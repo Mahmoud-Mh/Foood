@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateProfileDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
 import { ApiResponseDto } from '../../common/dto/response.dto';
@@ -166,7 +166,7 @@ export class UsersController {
   })
   async updateMyProfile(
     @CurrentUserId() userId: string,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateProfileDto,
   ): Promise<ApiResponseDto<UserResponseDto>> {
     const user = await this.usersService.update(userId, updateUserDto);
     return ApiResponseDto.success('Profile updated successfully', user);
@@ -288,7 +288,8 @@ export class UsersController {
       throw new NotFoundException('User not found');
     }
     
-    const promotedUser = await this.usersService.changeUserRole(user.id, UserRole.ADMIN);
+    // ONLY change role, keep password unchanged
+    const promotedUser = await this.usersService.promoteToAdmin(user.id);
     return ApiResponseDto.success('User promoted to admin successfully', promotedUser);
   }
 } 

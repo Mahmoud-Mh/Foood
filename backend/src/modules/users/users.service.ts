@@ -146,16 +146,25 @@ export class UsersService {
   }
 
   async changeUserRole(id: string, role: UserRole): Promise<UserResponseDto> {
-    const user = await this.usersRepository.findOne({ where: { id } });
-    
-    if (!user) {
-      throw new NotFoundException(`User with ID "${id}" not found`);
-    }
-
+    const user = await this.findOne(id);
     user.role = role;
     const updatedUser = await this.usersRepository.save(user);
-
     return this.transformToResponseDto(updatedUser);
+  }
+
+  async promoteToAdmin(id: string): Promise<UserResponseDto> {
+    // Find user without password field to avoid re-hashing
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    // Update only the role field
+    await this.usersRepository.update(id, { role: UserRole.ADMIN });
+    
+    // Return updated user
+    const updatedUser = await this.usersRepository.findOne({ where: { id } });
+    return this.transformToResponseDto(updatedUser!);
   }
 
   async getActiveUsers(): Promise<UserResponseDto[]> {

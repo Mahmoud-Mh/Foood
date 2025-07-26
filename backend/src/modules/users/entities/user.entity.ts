@@ -88,7 +88,8 @@ export class User {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
-    if (this.password) {
+    if (this.password && !this.password.startsWith('$2b$')) {
+      // Only hash if password is not already hashed (bcrypt hashes start with $2b$)
       const saltRounds = 12;
       this.password = await bcrypt.hash(this.password, saltRounds);
     }
