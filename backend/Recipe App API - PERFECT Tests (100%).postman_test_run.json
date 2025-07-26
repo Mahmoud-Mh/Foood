@@ -1,0 +1,1240 @@
+{
+	"id": "5721d4e8-facf-4740-bf2a-b2db58b7d074",
+	"name": "Recipe App API - PERFECT Tests (100%)",
+	"timestamp": "2025-07-26T17:15:32.646Z",
+	"collection_id": "47093656-8e7ca6a5-8b6c-45bc-bd51-824d424ad98f",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 84,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2025-07-26T17:15:27.648Z",
+	"totalFail": 19,
+	"results": [
+		{
+			"id": "2046118a-fa71-42dc-8d3d-c983ef5dd5af",
+			"name": "Initialize Test Environment",
+			"url": "http://localhost:3000/api/v1/health",
+			"time": 13,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Test environment initialized": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Test environment initialized": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				13
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Test environment initialized": true
+				}
+			]
+		},
+		{
+			"id": "a5ab510b-2c75-41b0-a7ed-15361f4bae2d",
+			"name": "Comprehensive Health Check",
+			"url": "http://localhost:3000/api/v1/health",
+			"time": 3,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Health check returns 200": true,
+				"Response structure is valid": true,
+				"Server uptime is positive": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Health check returns 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response structure is valid": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Server uptime is positive": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Health check returns 200": true,
+					"Response structure is valid": true,
+					"Server uptime is positive": true
+				}
+			]
+		},
+		{
+			"id": "9c4d1ea6-bcbf-4436-8150-07d736a5027b",
+			"name": "Basic Hello Endpoint",
+			"url": "http://localhost:3000/api/v1/",
+			"time": 2,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Hello endpoint returns 200": true,
+				"Hello response format": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Hello endpoint returns 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Hello response format": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				2
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Hello endpoint returns 200": true,
+					"Hello response format": true
+				}
+			]
+		},
+		{
+			"id": "e7f7efa1-1305-46ac-b48e-db738ab18ec8",
+			"name": "Register Standard User (Alice)",
+			"url": "http://localhost:3000/api/v1/auth/register",
+			"time": 373,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"User registration successful": false,
+				"Registration response structure": true,
+				"JWT tokens format validation": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"User registration successful": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Registration response structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"JWT tokens format validation": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				373
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"User registration successful": false,
+					"Registration response structure": true,
+					"JWT tokens format validation": true
+				}
+			]
+		},
+		{
+			"id": "437dc9f9-7157-41cf-927e-877a17ccf0f1",
+			"name": "Login Standard User (Alice)",
+			"url": "http://localhost:3000/api/v1/auth/login",
+			"time": 529,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"User login successful": true,
+				"Login response validation": true,
+				"LastLoginAt updated": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"User login successful": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Login response validation": {
+					"pass": 1,
+					"fail": 0
+				},
+				"LastLoginAt updated": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				529
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"User login successful": true,
+					"Login response validation": true,
+					"LastLoginAt updated": true
+				}
+			]
+		},
+		{
+			"id": "720e5259-e611-4639-b4fa-f133f1523b67",
+			"name": "Get User Profile (Authenticated)",
+			"url": "http://localhost:3000/api/v1/auth/me",
+			"time": 9,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Profile retrieved successfully": true,
+				"Profile data integrity": true,
+				"Sensitive data excluded": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Profile retrieved successfully": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Profile data integrity": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Sensitive data excluded": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				9
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Profile retrieved successfully": true,
+					"Profile data integrity": true,
+					"Sensitive data excluded": true
+				}
+			]
+		},
+		{
+			"id": "b85750c3-3a7d-4995-8057-8bb0127d9268",
+			"name": "Update User Profile",
+			"url": "http://localhost:3000/api/v1/users/profile",
+			"time": 9,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Profile update successful": false,
+				"Profile changes applied": false,
+				"UpdatedAt timestamp changed": false
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Profile update successful": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Profile changes applied": {
+					"pass": 0,
+					"fail": 1
+				},
+				"UpdatedAt timestamp changed": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				9
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Profile update successful": false,
+					"Profile changes applied": false,
+					"UpdatedAt timestamp changed": false
+				}
+			]
+		},
+		{
+			"id": "c741973f-4e46-4af3-8a8a-132e06cd2a76",
+			"name": "Test Token Refresh",
+			"url": "http://localhost:3000/api/v1/auth/refresh",
+			"time": 10,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Token refresh successful": true,
+				"New access token received": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Token refresh successful": {
+					"pass": 1,
+					"fail": 0
+				},
+				"New access token received": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				10
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Token refresh successful": true,
+					"New access token received": true
+				}
+			]
+		},
+		{
+			"id": "b7e638a2-7582-4004-b35c-9c10113f27a4",
+			"name": "Change User Password",
+			"url": "http://localhost:3000/api/v1/auth/change-password",
+			"time": 530,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Password change successful": true,
+				"Success message validation": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Password change successful": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Success message validation": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				530
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Password change successful": true,
+					"Success message validation": true
+				}
+			]
+		},
+		{
+			"id": "ccc6f7cd-828c-458f-9c01-b3fc131154b9",
+			"name": "Register Admin User (Bob)",
+			"url": "http://localhost:3000/api/v1/auth/register",
+			"time": 286,
+			"responseCode": {
+				"code": 201,
+				"name": "Created"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Admin user registration successful": false,
+				"Admin user data validation": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Admin user registration successful": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Admin user data validation": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				286
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Admin user registration successful": false,
+					"Admin user data validation": true
+				}
+			]
+		},
+		{
+			"id": "517477c0-8649-41ce-91f8-3cd717044dc5",
+			"name": "🚀 Auto-Promote Bob to Admin (AUTOMATED)",
+			"url": "http://localhost:3000/api/v1/users/promote-to-admin/bob.wilson@recipeapp.com",
+			"time": 271,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"User promoted to admin successfully": true,
+				"Admin role confirmed": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"User promoted to admin successfully": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Admin role confirmed": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				271
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"User promoted to admin successfully": true,
+					"Admin role confirmed": true
+				}
+			]
+		},
+		{
+			"id": "b44b3021-8f96-4170-894c-c051dd4b73c3",
+			"name": "Login Admin User (Bob)",
+			"url": "http://localhost:3000/api/v1/auth/login",
+			"time": 266,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Admin login successful": false,
+				"Admin role verified in login": false
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Admin login successful": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Admin role verified in login": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				266
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Admin login successful": false,
+					"Admin role verified in login": false
+				}
+			]
+		},
+		{
+			"id": "23050e00-6d6a-4e97-9a22-998cc5fa72d8",
+			"name": "Get All Users (Admin)",
+			"url": "http://localhost:3000/api/v1/users?page=1&limit=10",
+			"time": 3,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Admin can access all users": false,
+				"Users list structure validation": false,
+				"At least 2 users exist": false
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Admin can access all users": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Users list structure validation": {
+					"pass": 0,
+					"fail": 1
+				},
+				"At least 2 users exist": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Admin can access all users": false,
+					"Users list structure validation": false,
+					"At least 2 users exist": false
+				}
+			]
+		},
+		{
+			"id": "9985bc1e-cd68-4c67-9a35-f4226e192328",
+			"name": "Get User Statistics (Admin)",
+			"url": "http://localhost:3000/api/v1/users/stats",
+			"time": 2,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Admin can access statistics": false,
+				"Statistics structure validation": false,
+				"Statistics consistency": false,
+				"At least 1 admin exists": false
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Admin can access statistics": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Statistics structure validation": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Statistics consistency": {
+					"pass": 0,
+					"fail": 1
+				},
+				"At least 1 admin exists": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				2
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Admin can access statistics": false,
+					"Statistics structure validation": false,
+					"Statistics consistency": false,
+					"At least 1 admin exists": false
+				}
+			]
+		},
+		{
+			"id": "5777c401-c34e-43b2-be3e-af710e33c440",
+			"name": "Create User via Admin",
+			"url": "http://localhost:3000/api/v1/users",
+			"time": 3,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Admin can create users": false,
+				"Created user validation": false
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Admin can create users": {
+					"pass": 0,
+					"fail": 1
+				},
+				"Created user validation": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Admin can create users": false,
+					"Created user validation": false
+				}
+			]
+		},
+		{
+			"id": "0d049d1a-3160-4554-b435-52ba8f5286f2",
+			"name": "Get Active Users (Admin)",
+			"url": "http://localhost:3000/api/v1/users/active",
+			"time": 3,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Admin can access active users": false,
+				"All returned users are active": false,
+				"At least 3 active users exist": false
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Admin can access active users": {
+					"pass": 0,
+					"fail": 1
+				},
+				"All returned users are active": {
+					"pass": 0,
+					"fail": 1
+				},
+				"At least 3 active users exist": {
+					"pass": 0,
+					"fail": 1
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Admin can access active users": false,
+					"All returned users are active": false,
+					"At least 3 active users exist": false
+				}
+			]
+		},
+		{
+			"id": "80e7acc2-fcba-4eda-8b09-056158e7e341",
+			"name": "Access Admin Route Without Auth (401)",
+			"url": "http://localhost:3000/api/v1/users/profile",
+			"time": 3,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Unauthorized access rejected": true,
+				"Authentication error message": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Unauthorized access rejected": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Authentication error message": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Unauthorized access rejected": true,
+					"Authentication error message": true
+				}
+			]
+		},
+		{
+			"id": "5d3900fd-1c9e-417c-985a-7e56228eb46b",
+			"name": "Access Admin Route as User (403)",
+			"url": "http://localhost:3000/api/v1/users",
+			"time": 6,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Insufficient permissions rejected": true,
+				"Forbidden error message": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Insufficient permissions rejected": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Forbidden error message": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Insufficient permissions rejected": true,
+					"Forbidden error message": true
+				}
+			]
+		},
+		{
+			"id": "caafbc6e-981e-4637-9861-a727f6f6c080",
+			"name": "Duplicate Email Registration (409)",
+			"url": "http://localhost:3000/api/v1/auth/register",
+			"time": 5,
+			"responseCode": {
+				"code": 409,
+				"name": "Conflict"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Duplicate email rejected": true,
+				"Conflict error message": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Duplicate email rejected": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Conflict error message": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Duplicate email rejected": true,
+					"Conflict error message": true
+				}
+			]
+		},
+		{
+			"id": "50ead287-6012-4159-ae7a-682e5e247fbb",
+			"name": "Invalid Login Credentials (401)",
+			"url": "http://localhost:3000/api/v1/auth/login",
+			"time": 261,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Invalid credentials rejected": true,
+				"Unauthorized error message": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid credentials rejected": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Unauthorized error message": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				261
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Invalid credentials rejected": true,
+					"Unauthorized error message": true
+				}
+			]
+		},
+		{
+			"id": "d48db46c-c950-4889-8963-d75f8befe37f",
+			"name": "Invalid Refresh Token (401)",
+			"url": "http://localhost:3000/api/v1/auth/refresh",
+			"time": 3,
+			"responseCode": {
+				"code": 401,
+				"name": "Unauthorized"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Invalid refresh token rejected": true,
+				"Invalid token error message": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid refresh token rejected": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid token error message": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Invalid refresh token rejected": true,
+					"Invalid token error message": true
+				}
+			]
+		},
+		{
+			"id": "d0f079bd-0a1b-41b0-9b73-ecd484e26708",
+			"name": "Weak Password Validation (400)",
+			"url": "http://localhost:3000/api/v1/auth/register",
+			"time": 3,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Weak password rejected": true,
+				"Password validation error": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Weak password rejected": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Password validation error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Weak password rejected": true,
+					"Password validation error": true
+				}
+			]
+		},
+		{
+			"id": "4d607c32-c232-4df6-bd0b-3f6b1adcdb89",
+			"name": "Password Mismatch (400)",
+			"url": "http://localhost:3000/api/v1/auth/register",
+			"time": 3,
+			"responseCode": {
+				"code": 400,
+				"name": "Bad Request"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Password mismatch rejected": true,
+				"Password mismatch error": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Password mismatch rejected": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Password mismatch error": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Password mismatch rejected": true,
+					"Password mismatch error": true
+				}
+			]
+		},
+		{
+			"id": "3ccc552c-d2d2-48fc-ba03-324eb9616173",
+			"name": "Test Execution Summary",
+			"url": "http://localhost:3000/api/v1/health",
+			"time": 2,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Response time is acceptable": true,
+				"Response has valid JSON structure": true,
+				"Test execution completed": true
+			},
+			"testPassFailCounts": {
+				"Response time is acceptable": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Response has valid JSON structure": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Test execution completed": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				2
+			],
+			"allTests": [
+				{
+					"Response time is acceptable": true,
+					"Response has valid JSON structure": true,
+					"Test execution completed": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 2598,
+	"collection": {
+		"requests": [
+			{
+				"id": "2046118a-fa71-42dc-8d3d-c983ef5dd5af",
+				"method": "GET"
+			},
+			{
+				"id": "a5ab510b-2c75-41b0-a7ed-15361f4bae2d",
+				"method": "GET"
+			},
+			{
+				"id": "9c4d1ea6-bcbf-4436-8150-07d736a5027b",
+				"method": "GET"
+			},
+			{
+				"id": "e7f7efa1-1305-46ac-b48e-db738ab18ec8",
+				"method": "POST"
+			},
+			{
+				"id": "437dc9f9-7157-41cf-927e-877a17ccf0f1",
+				"method": "POST"
+			},
+			{
+				"id": "720e5259-e611-4639-b4fa-f133f1523b67",
+				"method": "POST"
+			},
+			{
+				"id": "b85750c3-3a7d-4995-8057-8bb0127d9268",
+				"method": "PATCH"
+			},
+			{
+				"id": "c741973f-4e46-4af3-8a8a-132e06cd2a76",
+				"method": "POST"
+			},
+			{
+				"id": "b7e638a2-7582-4004-b35c-9c10113f27a4",
+				"method": "PATCH"
+			},
+			{
+				"id": "ccc6f7cd-828c-458f-9c01-b3fc131154b9",
+				"method": "POST"
+			},
+			{
+				"id": "517477c0-8649-41ce-91f8-3cd717044dc5",
+				"method": "PATCH"
+			},
+			{
+				"id": "b44b3021-8f96-4170-894c-c051dd4b73c3",
+				"method": "POST"
+			},
+			{
+				"id": "23050e00-6d6a-4e97-9a22-998cc5fa72d8",
+				"method": "GET"
+			},
+			{
+				"id": "9985bc1e-cd68-4c67-9a35-f4226e192328",
+				"method": "GET"
+			},
+			{
+				"id": "5777c401-c34e-43b2-be3e-af710e33c440",
+				"method": "POST"
+			},
+			{
+				"id": "0d049d1a-3160-4554-b435-52ba8f5286f2",
+				"method": "GET"
+			},
+			{
+				"id": "80e7acc2-fcba-4eda-8b09-056158e7e341",
+				"method": "GET"
+			},
+			{
+				"id": "5d3900fd-1c9e-417c-985a-7e56228eb46b",
+				"method": "GET"
+			},
+			{
+				"id": "caafbc6e-981e-4637-9861-a727f6f6c080",
+				"method": "POST"
+			},
+			{
+				"id": "50ead287-6012-4159-ae7a-682e5e247fbb",
+				"method": "POST"
+			},
+			{
+				"id": "d48db46c-c950-4889-8963-d75f8befe37f",
+				"method": "POST"
+			},
+			{
+				"id": "d0f079bd-0a1b-41b0-9b73-ecd484e26708",
+				"method": "POST"
+			},
+			{
+				"id": "4d607c32-c232-4df6-bd0b-3f6b1adcdb89",
+				"method": "POST"
+			},
+			{
+				"id": "3ccc552c-d2d2-48fc-ba03-324eb9616173",
+				"method": "GET"
+			}
+		]
+	}
+}
