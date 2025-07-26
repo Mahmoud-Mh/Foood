@@ -11,6 +11,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { IngredientsModule } from './modules/ingredients/ingredients.module';
+import { RecipesModule } from './modules/recipes/recipes.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
@@ -36,6 +37,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     AuthModule,
     CategoriesModule,
     IngredientsModule,
+    RecipesModule,
   ],
   controllers: [AppController],
   providers: [

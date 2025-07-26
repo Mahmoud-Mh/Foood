@@ -11,6 +11,8 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from '../../users/entities/user.entity';
 import { Category } from '../../categories/entities/category.entity';
+import { RecipeIngredient } from './recipe-ingredient.entity';
+import { RecipeStep } from './recipe-step.entity';
 
 export enum RecipeStatus {
   DRAFT = 'draft',
@@ -152,13 +154,21 @@ export class Recipe {
   @JoinColumn({ name: 'categoryId' })
   category: Category;
 
-  // TODO: Add relations when entities are created
-  // @OneToMany(() => RecipeIngredient, recipeIngredient => recipeIngredient.recipe)
-  // recipeIngredients: RecipeIngredient[];
+  // Recipe ingredients relation
+  @OneToMany(() => RecipeIngredient, recipeIngredient => recipeIngredient.recipe, { 
+    cascade: true,
+    eager: false 
+  })
+  recipeIngredients: RecipeIngredient[];
 
-  // @OneToMany(() => RecipeStep, recipeStep => recipeStep.recipe)
-  // steps: RecipeStep[];
+  // Recipe steps relation
+  @OneToMany(() => RecipeStep, recipeStep => recipeStep.recipe, { 
+    cascade: true,
+    eager: false 
+  })
+  steps: RecipeStep[];
 
+  // TODO: Add when Comment and Rating entities are created
   // @OneToMany(() => Comment, comment => comment.recipe)
   // comments: Comment[];
 
