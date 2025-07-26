@@ -9,6 +9,8 @@ import { ConfigService } from './config/config.service';
 import { createTypeOrmOptions } from './config/database.config';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { IngredientsModule } from './modules/ingredients/ingredients.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
@@ -32,6 +34,8 @@ import { RolesGuard } from './common/guards/roles.guard';
     }),
     UsersModule,
     AuthModule,
+    CategoriesModule,
+    IngredientsModule,
   ],
   controllers: [AppController],
   providers: [
