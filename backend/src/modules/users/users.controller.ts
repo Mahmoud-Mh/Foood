@@ -11,6 +11,8 @@ import {
   HttpStatus,
   UseGuards,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +23,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateProfileDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
@@ -42,7 +45,11 @@ import {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth('access-token')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService
+  ) {}
 
   @Post()
   @AdminOnly()
@@ -210,6 +217,21 @@ export class UsersController {
     return ApiResponseDto.success('User deleted successfully');
   }
 
+  @Delete('me/account')
+  @ApiOperation({ summary: 'Delete current user account (self-deletion)' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Account deleted successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'User not found',
+  })
+  async deleteMyAccount(@CurrentUserId() userId: string): Promise<ApiResponseDto<null>> {
+    await this.usersService.deleteUserAccount(userId);
+    return ApiResponseDto.success('Account deleted successfully');
+  }
+
   @Patch(':id/deactivate')
   @AdminOnly()
   @ApiOperation({ summary: 'Deactivate user account (Admin only)' })
@@ -271,10 +293,10 @@ export class UsersController {
   }
 
   @Patch('promote-to-admin/:email')
-  @Public()
+  @AdminOnly()
   @ApiOperation({ 
-    summary: 'Promote user to admin by email (DEVELOPMENT ONLY)',
-    description: 'Temporary endpoint for automated testing. Should be removed in production.'
+    summary: 'Promote user to admin by email (Admin only)',
+    description: 'Promote any user to admin role. Requires admin privileges.'
   })
   @ApiParam({ name: 'email', description: 'User email to promote' })
   @ApiResponse({
@@ -291,5 +313,36 @@ export class UsersController {
     // ONLY change role, keep password unchanged
     const promotedUser = await this.usersService.promoteToAdmin(user.id);
     return ApiResponseDto.success('User promoted to admin successfully', promotedUser);
+  }
+
+  @Patch('bootstrap-admin/:email')
+  @Public()
+  @ApiOperation({ 
+    summary: 'Bootstrap first admin for testing (DEVELOPMENT ONLY)',
+    description: 'Create the first admin user for automated testing. Should be removed in production.'
+  })
+  @ApiParam({ name: 'email', description: 'User email to promote to admin' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'First admin user created successfully with new admin tokens',
+  })
+  async bootstrapAdmin(@Param('email') email: string): Promise<ApiResponseDto<any>> {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    
+    // 1. Promote user to admin in database
+    const promotedUser = await this.usersService.promoteToAdmin(user.id);
+    
+    // 2. Generate new JWT tokens with admin role using the same approach as login
+    const tokens = await this.authService.generateTokensForUser(promotedUser);
+    
+    // 3. Return promoted user with new admin tokens
+    return ApiResponseDto.success('First admin user created successfully', {
+      user: promotedUser,
+      tokens: tokens,
+      message: 'Admin privileges granted with new tokens'
+    });
   }
 } 

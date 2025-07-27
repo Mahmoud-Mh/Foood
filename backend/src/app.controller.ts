@@ -1,42 +1,35 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AppService } from './app.service';
-import { ApiResponseDto } from './common/dto/response.dto';
-import { Public } from './common/decorators/auth.decorators';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-@ApiTags('Application')
+@ApiTags('App')
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @Public()
-  @ApiOperation({ summary: 'Health check endpoint' })
-  @ApiResponse({
-    status: 200,
-    description: 'Application is running successfully',
-    type: ApiResponseDto,
-  })
-  getHello(): ApiResponseDto<string> {
-    const message = this.appService.getHello();
-    return ApiResponseDto.success('Application is running successfully', message);
+  @ApiOperation({ summary: 'Health check' })
+  @ApiResponse({ status: 200, description: 'Returns application status' })
+  getHello(): string {
+    return this.appService.getHello();
   }
 
   @Get('health')
-  @Public()
-  @ApiOperation({ summary: 'Application health status' })
-  @ApiResponse({
-    status: 200,
-    description: 'Health check successful',
-    type: ApiResponseDto,
-  })
-  healthCheck(): ApiResponseDto<object> {
-    const healthData = {
+  @ApiOperation({ summary: 'Health check endpoint' })
+  @ApiResponse({ status: 200, description: 'Application is healthy' })
+  getHealth(): object {
+    return {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      environment: process.env.NODE_ENV || 'development',
+      service: 'Recipe App API',
+      version: '1.0.0',
     };
-    return ApiResponseDto.success('Health check successful', healthData);
+  }
+
+  @Get('clear-database')
+  @ApiOperation({ summary: 'Clear all database data (DEV ONLY)' })
+  @ApiResponse({ status: 200, description: 'Database cleared successfully' })
+  async clearDatabase(): Promise<object> {
+    return this.appService.clearDatabase();
   }
 }

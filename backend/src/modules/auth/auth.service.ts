@@ -157,7 +157,12 @@ export class AuthService {
       throw new UnauthorizedException('Account is deactivated');
     }
 
-    return user;
+    // 🔥 CORRECTION SÉCURITÉ: Utiliser le rôle du JWT, pas de la DB
+    // Retourner les infos user MAIS avec le rôle du token JWT
+    return {
+      ...user,
+      role: payload.role // ← Utilise le rôle du JWT token, pas de la DB !
+    };
   }
 
   async logout(userId: string): Promise<{ message: string }> {
@@ -170,6 +175,13 @@ export class AuthService {
     // The client should remove the tokens from storage
     
     return { message: 'Logout successful' };
+  }
+
+  /**
+   * Generate new tokens for a user (useful after role changes)
+   */
+  async generateTokensForUser(user: UserResponseDto): Promise<TokenResponseDto> {
+    return this.generateTokens(user.id, user.email, user.role);
   }
 
   async changePassword(

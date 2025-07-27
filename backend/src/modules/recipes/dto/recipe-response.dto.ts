@@ -218,6 +218,14 @@ export class RecipeResponseDto {
   recipeIngredients?: RecipeIngredientResponseDto[];
 
   @ApiProperty({ 
+    description: 'Recipe ingredients (alias)', 
+    type: [RecipeIngredientResponseDto] 
+  })
+  @Expose()
+  @Type(() => RecipeIngredientResponseDto)
+  ingredients?: RecipeIngredientResponseDto[];
+
+  @ApiProperty({ 
     description: 'Recipe steps', 
     type: [RecipeStepResponseDto] 
   })

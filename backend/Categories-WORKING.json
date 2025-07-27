@@ -1,0 +1,396 @@
+{
+	"info": {
+		"_postman_id": "categories-working-test-fixed-2025",
+		"name": "Categories - WORKING TEST FIXED",
+		"description": "Collection Categories avec extraction correcte du token",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"version": "1.1.0"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api/v1"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{admin_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Step 1 - Setup Admin",
+			"item": [
+				{
+					"name": "Register & Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('=== REGISTER ADMIN ===');",
+									"",
+									"pm.test('Registration successful', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"console.log('Full response:', JSON.stringify(response, null, 2));",
+									"",
+									"// Extract token from correct path: response.data.tokens.accessToken",
+									"if (response.data && response.data.tokens && response.data.tokens.accessToken) {",
+									"    const token = response.data.tokens.accessToken;",
+									"    pm.globals.set('admin_token', token);",
+									"    pm.collectionVariables.set('admin_token', token);",
+									"    pm.environment.set('admin_token', token);",
+									"    console.log('✅ Token extracted and stored:', token.substring(0, 30) + '...');",
+									"} else {",
+									"    console.log('❌ Token not found in response.data.tokens.accessToken');",
+									"    console.log('❌ Response structure:', Object.keys(response));",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"email\": \"working.admin@recipeapp.com\",\n  \"password\": \"WorkingAdmin123!\",\n  \"confirmPassword\": \"WorkingAdmin123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Promote to Admin Role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('User promoted to admin', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"console.log('✅ User promoted to admin role');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Ensure token is available before request",
+									"const token = pm.globals.get('admin_token') || pm.collectionVariables.get('admin_token');",
+									"console.log('Token for promotion:', token ? token.substring(0, 30) + '...' : 'NOT FOUND');",
+									"if (token) {",
+									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + token});",
+									"} else {",
+									"    console.log('❌ NO TOKEN AVAILABLE FOR PROMOTION');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/promote-to-admin/working.admin@recipeapp.com",
+							"host": ["{{base_url}}"],
+							"path": ["users", "promote-to-admin", "working.admin@recipeapp.com"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Step 2 - Test Categories",
+			"item": [
+				{
+					"name": "Create Test Category",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Debug token availability",
+									"const token = pm.globals.get('admin_token') || pm.collectionVariables.get('admin_token');",
+									"console.log('Token for category creation:', token ? token.substring(0, 30) + '...' : 'NOT FOUND');",
+									"if (token) {",
+									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + token});",
+									"} else {",
+									"    console.log('❌ NO TOKEN AVAILABLE FOR CATEGORY CREATION');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('=== CREATE CATEGORY ===');",
+									"",
+									"pm.test('Category created successfully', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"console.log('Create category response:', JSON.stringify(response, null, 2));",
+									"",
+									"if (response.success && response.data && response.data.id) {",
+									"    pm.globals.set('category_id', response.data.id);",
+									"    pm.collectionVariables.set('category_id', response.data.id);",
+									"    pm.globals.set('category_slug', response.data.slug);",
+									"    pm.collectionVariables.set('category_slug', response.data.slug);",
+									"    console.log('✅ Category ID stored:', response.data.id);",
+									"    console.log('✅ Category slug stored:', response.data.slug);",
+									"} else {",
+									"    console.log('❌ Failed to extract category data from response');",
+									"    console.log('❌ Response structure:', Object.keys(response));",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test Working Category\",\n  \"description\": \"This category should work with proper authentication\",\n  \"icon\": \"🧪\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/categories",
+							"host": ["{{base_url}}"],
+							"path": ["categories"]
+						}
+					}
+				},
+				{
+					"name": "Get Category by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('=== GET CATEGORY BY ID ===');",
+									"",
+									"pm.test('Category retrieved successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"console.log('Get category response:', JSON.stringify(response, null, 2));",
+									"",
+									"pm.test('Category data matches creation', function () {",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.name).to.equal('Test Working Category');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["categories", "{{category_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get All Categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('=== GET ALL CATEGORIES ===');",
+									"",
+									"pm.test('Categories list retrieved', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"console.log('Get all categories response:', JSON.stringify(response, null, 2));",
+									"",
+									"pm.test('At least one category exists', function () {",
+									"    pm.expect(response.data.data.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["categories"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "10"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Category Stats (Admin)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const token = pm.globals.get('admin_token') || pm.collectionVariables.get('admin_token');",
+									"console.log('Token for stats:', token ? token.substring(0, 30) + '...' : 'NOT FOUND');",
+									"if (token) {",
+									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + token});",
+									"} else {",
+									"    console.log('❌ NO TOKEN AVAILABLE FOR STATS');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('=== GET CATEGORY STATS ===');",
+									"",
+									"pm.test('Category stats retrieved', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"console.log('Stats response:', JSON.stringify(response, null, 2));",
+									"",
+									"pm.test('Stats structure is correct', function () {",
+									"    pm.expect(response.success).to.be.true;",
+									"    pm.expect(response.data.total).to.be.at.least(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/categories/stats",
+							"host": ["{{base_url}}"],
+							"path": ["categories", "stats"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Step 3 - Cleanup",
+			"item": [
+				{
+					"name": "Delete Test Category",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const token = pm.globals.get('admin_token') || pm.collectionVariables.get('admin_token');",
+									"console.log('Token for deletion:', token ? token.substring(0, 30) + '...' : 'NOT FOUND');",
+									"if (token) {",
+									"    pm.request.headers.add({key: 'Authorization', value: 'Bearer ' + token});",
+									"} else {",
+									"    console.log('❌ NO TOKEN AVAILABLE FOR DELETION');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('=== DELETE CATEGORY ===');",
+									"",
+									"pm.test('Category deleted successfully', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"console.log('Delete response:', JSON.stringify(response, null, 2));",
+									"",
+									"console.log('🧹 Test category deleted');",
+									"console.log('🎉 CATEGORIES MODULE TEST COMPLETED!');"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["categories", "{{category_id}}"]
+						}
+					}
+				}
+			]
+		}
+	]
+} 
