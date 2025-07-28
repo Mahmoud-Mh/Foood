@@ -28,6 +28,7 @@ export class RolesGuard implements CanActivate {
     }
 
     // Check if user has one of the required roles
+    // The JWT validation in AuthService now checks the database role
     const hasRequiredRole = requiredRoles.includes(user.role);
     
     if (!hasRequiredRole) {

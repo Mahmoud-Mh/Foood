@@ -13,6 +13,7 @@ import {
   NotFoundException,
   Inject,
   forwardRef,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -39,6 +40,7 @@ import {
   CurrentUserId,
   Roles 
 } from '../../common/decorators/auth.decorators';
+import { GetUsersDto } from './dto/get-users.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -77,13 +79,17 @@ export class UsersController {
   @ApiOperation({ summary: 'Get all users with pagination (Admin only)' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
+  @ApiQuery({ name: 'search', required: false, type: String, description: 'Search term for name or email' })
+  @ApiQuery({ name: 'role', required: false, enum: UserRole, description: 'Filter by user role' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Users retrieved successfully',
     type: PaginatedResultDto<UserResponseDto>,
   })
-  async findAll(@Query() paginationDto: PaginationDto): Promise<ApiResponseDto<PaginatedResultDto<UserResponseDto>>> {
-    const users = await this.usersService.findAll(paginationDto);
+  async findAll(
+    @Query() getUsersDto: GetUsersDto,
+  ): Promise<ApiResponseDto<PaginatedResultDto<UserResponseDto>>> {
+    const users = await this.usersService.findAll(getUsersDto, getUsersDto.search, getUsersDto.role);
     return ApiResponseDto.success('Users retrieved successfully', users);
   }
 
@@ -212,7 +218,15 @@ export class UsersController {
     status: HttpStatus.NOT_FOUND,
     description: 'User not found',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<ApiResponseDto<null>> {
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() currentUser: UserResponseDto,
+  ): Promise<ApiResponseDto<null>> {
+    // Prevent users from deleting their own account
+    if (currentUser.id === id) {
+      throw new ForbiddenException('You cannot delete your own account');
+    }
+
     await this.usersService.remove(id);
     return ApiResponseDto.success('User deleted successfully');
   }
@@ -272,6 +286,29 @@ export class UsersController {
   async verifyEmail(@Param('id', ParseUUIDPipe) id: string): Promise<ApiResponseDto<UserResponseDto>> {
     const user = await this.usersService.verifyEmail(id);
     return ApiResponseDto.success('Email verified successfully', user);
+  }
+
+  @Patch(':id/role')
+  @AdminOnly()
+  @ApiOperation({ summary: 'Update user role (Admin only)' })
+  @ApiParam({ name: 'id', description: 'User unique identifier' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User role updated successfully',
+    type: UserResponseDto,
+  })
+  async updateUserRole(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: { role: UserRole },
+    @CurrentUser() currentUser: UserResponseDto,
+  ): Promise<ApiResponseDto<UserResponseDto>> {
+    // Prevent users from changing their own role
+    if (currentUser.id === id) {
+      throw new ForbiddenException('You cannot change your own role');
+    }
+
+    const user = await this.usersService.changeUserRole(id, body.role);
+    return ApiResponseDto.success('User role updated successfully', user);
   }
 
   @Patch(':id/change-role')

@@ -157,11 +157,11 @@ export class AuthService {
       throw new UnauthorizedException('Account is deactivated');
     }
 
-    // 🔥 CORRECTION SÉCURITÉ: Utiliser le rôle du JWT, pas de la DB
-    // Retourner les infos user MAIS avec le rôle du token JWT
+    // 🔒 SECURITY FIX: Use role from database, not JWT token
+    // This prevents users from accessing admin endpoints with old tokens
     return {
       ...user,
-      role: payload.role // ← Utilise le rôle du JWT token, pas de la DB !
+      role: fullUser.role // ← Use role from database, not JWT token!
     };
   }
 

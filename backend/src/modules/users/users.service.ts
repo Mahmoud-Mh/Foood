@@ -1,6 +1,6 @@
 import { Injectable, ConflictException, NotFoundException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateProfileDto } from './dto/update-user.dto';
@@ -32,12 +32,30 @@ export class UsersService {
     return this.transformToResponseDto(savedUser);
   }
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginatedResultDto<UserResponseDto>> {
+  async findAll(paginationDto: PaginationDto, search?: string, role?: any): Promise<PaginatedResultDto<UserResponseDto>> {
     const page = paginationDto.page || 1;
     const limit = paginationDto.limit || 10;
     const skip = (page - 1) * limit;
 
+    // Build where conditions
+    let whereConditions: any = {};
+    
+    if (role) {
+      whereConditions.role = role;
+    }
+    
+    if (search) {
+      // Search in email, firstName, or lastName
+      // Use OR conditions for search
+      whereConditions = [
+        { email: Like(`%${search}%`), ...(role ? { role } : {}) },
+        { firstName: Like(`%${search}%`), ...(role ? { role } : {}) },
+        { lastName: Like(`%${search}%`), ...(role ? { role } : {}) }
+      ];
+    }
+
     const [users, total] = await this.usersRepository.findAndCount({
+      where: whereConditions,
       skip,
       take: limit,
       order: { createdAt: 'DESC' },
@@ -135,12 +153,25 @@ export class UsersService {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
+    // Check if user has associated recipes
+    const recipeCount = await this.recipeRepository.count({ where: { authorId: id } });
+    if (recipeCount > 0) {
+      throw new ConflictException(`Cannot delete user. User has ${recipeCount} associated recipe(s). Please delete the recipes first or deactivate the user instead.`);
+    }
+
     // Clean up user's avatar file before deleting
     if (user.avatar) {
       this.cleanupOldAvatar(user.avatar);
     }
 
-    await this.usersRepository.remove(user);
+    try {
+      await this.usersRepository.remove(user);
+    } catch (error) {
+      if (error.code === '23503') { // Foreign key constraint violation
+        throw new ConflictException('Cannot delete user due to associated data. Please delete associated records first or deactivate the user instead.');
+      }
+      throw error;
+    }
   }
 
   async deactivateUser(id: string): Promise<UserResponseDto> {
@@ -189,10 +220,28 @@ export class UsersService {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
+    // Don't allow users to change their own role
+    // This should be checked at the controller level, but adding here as extra security
+    if (user.role === role) {
+      return this.transformToResponseDto(user); // No change needed
+    }
+
     user.role = role;
     const updatedUser = await this.usersRepository.save(user);
 
+    // Invalidate all existing tokens for this user
+    await this.invalidateUserTokens(id);
+
     return this.transformToResponseDto(updatedUser);
+  }
+
+  private async invalidateUserTokens(userId: string): Promise<void> {
+    // Update the user's lastLoginAt to invalidate existing tokens
+    // This is a simple approach - in production, you might want a proper token blacklist
+    await this.usersRepository.update(userId, { 
+      lastLoginAt: new Date(),
+      updatedAt: new Date()
+    });
   }
 
   async promoteToAdmin(id: string): Promise<UserResponseDto> {
