@@ -19,9 +19,9 @@ import {
 import { DifficultyLevel, RecipeStatus } from '../entities/recipe.entity';
 
 export class CreateRecipeIngredientDto {
-  @ApiProperty({ description: 'Ingredient ID' })
+  @ApiProperty({ description: 'Ingredient ID (UUID) or ingredient name (string)' })
   @IsNotEmpty()
-  @IsUUID()
+  @IsString()
   ingredientId: string;
 
   @ApiProperty({ description: 'Quantity needed', example: 250 })
@@ -80,7 +80,7 @@ export class CreateRecipeStepDto {
 
   @ApiPropertyOptional({ description: 'Step image URL' })
   @IsOptional()
-  @IsUrl()
+  @IsString()
   imageUrl?: string;
 
   @ApiPropertyOptional({ description: 'Tips for this step' })
@@ -194,13 +194,13 @@ export class CreateRecipeDto {
 
   @ApiPropertyOptional({ description: 'Recipe main image URL' })
   @IsOptional()
-  @IsUrl()
+  @IsString()
   imageUrl?: string;
 
   @ApiPropertyOptional({ description: 'Additional recipe images', type: [String] })
   @IsOptional()
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsString({ each: true })
   additionalImages?: string[];
 
   @ApiPropertyOptional({ description: 'Recipe tags for search', type: [String] })

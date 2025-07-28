@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { recipeService, categoryService } from '@/services';
-import { RecipeListItem, Category } from '@/types/api.types';
+import { Recipe, Category } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
+import Navbar from '@/components/Navbar';
 
 export default function HomePage() {
-  const [featuredRecipes, setFeaturedRecipes] = useState<RecipeListItem[]>([]);
-  const [popularRecipes, setPopularRecipes] = useState<RecipeListItem[]>([]);
+  const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
+  const [popularRecipes, setPopularRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,13 +21,13 @@ export default function HomePage() {
         // we'll use the general published recipes endpoint for both
         const [publishedRecipesResult, categoriesData] = await Promise.all([
           // Get published recipes and use them for both featured and popular
-          recipeService.getPublicRecipes({ limit: 12 }).catch(() => ({ items: [] })),
+          recipeService.getPublicRecipes({ limit: 12 }).catch(() => ({ data: [] })),
           // Try to get categories, fallback to empty array if it fails
           categoryService.getAllPublicCategories().catch(() => [])
         ]);
 
         // Split the published recipes between featured and popular
-        const allRecipes = publishedRecipesResult.items || [];
+        const allRecipes = publishedRecipesResult.data || [];
         setFeaturedRecipes(allRecipes.slice(0, 6)); // First 6 for featured
         setPopularRecipes(allRecipes.slice(6, 14)); // Next 8 for popular
 
@@ -55,41 +56,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-indigo-600">Recipe Hub</h1>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/recipes" className="text-gray-700 hover:text-indigo-600 transition">
-                Recipes
-              </Link>
-              <Link href="/categories" className="text-gray-700 hover:text-indigo-600 transition">
-                Categories
-              </Link>
-              <Link href="/ingredients" className="text-gray-700 hover:text-indigo-600 transition">
-                Ingredients
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link 
-                href="/auth/login"
-                className="text-gray-700 hover:text-indigo-600 transition"
-              >
-                Sign In
-              </Link>
-              <Link 
-                href="/auth/register"
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-indigo-50 via-white to-orange-50">
@@ -231,7 +198,7 @@ export default function HomePage() {
 }
 
 // Recipe Card Component
-function RecipeCard({ recipe }: { recipe: RecipeListItem }) {
+function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Link href={`/recipes/${recipe.id}`} className="group">
       <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow">
@@ -256,11 +223,11 @@ function RecipeCard({ recipe }: { recipe: RecipeListItem }) {
             {FormatUtils.truncateText(recipe.description, 100)}
           </p>
           <div className="flex items-center justify-between text-sm text-gray-500">
-            <span>{FormatUtils.formatDuration(recipe.totalTimeMinutes)}</span>
+            <span>{FormatUtils.formatDuration(recipe.prepTimeMinutes + recipe.cookTimeMinutes)}</span>
             <span>{FormatUtils.formatServings(recipe.servings)}</span>
             <div className="flex items-center">
-              <span className="text-yellow-500">★</span>
-              <span className="ml-1">{FormatUtils.formatRating(recipe.rating)}</span>
+              <span className="text-indigo-500">👀</span>
+              <span className="ml-1">{recipe.viewsCount || 0}</span>
             </div>
           </div>
         </div>
@@ -275,8 +242,7 @@ function CategoryCard({ category }: { category: Category }) {
     <Link href={`/recipes?category=${category.id}`} className="group">
       <div className="text-center">
         <div 
-          className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3 group-hover:scale-110 transition-transform"
-          style={{ backgroundColor: category.color }}
+          className="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3 group-hover:scale-110 transition-transform bg-indigo-500"
         >
           {category.icon || category.name.charAt(0)}
         </div>
@@ -284,7 +250,7 @@ function CategoryCard({ category }: { category: Category }) {
           {category.name}
         </h3>
         <p className="text-sm text-gray-500">
-          {FormatUtils.formatNumber(category.recipesCount)} recipes
+          {FormatUtils.formatNumber(category.recipeCount || 0)} recipes
         </p>
       </div>
     </Link>
@@ -292,7 +258,7 @@ function CategoryCard({ category }: { category: Category }) {
 }
 
 // Compact Recipe Card Component
-function CompactRecipeCard({ recipe }: { recipe: RecipeListItem }) {
+function CompactRecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Link href={`/recipes/${recipe.id}`} className="group">
       <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
@@ -309,10 +275,10 @@ function CompactRecipeCard({ recipe }: { recipe: RecipeListItem }) {
             {FormatUtils.truncateText(recipe.title, 40)}
           </h4>
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>{FormatUtils.formatDuration(recipe.totalTimeMinutes)}</span>
+            <span>{FormatUtils.formatDuration(recipe.prepTimeMinutes + recipe.cookTimeMinutes)}</span>
             <div className="flex items-center">
-              <span className="text-yellow-500">★</span>
-              <span className="ml-1">{FormatUtils.formatRating(recipe.rating)}</span>
+              <span className="text-indigo-500">👀</span>
+              <span className="ml-1">{recipe.viewsCount || 0}</span>
             </div>
           </div>
         </div>

@@ -24,7 +24,7 @@ async function bootstrap() {
     credentials: true,
   });
   
-  // Global validation pipe
+  // Global validation pipe with detailed error logging
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -32,6 +32,10 @@ async function bootstrap() {
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,
+      },
+      exceptionFactory: (errors) => {
+        console.error('Validation errors:', JSON.stringify(errors, null, 2));
+        return new Error('Validation failed');
       },
     }),
   );

@@ -7,11 +7,13 @@ export interface ApiResponse<T> {
 }
 
 export interface PaginatedResult<T> {
-  items: T[];
+  data: T[];
   total: number;
   page: number;
   limit: number;
   totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
 }
 
 // Auth Types
@@ -48,24 +50,27 @@ export interface Recipe {
   id: string;
   title: string;
   description: string;
-  summary?: string;
-  difficulty: DifficultyLevel;
+  instructions: string;
   prepTimeMinutes: number;
   cookTimeMinutes: number;
-  totalTimeMinutes: number;
   servings: number;
+  difficulty: DifficultyLevel;
   status: RecipeStatus;
   imageUrl?: string;
-  videoUrl?: string;
-  tags: string[];
+  additionalImages?: string[];
+  tags?: string[];
   nutritionalInfo?: NutritionalInfo;
-  rating: number;
-  ratingsCount: number;
+  notes?: string;
   viewsCount: number;
-  author: User;
-  category: Category;
-  ingredients: RecipeIngredient[];
-  steps: RecipeStep[];
+  likesCount: number;
+  isFeatured: boolean;
+  isActive: boolean;
+  authorId: string;
+  author?: User;
+  categoryId: string;
+  category?: Category;
+  ingredients?: RecipeIngredient[];
+  steps?: RecipeStep[];
   createdAt: string;
   updatedAt: string;
 }
@@ -81,23 +86,25 @@ export interface RecipeListItem {
   rating: number;
   ratingsCount: number;
   author: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatar'>;
-  category: Pick<Category, 'id' | 'name' | 'color'>;
+  category: Pick<Category, 'id' | 'name' | 'icon'>;
   createdAt: string;
 }
 
 export interface RecipeIngredient {
   id: string;
+  recipeId: string;
+  ingredientId: string;
+  ingredient?: Ingredient;
   quantity: number;
   unit: string;
   preparation?: string;
   isOptional: boolean;
   order: number;
-  ingredient: Ingredient;
-  displayText: string;
 }
 
 export interface RecipeStep {
   id: string;
+  recipeId: string;
   stepNumber: number;
   title: string;
   instructions: string;
@@ -106,16 +113,12 @@ export interface RecipeStep {
   tips?: string;
   temperature?: string;
   equipment?: string[];
-  isActive: boolean;
-  displayTitle: string;
-  timeDisplay: string;
 }
 
 export enum DifficultyLevel {
-  BEGINNER = 'beginner',
-  INTERMEDIATE = 'intermediate',
-  ADVANCED = 'advanced',
-  EXPERT = 'expert'
+  EASY = 'easy',
+  MEDIUM = 'medium',
+  HARD = 'hard'
 }
 
 export enum RecipeStatus {
@@ -130,19 +133,19 @@ export interface NutritionalInfo {
   carbs?: number;
   fat?: number;
   fiber?: number;
-  sugar?: number;
-  sodium?: number;
 }
 
 // Category Types
 export interface Category {
   id: string;
   name: string;
-  description?: string;
-  color: string;
+  description: string;
   icon?: string;
+  imageUrl?: string;
+  slug: string;
   isActive: boolean;
-  recipesCount: number;
+  sortOrder: number;
+  recipeCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -151,15 +154,32 @@ export interface Category {
 export interface Ingredient {
   id: string;
   name: string;
-  description?: string;
-  category: string;
-  unit: string;
+  description: string;
+  category: IngredientCategory;
   imageUrl?: string;
-  nutritionalInfo?: NutritionalInfo;
+  caloriesPerUnit?: number;
+  defaultUnit: string;
   isActive: boolean;
-  usageCount: number;
+  allergenInfo?: string;
+  usageCount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export enum IngredientCategory {
+  VEGETABLE = 'vegetable',
+  FRUIT = 'fruit',
+  MEAT = 'meat',
+  SEAFOOD = 'seafood',
+  DAIRY = 'dairy',
+  GRAIN = 'grain',
+  SPICE = 'spice',
+  HERB = 'herb',
+  CONDIMENT = 'condiment',
+  BAKING = 'baking',
+  OIL = 'oil',
+  BEVERAGE = 'beverage',
+  OTHER = 'other'
 }
 
 // Form Types
@@ -181,18 +201,20 @@ export interface RegisterForm {
 export interface CreateRecipeForm {
   title: string;
   description: string;
-  summary?: string;
-  difficulty: DifficultyLevel;
+  instructions: string;
   prepTimeMinutes: number;
   cookTimeMinutes: number;
   servings: number;
   categoryId: string;
+  difficulty?: DifficultyLevel;
+  status?: RecipeStatus;
   imageUrl?: string;
-  videoUrl?: string;
-  tags: string[];
+  additionalImages?: string[];
+  tags?: string[];
+  nutritionalInfo?: NutritionalInfo;
+  notes?: string;
   ingredients: CreateRecipeIngredientForm[];
   steps: CreateRecipeStepForm[];
-  nutritionalInfo?: NutritionalInfo;
 }
 
 export interface CreateRecipeIngredientForm {

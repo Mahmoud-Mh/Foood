@@ -60,7 +60,7 @@ export class IngredientService {
   }
 
   public async getAllPublicIngredients(): Promise<Ingredient[]> {
-    const response = await this.httpService.get<Ingredient[]>('/ingredients/public/all');
+    const response = await this.httpService.get<Ingredient[]>('/ingredients/active');
     
     if (!response.success) {
       throw new Error(response.message || 'Failed to fetch all public ingredients');
@@ -157,7 +157,7 @@ export class IngredientService {
 
   public async getPublicIngredientsByCategory(category: string): Promise<Ingredient[]> {
     const response = await this.httpService.get<Ingredient[]>(
-      `/ingredients/public/category/${category}`
+      `/ingredients/category/${category}`
     );
     
     if (!response.success) {

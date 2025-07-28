@@ -35,10 +35,9 @@ export class FormatUtils {
   // Difficulty formatting
   public static formatDifficulty(difficulty: DifficultyLevel): string {
     const difficultyMap: Record<DifficultyLevel, string> = {
-      [DifficultyLevel.BEGINNER]: 'Beginner',
-      [DifficultyLevel.INTERMEDIATE]: 'Intermediate',
-      [DifficultyLevel.ADVANCED]: 'Advanced',
-      [DifficultyLevel.EXPERT]: 'Expert'
+      [DifficultyLevel.EASY]: 'Easy',
+      [DifficultyLevel.MEDIUM]: 'Medium',
+      [DifficultyLevel.HARD]: 'Hard'
     };
     
     return difficultyMap[difficulty] || difficulty;
@@ -46,10 +45,9 @@ export class FormatUtils {
 
   public static getDifficultyColor(difficulty: DifficultyLevel): string {
     const colorMap: Record<DifficultyLevel, string> = {
-      [DifficultyLevel.BEGINNER]: 'text-green-600 bg-green-50',
-      [DifficultyLevel.INTERMEDIATE]: 'text-yellow-600 bg-yellow-50',
-      [DifficultyLevel.ADVANCED]: 'text-orange-600 bg-orange-50',
-      [DifficultyLevel.EXPERT]: 'text-red-600 bg-red-50'
+      [DifficultyLevel.EASY]: 'text-green-600 bg-green-50',
+      [DifficultyLevel.MEDIUM]: 'text-yellow-600 bg-yellow-50',
+      [DifficultyLevel.HARD]: 'text-red-600 bg-red-50'
     };
     
     return colorMap[difficulty] || 'text-gray-600 bg-gray-50';

@@ -19,6 +19,7 @@ import {
   ApiQuery,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { IngredientsService } from './ingredients.service';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
@@ -104,6 +105,7 @@ export class IngredientsController {
 
   @Get('category/:category')
   @Public()
+  @SkipThrottle()
   @ApiOperation({ summary: 'Get ingredients by category' })
   @ApiParam({ name: 'category', enum: IngredientCategory, description: 'Ingredient category' })
   @ApiResponse({
@@ -131,8 +133,8 @@ export class IngredientsController {
   }
 
   @Get('most-used')
-  @UserOrAdmin()
-  @ApiOperation({ summary: 'Get most used ingredients' })
+  @Public()
+  @ApiOperation({ summary: 'Get most used ingredients (public)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of ingredients to return' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -147,8 +149,8 @@ export class IngredientsController {
   }
 
   @Get(':id')
-  @UserOrAdmin()
-  @ApiOperation({ summary: 'Get ingredient by ID' })
+  @Public()
+  @ApiOperation({ summary: 'Get ingredient by ID (public)' })
   @ApiParam({ name: 'id', description: 'Ingredient UUID' })
   @ApiResponse({
     status: HttpStatus.OK,

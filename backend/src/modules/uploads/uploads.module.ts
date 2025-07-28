@@ -9,17 +9,17 @@ import { UploadsService } from './uploads.service';
   imports: [
     MulterModule.register({
       storage: diskStorage({
-        destination: './uploads/avatars',
+        destination: './uploads/avatars', // Default destination
         filename: (req, file, callback) => {
-          // Generate unique filename with timestamp
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
           const ext = extname(file.originalname);
-          const filename = `avatar-${uniqueSuffix}${ext}`;
+          // Determine prefix based on the endpoint
+          const prefix = req.url.includes('/recipe') ? 'recipe' : 'avatar';
+          const filename = `${prefix}-${uniqueSuffix}${ext}`;
           callback(null, filename);
         },
       }),
       fileFilter: (req, file, callback) => {
-        // Allow only image files
         if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
           return callback(new Error('Only image files are allowed!'), false);
         }

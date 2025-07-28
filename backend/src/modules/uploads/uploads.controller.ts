@@ -26,6 +26,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUserId, Public } from '../../common/decorators/auth.decorators';
 import { UploadsService } from './uploads.service';
 import { ApiResponseDto } from '../../common/dto/response.dto';
+import { diskStorage } from 'multer';
 
 interface UploadResponse {
   filename: string;
@@ -52,7 +53,26 @@ export class UploadsController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid file or file too large',
   })
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: './uploads/avatars',
+      filename: (req, file, callback) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        const filename = `avatar-${uniqueSuffix}${ext}`;
+        callback(null, filename);
+      },
+    }),
+    fileFilter: (req, file, callback) => {
+      if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+        return callback(new Error('Only image files are allowed!'), false);
+      }
+      callback(null, true);
+    },
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB limit
+    },
+  }))
   async uploadAvatar(
     @UploadedFile() file: Express.Multer.File,
     @CurrentUserId() userId: string,
@@ -95,7 +115,26 @@ export class UploadsController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid file or file too large',
   })
-  @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: './uploads/avatars',
+      filename: (req, file, callback) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        const filename = `avatar-${uniqueSuffix}${ext}`;
+        callback(null, filename);
+      },
+    }),
+    fileFilter: (req, file, callback) => {
+      if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+        return callback(new Error('Only image files are allowed!'), false);
+      }
+      callback(null, true);
+    },
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB limit
+    },
+  }))
   async uploadAvatarPublic(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ApiResponseDto<UploadResponse>> {
@@ -165,7 +204,26 @@ export class UploadsController {
     status: HttpStatus.CREATED,
     description: 'Recipe image uploaded successfully',
   })
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './uploads/recipes',
+      filename: (req, file, callback) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        const filename = `recipe-${uniqueSuffix}${ext}`;
+        callback(null, filename);
+      },
+    }),
+    fileFilter: (req, file, callback) => {
+      if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+        return callback(new Error('Only image files are allowed!'), false);
+      }
+      callback(null, true);
+    },
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB limit
+    },
+  }))
   async uploadRecipeImage(
     @UploadedFile() file: Express.Multer.File,
     @CurrentUserId() userId: string,

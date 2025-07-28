@@ -5,13 +5,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { authService, recipeService } from '@/services';
-import { User, RecipeListItem } from '@/types/api.types';
+import { User, Recipe } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
+import Navbar from '@/components/Navbar';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [myRecipes, setMyRecipes] = useState<RecipeListItem[]>([]);
+  const [myRecipes, setMyRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -35,7 +36,7 @@ export default function DashboardPage() {
         // Get user's recipes - handle gracefully if it fails
         try {
           const recipesResult = await recipeService.getMyRecipes({ limit: 6 });
-          setMyRecipes(recipesResult.items || []);
+          setMyRecipes(recipesResult.data || []);
         } catch (recipeError) {
           // If recipes fail to load, just show empty state
           console.warn('Failed to load user recipes:', recipeError);
@@ -87,79 +88,36 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-indigo-600">
-                Recipe Hub
-              </Link>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/recipes" className="text-gray-700 hover:text-indigo-600 transition">
-                Browse Recipes
-              </Link>
-              <Link href="/recipes/create" className="text-gray-700 hover:text-indigo-600 transition">
-                Create Recipe
-              </Link>
-              <Link href="/categories" className="text-gray-700 hover:text-indigo-600 transition">
-                Categories
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <Image
-                  src={FormatUtils.getAvatarUrl(user.avatar, FormatUtils.formatUserName(user.firstName, user.lastName))}
-                  alt="Profile"
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-                <span className="text-gray-700 font-medium">
-                  {FormatUtils.formatUserName(user.firstName, user.lastName)}
-                </span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="text-gray-500 hover:text-gray-700 transition"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-          <div className="flex items-center space-x-6">
-            <Image
-              src={FormatUtils.getAvatarUrl(user.avatar, FormatUtils.formatUserName(user.firstName, user.lastName))}
-              alt="Profile"
-              width={80}
-              height={80}
-              className="rounded-full"
-            />
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 Welcome back, {user.firstName}! 👋
               </h1>
-              <p className="text-gray-600 mt-2">
-                {user.bio || "Ready to cook something amazing today?"}
+              <p className="text-gray-600">
+                Ready to create something delicious today?
               </p>
-              <div className="flex items-center space-x-4 mt-4">
-                <span className="text-sm text-gray-500">
-                  Member since {FormatUtils.formatDateShort(user.createdAt)}
-                </span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                }`}>
-                  {user.role === 'admin' ? 'Admin' : 'Member'}
-                </span>
-              </div>
+            </div>
+            <div className="mt-4 md:mt-0 space-y-2 md:space-y-0 md:space-x-3 md:flex">
+              <Link
+                href="/recipes/create"
+                className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+              >
+                <span className="mr-2">✨</span>
+                Create New Recipe
+              </Link>
+              <Link
+                href="/recipes"
+                className="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
+              >
+                <span className="mr-2">🔍</span>
+                Browse Recipes
+              </Link>
             </div>
           </div>
         </div>
@@ -263,7 +221,7 @@ export default function DashboardPage() {
 }
 
 // Recipe Card Component
-function RecipeCard({ recipe }: { recipe: RecipeListItem }) {
+function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Link href={`/recipes/${recipe.id}`} className="group">
       <div className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition">
@@ -285,10 +243,10 @@ function RecipeCard({ recipe }: { recipe: RecipeListItem }) {
             {FormatUtils.truncateText(recipe.title, 40)}
           </h3>
           <div className="flex items-center justify-between text-sm text-gray-500">
-            <span>{FormatUtils.formatDuration(recipe.totalTimeMinutes)}</span>
+            <span>{FormatUtils.formatDuration(recipe.prepTimeMinutes + recipe.cookTimeMinutes)}</span>
             <div className="flex items-center">
-              <span className="text-yellow-500">★</span>
-              <span className="ml-1">{FormatUtils.formatRating(recipe.rating)}</span>
+              <span className="text-indigo-500">👀</span>
+              <span className="ml-1">{recipe.viewsCount || 0}</span>
             </div>
           </div>
         </div>

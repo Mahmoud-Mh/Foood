@@ -59,7 +59,9 @@ export default function ImageUpload({
 
     try {
       const formData = new FormData();
-      formData.append(type, file);
+      // Backend expects 'image' for recipe uploads, 'avatar' for avatar uploads
+      const fieldName = type === 'recipe' ? 'image' : type;
+      formData.append(fieldName, file);
 
       // Use public endpoint for registration (when not authenticated)
       const isAuthenticated = authService.isAuthenticated();

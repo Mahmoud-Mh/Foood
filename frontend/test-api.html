@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test</h1>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                console.log('Testing API...');
+                const response = await fetch('http://localhost:3001/api/v1/recipes/published?limit=5');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('API Response:', data);
+                
+                resultDiv.innerHTML = `
+                    <h2>✅ API Test Successful!</h2>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Total Recipes:</strong> ${data.data.total}</p>
+                    <p><strong>Recipes Returned:</strong> ${data.data.items.length}</p>
+                    <h3>Sample Recipes:</h3>
+                    <ul>
+                        ${data.data.items.slice(0, 3).map(recipe => 
+                            `<li><strong>${recipe.title}</strong> - ${recipe.description}</li>`
+                        ).join('')}
+                    </ul>
+                `;
+            } catch (error) {
+                console.error('API Test Failed:', error);
+                resultDiv.innerHTML = `
+                    <h2>❌ API Test Failed</h2>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+
+        // Run the test when page loads
+        testAPI();
+    </script>
+</body>
+</html> 

@@ -11,6 +11,7 @@ import { HttpError } from '@/services/base/http.service';
 import { UpdateProfileData } from '@/services/user.service';
 import ImageUpload from '@/components/ImageUpload';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
+import Navbar from '@/components/Navbar';
 
 interface ProfileFormData {
   firstName: string;
@@ -297,49 +298,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-indigo-600">
-                Recipe Hub
-              </Link>
-            </div>
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/dashboard" className="text-gray-700 hover:text-indigo-600 transition">
-                Dashboard
-              </Link>
-              <Link href="/recipes" className="text-gray-700 hover:text-indigo-600 transition">
-                Browse Recipes
-              </Link>
-              <Link href="/recipes/create" className="text-gray-700 hover:text-indigo-600 transition">
-                Create Recipe
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-3">
-                <Image
-                  src={FormatUtils.getAvatarUrl(user.avatar, FormatUtils.formatUserName(user.firstName, user.lastName))}
-                  alt="Profile"
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                />
-                <span className="text-gray-700 font-medium">
-                  {FormatUtils.formatUserName(user.firstName, user.lastName)}
-                </span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="text-gray-500 hover:text-gray-700 transition"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

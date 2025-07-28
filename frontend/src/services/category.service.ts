@@ -58,7 +58,7 @@ export class CategoryService {
   }
 
   public async getAllPublicCategories(): Promise<Category[]> {
-    const response = await this.httpService.get<Category[]>('/categories/public/all');
+    const response = await this.httpService.get<Category[]>('/categories/active');
     
     if (!response.success) {
       throw new Error(response.message || 'Failed to fetch all public categories');
@@ -78,7 +78,7 @@ export class CategoryService {
   }
 
   public async getPublicCategoryById(id: string): Promise<Category> {
-    const response = await this.httpService.get<Category>(`/categories/public/${id}`);
+    const response = await this.httpService.get<Category>(`/categories/${id}`);
     
     if (!response.success) {
       throw new Error(response.message || 'Failed to fetch category');

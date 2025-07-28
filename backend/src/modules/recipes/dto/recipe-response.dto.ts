@@ -299,6 +299,13 @@ export class RecipeListResponseDto {
   @Expose()
   difficulty: DifficultyLevel;
 
+  @ApiProperty({ 
+    description: 'Recipe status',
+    enum: RecipeStatus
+  })
+  @Expose()
+  status: RecipeStatus;
+
   @ApiProperty({ description: 'Recipe main image URL' })
   @Expose()
   imageUrl?: string;

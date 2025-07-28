@@ -8,6 +8,7 @@ import { Category } from '../categories/entities/category.entity';
 import { Ingredient } from '../ingredients/entities/ingredient.entity';
 import { RecipesService } from './recipes.service';
 import { RecipesController } from './recipes.controller';
+import { IngredientsModule } from '../ingredients/ingredients.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { RecipesController } from './recipes.controller';
       User,
       Category,
       Ingredient
-    ])
+    ]),
+    IngredientsModule
   ],
   providers: [RecipesService],
   controllers: [RecipesController],

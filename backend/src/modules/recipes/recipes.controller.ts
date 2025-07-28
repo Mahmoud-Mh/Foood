@@ -14,6 +14,7 @@ import {
   ParseIntPipe,
   DefaultValuePipe,
 } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import {
   ApiTags,
   ApiOperation,
@@ -59,6 +60,7 @@ export class RecipesController {
 
   @Get('published')
   @Public()
+  @SkipThrottle()
   @ApiOperation({
     summary: 'Get all published recipes (public)',
     description: 'Retrieve paginated list of published recipes with optional filters'
@@ -106,6 +108,7 @@ export class RecipesController {
 
   @Get('featured')
   @Public()
+  @SkipThrottle()
   @ApiOperation({
     summary: 'Get featured recipes (public)',
     description: 'Retrieve list of featured recipes'
@@ -128,6 +131,7 @@ export class RecipesController {
 
   @Get('search')
   @Public()
+  @SkipThrottle()
   @ApiOperation({
     summary: 'Search published recipes (public)',
     description: 'Search recipes by title, description, or tags'
@@ -162,6 +166,7 @@ export class RecipesController {
 
   @Get('category/:categoryId')
   @Public()
+  @SkipThrottle()
   @ApiOperation({
     summary: 'Get recipes by category (public)',
     description: 'Retrieve published recipes from a specific category'
@@ -190,6 +195,7 @@ export class RecipesController {
 
   @Get('difficulty/:difficulty')
   @Public()
+  @SkipThrottle()
   @ApiOperation({
     summary: 'Get recipes by difficulty (public)',
     description: 'Retrieve published recipes by difficulty level'
@@ -218,6 +224,7 @@ export class RecipesController {
 
   @Get(':id')
   @Public()
+  @SkipThrottle()
   @ApiOperation({
     summary: 'Get recipe by ID (public)',
     description: 'Retrieve a single recipe with full details and increment view count'
@@ -296,8 +303,19 @@ export class RecipesController {
     @Body() createRecipeDto: CreateRecipeDto,
     @CurrentUserId() userId: string,
   ): Promise<ApiResponseDto<RecipeResponseDto>> {
-    const recipe = await this.recipesService.create(createRecipeDto, userId);
-    return ApiResponseDto.success('Recipe created successfully', recipe);
+    try {
+      console.log('Creating recipe with data:', JSON.stringify(createRecipeDto, null, 2));
+      const recipe = await this.recipesService.create(createRecipeDto, userId);
+      return ApiResponseDto.success('Recipe created successfully', recipe);
+    } catch (error) {
+      console.error('Error creating recipe:', error);
+      console.error('Error details:', {
+        message: error.message,
+        statusCode: error.statusCode,
+        response: error.response
+      });
+      throw error;
+    }
   }
 
   @Get('my/recipes')

@@ -19,6 +19,7 @@ import {
   ApiQuery,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -74,6 +75,7 @@ export class CategoriesController {
 
   @Get('active')
   @Public()
+  @SkipThrottle()
   @ApiOperation({ summary: 'Get all active categories' })
   @ApiResponse({
     status: HttpStatus.OK,
@@ -118,8 +120,8 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  @UserOrAdmin()
-  @ApiOperation({ summary: 'Get category by ID' })
+  @Public()
+  @ApiOperation({ summary: 'Get category by ID (public)' })
   @ApiParam({ name: 'id', description: 'Category UUID' })
   @ApiResponse({
     status: HttpStatus.OK,

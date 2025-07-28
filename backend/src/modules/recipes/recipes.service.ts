@@ -16,6 +16,8 @@ import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import { RecipeResponseDto, RecipeListResponseDto } from './dto/recipe-response.dto';
 import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
 import { UserRole } from '../users/entities/user.entity';
+import { IngredientsService } from '../ingredients/ingredients.service';
+import { IngredientCategory } from '../ingredients/entities/ingredient.entity';
 
 export interface RecipeFilters {
   categoryId?: string;
@@ -64,6 +66,8 @@ export class RecipesService {
     
     @InjectRepository(RecipeStep)
     private readonly recipeStepRepository: Repository<RecipeStep>,
+    
+    private readonly ingredientsService: IngredientsService,
   ) {}
 
   /**
@@ -73,41 +77,93 @@ export class RecipesService {
     createRecipeDto: CreateRecipeDto, 
     authorId: string
   ): Promise<RecipeResponseDto> {
-    // Validate ingredients and steps order
-    await this.validateCreateRecipeDto(createRecipeDto);
+    console.log('RecipesService.create called with:', { authorId, ingredientsCount: createRecipeDto.ingredients.length });
+    
+    try {
+      // Validate ingredients and steps order
+      await this.validateCreateRecipeDto(createRecipeDto);
+      console.log('Validation passed');
 
-    // Create recipe entity
-    const recipe = this.recipeRepository.create({
-      ...createRecipeDto,
-      authorId,
-      status: createRecipeDto.status || RecipeStatus.DRAFT,
-      difficulty: createRecipeDto.difficulty || DifficultyLevel.EASY,
-    });
+      // Create recipe entity
+      const recipe = this.recipeRepository.create({
+        ...createRecipeDto,
+        authorId,
+        status: createRecipeDto.status || RecipeStatus.DRAFT,
+        difficulty: createRecipeDto.difficulty || DifficultyLevel.EASY,
+      });
+      console.log('Recipe entity created');
 
-    // Save recipe first
-    const savedRecipe = await this.recipeRepository.save(recipe);
+      // Save recipe first
+      const savedRecipe = await this.recipeRepository.save(recipe);
+      console.log('Recipe saved with ID:', savedRecipe.id);
 
-    // Create ingredients with order
-    const ingredients = createRecipeDto.ingredients.map((ingredient, index) => 
-      this.recipeIngredientRepository.create({
-        ...ingredient,
-        recipeId: savedRecipe.id,
-        order: ingredient.order || index + 1,
-      })
-    );
-    await this.recipeIngredientRepository.save(ingredients);
+      // Process ingredients - create new ingredients if needed
+      const processedIngredients: any[] = [];
+      for (const ingredient of createRecipeDto.ingredients) {
+        console.log('Processing ingredient:', ingredient.ingredientId);
+        let ingredientId = ingredient.ingredientId;
+        
+        // If ingredientId is not a UUID, create a new ingredient
+        if (!this.isUUID(ingredientId)) {
+          console.log('Creating new ingredient for:', ingredientId);
+          try {
+            const newIngredient = await this.ingredientsService.create({
+              name: ingredientId,
+              description: `Custom ingredient: ${ingredientId}`,
+              category: IngredientCategory.OTHER,
+              defaultUnit: ingredient.unit,
+            });
+            ingredientId = newIngredient.id;
+            console.log('New ingredient created with ID:', ingredientId);
+          } catch (error) {
+            console.log('Failed to create ingredient, searching for existing:', error.message);
+            // If ingredient already exists, try to find it
+            const existingIngredients = await this.ingredientsService.searchByName(ingredientId);
+            if (existingIngredients.length > 0) {
+              ingredientId = existingIngredients[0].id;
+              console.log('Found existing ingredient with ID:', ingredientId);
+            } else {
+              throw new BadRequestException(`Failed to create or find ingredient: ${ingredientId}`);
+            }
+          }
+        } else {
+          console.log('Using existing ingredient ID:', ingredientId);
+        }
+        
+        processedIngredients.push({
+          ...ingredient,
+          ingredientId,
+          recipeId: savedRecipe.id,
+          order: ingredient.order || processedIngredients.length + 1,
+        });
+      }
+      console.log('All ingredients processed');
 
-    // Create steps with validation
-    const steps = createRecipeDto.steps.map(step =>
-      this.recipeStepRepository.create({
-        ...step,
-        recipeId: savedRecipe.id,
-      })
-    );
-    await this.recipeStepRepository.save(steps);
+      // Create ingredients with order
+      const ingredients = processedIngredients.map(ingredient => 
+        this.recipeIngredientRepository.create(ingredient)
+      );
+      await this.recipeIngredientRepository.save(ingredients as any);
+      console.log('Ingredients saved');
 
-    // Return complete recipe
-    return this.findOneForResponse(savedRecipe.id);
+      // Create steps with validation
+      const steps = createRecipeDto.steps.map(step =>
+        this.recipeStepRepository.create({
+          ...step,
+          recipeId: savedRecipe.id,
+        })
+      );
+      await this.recipeStepRepository.save(steps);
+      console.log('Steps saved');
+
+      // Return complete recipe
+      const result = await this.findOneForResponse(savedRecipe.id);
+      console.log('Recipe creation completed successfully');
+      return result;
+    } catch (error) {
+      console.error('Error in RecipesService.create:', error);
+      throw error;
+    }
   }
 
   /**
@@ -562,5 +618,10 @@ export class RecipesService {
     transformed.stepsCount = recipe.steps?.length || 0;
 
     return transformed;
+  }
+
+  private isUUID(value: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(value);
   }
 } 
