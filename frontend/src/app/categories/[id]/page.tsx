@@ -28,7 +28,7 @@ export default function CategoryDetailPage() {
         setLoading(true);
         
         // Fetch category details
-        const categoryResponse = await categoryService.getPublicCategoryById(categoryId);
+        const categoryResponse = await categoryService.getCategoryById(categoryId);
         setCategory(categoryResponse);
         
         // Fetch recipes for this category

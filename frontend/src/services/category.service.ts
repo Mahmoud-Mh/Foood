@@ -31,32 +31,6 @@ export class CategoryService {
     return response.data;
   }
 
-  public async getPublicCategories(
-    page: number = 1, 
-    limit: number = 50
-  ): Promise<PaginatedResult<Category>> {
-    const response = await this.httpService.get<PaginatedResult<Category>>(
-      '/categories/public',
-      { params: { page, limit } }
-    );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch public categories');
-    }
-    
-    return response.data;
-  }
-
-  public async getAllCategories(): Promise<Category[]> {
-    const response = await this.httpService.get<Category[]>('/categories/all');
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch all categories');
-    }
-    
-    return response.data;
-  }
-
   public async getAllPublicCategories(): Promise<Category[]> {
     const response = await this.httpService.get<Category[]>('/categories/active');
     
@@ -68,16 +42,6 @@ export class CategoryService {
   }
 
   public async getCategoryById(id: string): Promise<Category> {
-    const response = await this.httpService.get<Category>(`/categories/${id}`);
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch category');
-    }
-    
-    return response.data;
-  }
-
-  public async getPublicCategoryById(id: string): Promise<Category> {
     const response = await this.httpService.get<Category>(`/categories/${id}`);
     
     if (!response.success) {
@@ -115,29 +79,5 @@ export class CategoryService {
     }
   }
 
-  public async searchCategories(query: string): Promise<Category[]> {
-    const response = await this.httpService.get<Category[]>(
-      '/categories/search',
-      { params: { query } }
-    );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to search categories');
-    }
-    
-    return response.data;
-  }
 
-  public async searchPublicCategories(query: string): Promise<Category[]> {
-    const response = await this.httpService.get<Category[]>(
-      '/categories/public/search',
-      { params: { query } }
-    );
-    
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to search public categories');
-    }
-    
-    return response.data;
-  }
 } 

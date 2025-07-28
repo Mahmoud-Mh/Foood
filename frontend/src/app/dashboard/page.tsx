@@ -56,31 +56,35 @@ export default function DashboardPage() {
     loadDashboardData();
   }, [router]);
 
-  const handleLogout = () => {
-    authService.logout();
-    router.push('/');
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading your dashboard...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h2>
-          <p className="text-gray-600 mb-6">{error || 'Unable to load dashboard'}</p>
-          <Link 
-            href="/auth/login"
-            className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
-          >
-            Back to Login
-          </Link>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h2>
+            <p className="text-gray-600 mb-6">{error || 'Unable to load dashboard'}</p>
+            <Link 
+              href="/auth/login"
+              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+            >
+              Back to Login
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -93,102 +97,104 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
+          <div className="text-center">
+            <div className="mb-6">
+              <div className="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Image
+                  src={FormatUtils.getAvatarUrl(user.avatar, FormatUtils.formatUserName(user.firstName, user.lastName))}
+                  alt="Profile"
+                  width={64}
+                  height={64}
+                  className="rounded-full"
+                />
+              </div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Welcome back, {user.firstName}! 👋
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 text-lg">
                 Ready to create something delicious today?
               </p>
             </div>
-            <div className="mt-4 md:mt-0 space-y-2 md:space-y-0 md:space-x-3 md:flex">
+            
+            <div className="flex justify-center">
               <Link
                 href="/recipes/create"
-                className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+                className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium text-lg"
               >
-                <span className="mr-2">✨</span>
+                <span className="mr-3">✨</span>
                 Create New Recipe
-              </Link>
-              <Link
-                href="/recipes"
-                className="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium"
-              >
-                <span className="mr-2">🔍</span>
-                Browse Recipes
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Link 
-            href="/recipes/create"
-            className="bg-indigo-600 text-white p-6 rounded-xl hover:bg-indigo-700 transition group"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="bg-white bg-opacity-20 p-3 rounded-lg">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-semibold">Create Recipe</h3>
-                <p className="text-indigo-100 text-sm">Share your culinary creation</p>
-              </div>
-            </div>
-          </Link>
-
-          <Link 
-            href="/recipes"
-            className="bg-white border-2 border-gray-200 p-6 rounded-xl hover:border-indigo-300 transition group"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="bg-indigo-50 p-3 rounded-lg">
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="bg-indigo-100 p-3 rounded-lg">
                 <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">Browse Recipes</h3>
-                <p className="text-gray-600 text-sm">Discover new dishes</p>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Total Recipes</p>
+                <p className="text-2xl font-bold text-gray-900">{myRecipes.length}</p>
               </div>
             </div>
-          </Link>
+          </div>
 
-          <Link 
-            href="/profile"
-            className="bg-white border-2 border-gray-200 p-6 rounded-xl hover:border-indigo-300 transition group"
-          >
-            <div className="flex items-center space-x-4">
-              <div className="bg-indigo-50 p-3 rounded-lg">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="bg-green-100 p-3 rounded-lg">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900">My Profile</h3>
-                <p className="text-gray-600 text-sm">Manage your account</p>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Published</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {myRecipes.filter(r => r.status === 'published').length}
+                </p>
               </div>
             </div>
-          </Link>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center">
+              <div className="bg-yellow-100 p-3 rounded-lg">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Drafts</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {myRecipes.filter(r => r.status === 'draft').length}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* My Recipes Section */}
         <div className="bg-white rounded-xl shadow-sm p-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Recipes</h2>
-            <Link 
-              href="/recipes/my-recipes"
-              className="text-indigo-600 hover:text-indigo-700 font-medium"
-            >
-              View all →
-            </Link>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">My Recipes</h2>
+              <p className="text-gray-600">Your culinary creations</p>
+            </div>
+            {myRecipes.length > 0 && (
+              <Link 
+                href="/recipes/my-recipes"
+                className="text-indigo-600 hover:text-indigo-700 font-medium"
+              >
+                View all →
+              </Link>
+            )}
           </div>
 
-          {/* Fixed: Added proper null/undefined checking */}
           {myRecipes && myRecipes.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {myRecipes.map((recipe) => (
@@ -196,24 +202,75 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="bg-gray-50 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center py-16">
+              <div className="bg-gray-50 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No recipes yet</h3>
-              <p className="text-gray-600 mb-6">
-                Start sharing your delicious recipes with the community!
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">No recipes yet</h3>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                Start sharing your delicious recipes with the community! Create your first recipe and inspire others.
               </p>
               <Link 
                 href="/recipes/create"
-                className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+                className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition font-medium"
               >
                 Create Your First Recipe
               </Link>
             </div>
           )}
+        </div>
+
+        {/* Quick Tips Section */}
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-8 mt-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4">💡 Quick Tips</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex items-start space-x-3">
+              <div className="bg-indigo-600 text-white p-2 rounded-full">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-1">Add Photos</h4>
+                <p className="text-sm text-gray-600">Include high-quality photos to make your recipes more appealing</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="bg-indigo-600 text-white p-2 rounded-full">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-1">Clear Instructions</h4>
+                <p className="text-sm text-gray-600">Write step-by-step instructions that are easy to follow</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="bg-indigo-600 text-white p-2 rounded-full">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-1">Be Specific</h4>
+                <p className="text-sm text-gray-600">Include exact measurements and cooking times for best results</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <div className="bg-indigo-600 text-white p-2 rounded-full">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900 mb-1">Share Your Story</h4>
+                <p className="text-sm text-gray-600">Add personal touches and stories to make your recipes unique</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -235,6 +292,15 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
           <div className="absolute top-2 right-2">
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${FormatUtils.getDifficultyColor(recipe.difficulty)}`}>
               {FormatUtils.formatDifficulty(recipe.difficulty)}
+            </span>
+          </div>
+          <div className="absolute top-2 left-2">
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              recipe.status === 'published' 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-yellow-100 text-yellow-800'
+            }`}>
+              {recipe.status === 'published' ? 'Published' : 'Draft'}
             </span>
           </div>
         </div>
