@@ -2,19 +2,50 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { CategoryService } from '@/services/category.service';
 import { RecipeService } from '@/services/recipe.service';
 import { Category, Recipe } from '@/types/api.types';
+import { FormatUtils } from '@/utils/formatters';
 import Navbar from '@/components/Navbar';
 
 const categoryService = new CategoryService();
 const recipeService = new RecipeService();
 
+// Category icons mapping
+const categoryIcons: { [key: string]: string } = {
+  'breakfast': '🌅',
+  'lunch': '🍽️',
+  'dinner': '🌙',
+  'dessert': '🍰',
+  'snack': '🥨',
+  'appetizer': '🥟',
+  'soup': '🍲',
+  'salad': '🥗',
+  'pasta': '🍝',
+  'pizza': '🍕',
+  'seafood': '🐟',
+  'meat': '🥩',
+  'vegetarian': '🥬',
+  'vegan': '🌱',
+  'gluten-free': '🌾',
+  'quick': '⚡',
+  'slow-cooker': '⏰',
+  'grill': '🔥',
+  'bake': '🍞',
+  'drink': '🥤',
+  'cocktail': '🍸',
+  'smoothie': '🥤',
+  'juice': '🧃',
+  'coffee': '☕',
+  'tea': '🫖'
+};
+
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [categoryRecipes, setCategoryRecipes] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [categoryRecipes, setCategoryRecipes] = useState<{ [key: string]: Recipe[] }>({});
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -24,10 +55,10 @@ export default function CategoriesPage() {
         setCategories(response);
         
         // Fetch recipes for each category
-        const recipesMap: { [key: string]: Recipe[] } = {};
+        const recipesMap: Record<string, any[]> = {};
         for (const category of response) {
           try {
-            const recipesResponse = await recipeService.getPublicRecipes({ categoryId: category.id, limit: 10 });
+            const recipesResponse = await recipeService.getPublicRecipes({ categoryId: category.id, limit: 6 });
             recipesMap[category.id] = recipesResponse.data || [];
           } catch (error) {
             console.error(`Error fetching recipes for category ${category.name}:`, error);
@@ -46,12 +77,37 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
+  const getCategoryIcon = (categoryName: string) => {
+    const normalizedName = categoryName.toLowerCase().replace(/\s+/g, '-');
+    return categoryIcons[normalizedName] || '🍽️';
+  };
+
+  const getCategoryColor = (index: number) => {
+    const colors = [
+      'from-red-500 to-pink-500',
+      'from-blue-500 to-indigo-500',
+      'from-green-500 to-emerald-500',
+      'from-yellow-500 to-orange-500',
+      'from-purple-500 to-pink-500',
+      'from-teal-500 to-cyan-500',
+      'from-orange-500 to-red-500',
+      'from-indigo-500 to-purple-500',
+      'from-emerald-500 to-teal-500',
+      'from-pink-500 to-rose-500',
+      'from-cyan-500 to-blue-500',
+      'from-amber-500 to-yellow-500'
+    ];
+    const selectedColor = colors[index % colors.length];
+    return selectedColor;
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading categories...</p>
           </div>
         </div>
@@ -61,10 +117,11 @@ export default function CategoriesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
               <p>{error}</p>
             </div>
           </div>
@@ -76,76 +133,78 @@ export default function CategoriesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Recipe Categories</h1>
-          <p className="text-gray-600">Explore recipes by category</p>
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            🍽️ Explore Recipe Categories 🍽️
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Discover delicious recipes organized by category. From quick breakfasts to gourmet dinners, 
+            find the perfect recipe for any occasion.
+          </p>
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {categories.map((category, index) => {
             const recipes = categoryRecipes[category.id] || [];
             const recipeCount = recipes.length;
+            const icon = getCategoryIcon(category.name);
+            const gradientClass = getCategoryColor(index);
             
             return (
               <div
                 key={category.id}
-                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden"
+                className="group relative bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
               >
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      {category.name}
-                    </h3>
-                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                      {recipeCount} {recipeCount === 1 ? 'recipe' : 'recipes'}
-                    </span>
+                {/* Clickable Area for Browsing Recipes */}
+                <Link href={`/categories/${category.id}`} className="block">
+                  <div className={`relative h-32 bg-gradient-to-br ${gradientClass} p-6 flex items-center justify-center cursor-pointer`}>
+                    <div className="text-4xl mb-2">{icon}</div>
+                    <div className="relative z-10 text-center">
+                      <h3 className="text-xl font-bold text-white mb-2">{category.name}</h3>
+                      <p className="text-white text-opacity-90 text-sm">{category.description}</p>
+                    </div>
                   </div>
-                  
-                  <p className="text-gray-600 text-sm mb-4">
-                    {category.description || 'Explore delicious recipes in this category'}
-                  </p>
+                </Link>
 
-                  {/* Sample Recipes */}
+                {/* Content Area */}
+                <div className="p-6 flex flex-col h-full">
+                  {/* Popular Recipes Section */}
                   {recipes.length > 0 && (
                     <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">Sample Recipes:</h4>
+                      <div className="flex items-center mb-2">
+                        <span className="text-purple-600 mr-2">🍽️</span>
+                        <h4 className="font-semibold text-gray-900">Popular Recipes</h4>
+                      </div>
                       <div className="space-y-1">
                         {recipes.slice(0, 3).map((recipe) => (
-                          <Link
-                            key={recipe.id}
-                            href={`/recipes/${recipe.id}`}
-                            className="block text-sm text-blue-600 hover:text-blue-800 truncate"
-                          >
+                          <div key={recipe.id} className="text-sm text-gray-700 truncate">
                             • {recipe.title}
-                          </Link>
+                          </div>
                         ))}
-                        {recipes.length > 3 && (
-                          <p className="text-xs text-gray-500">
-                            +{recipes.length - 3} more recipes
-                          </p>
-                        )}
                       </div>
                     </div>
                   )}
 
-                  {/* Action Buttons */}
-                  <div className="flex space-x-2">
-                    <Link
-                      href={`/categories/${category.id}`}
-                      className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200 text-center"
-                    >
-                      View All Recipes
-                    </Link>
-                    <Link
-                      href={`/recipes/create?category=${category.id}`}
-                      className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors duration-200"
-                    >
-                      Add Recipe
-                    </Link>
+                  {/* Recipe Count */}
+                  <div className="mt-auto pt-4">
+                    <div className="text-sm text-gray-500 mb-2">
+                      {recipes.length} recipe{recipes.length !== 1 ? 's' : ''} available
+                    </div>
                   </div>
+                </div>
+
+                {/* Action Buttons - Fixed at bottom */}
+                <div className="px-6 pb-6">
+                  <Link
+                    href={`/recipes/create?category=${category.id}`}
+                    className="w-full bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors duration-200 text-center block"
+                  >
+                    Add Recipe
+                  </Link>
                 </div>
               </div>
             );
@@ -154,14 +213,42 @@ export default function CategoriesPage() {
 
         {/* Empty State */}
         {categories.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="text-center py-16">
+            <div className="bg-gray-50 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Categories Found</h3>
-            <p className="text-gray-600 mb-4">There are no recipe categories available at the moment.</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">No Categories Found</h3>
+            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+              There are no recipe categories available at the moment. Check back later for new categories!
+            </p>
+            <Link
+              href="/recipes/create"
+              className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-medium"
+            >
+              Create Your First Recipe
+            </Link>
+          </div>
+        )}
+
+        {/* Call to Action */}
+        {categories.length > 0 && (
+          <div className="mt-16 text-center">
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Can't find what you're looking for?
+              </h2>
+              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                Create your own recipe and share it with the community! Your culinary creations can inspire others.
+              </p>
+              <Link
+                href="/recipes/create"
+                className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition font-medium"
+              >
+                Create New Recipe
+              </Link>
+            </div>
           </div>
         )}
       </div>

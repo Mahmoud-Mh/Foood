@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { recipeService, categoryService } from '@/services';
+import { recipeService, categoryService, authService } from '@/services';
 import { Recipe, Category } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
 import Navbar from '@/components/Navbar';
@@ -12,11 +12,16 @@ export default function HomePage() {
   const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
   const [popularRecipes, setPopularRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryRecipes, setCategoryRecipes] = useState<Record<string, any[]>>({});
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Check authentication status
+        setIsAuthenticated(authService.isAuthenticated());
+
         // Since specific featured/popular endpoints don't exist yet,
         // we'll use the general published recipes endpoint for both
         const [publishedRecipesResult, categoriesData] = await Promise.all([
@@ -31,13 +36,28 @@ export default function HomePage() {
         setFeaturedRecipes(allRecipes.slice(0, 6)); // First 6 for featured
         setPopularRecipes(allRecipes.slice(6, 14)); // Next 8 for popular
 
-        setCategories(Array.isArray(categoriesData) ? categoriesData.slice(0, 6) : []); // Show only first 6 categories
+        const categoriesList = Array.isArray(categoriesData) ? categoriesData.slice(0, 6) : [];
+        setCategories(categoriesList);
+
+        // Fetch recipes for each category to get counts
+        const recipesMap: Record<string, any[]> = {};
+        for (const category of categoriesList) {
+          try {
+            const recipesResponse = await recipeService.getPublicRecipes({ categoryId: category.id, limit: 6 });
+            recipesMap[category.id] = recipesResponse.data || [];
+          } catch (error) {
+            console.error(`Error fetching recipes for category ${category.name}:`, error);
+            recipesMap[category.id] = [];
+          }
+        }
+        setCategoryRecipes(recipesMap);
       } catch (error) {
         console.error('Error loading homepage data:', error);
         // Set empty arrays as fallback
         setFeaturedRecipes([]);
         setPopularRecipes([]);
         setCategories([]);
+        setCategoryRecipes({});
       } finally {
         setLoading(false);
       }
@@ -77,12 +97,14 @@ export default function HomePage() {
               >
                 Explore Recipes
               </Link>
-              <Link 
-                href="/auth/register"
-                className="border-2 border-indigo-600 text-indigo-600 px-8 py-3 rounded-xl hover:bg-indigo-50 transition font-semibold"
-              >
-                Join Community
-              </Link>
+              {!isAuthenticated && (
+                <Link 
+                  href="/auth/register"
+                  className="border-2 border-indigo-600 text-indigo-600 px-8 py-3 rounded-xl hover:bg-indigo-50 transition font-semibold"
+                >
+                  Join Community
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -116,9 +138,12 @@ export default function HomePage() {
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-              {categories.map((category) => (
-                <CategoryCard key={category.id} category={category} />
-              ))}
+              {categories.map((category) => {
+                const recipes = categoryRecipes[category.id] || [];
+                return (
+                  <CategoryCard key={category.id} category={category} recipeCount={recipes.length} />
+                );
+              })}
             </div>
           </div>
         </section>
@@ -164,6 +189,30 @@ export default function HomePage() {
                 Join & Share Your First Recipe
               </Link>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Join Community Section - Only for non-authenticated users */}
+      {!isAuthenticated && (
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="bg-indigo-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">Welcome to Recipe Hub!</h3>
+            <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
+              Our community is just getting started. Be among the first to share your amazing recipes 
+              and help build this delicious platform together!
+            </p>
+            <Link 
+              href="/auth/register"
+              className="bg-indigo-600 text-white px-8 py-3 rounded-xl hover:bg-indigo-700 transition font-semibold inline-block"
+            >
+              Join & Share Your First Recipe
+            </Link>
           </div>
         </section>
       )}
@@ -237,7 +286,7 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
 }
 
 // Category Card Component
-function CategoryCard({ category }: { category: Category }) {
+function CategoryCard({ category, recipeCount }: { category: Category, recipeCount: number }) {
   return (
     <Link href={`/recipes?category=${category.id}`} className="group">
       <div className="text-center">
@@ -250,7 +299,7 @@ function CategoryCard({ category }: { category: Category }) {
           {category.name}
         </h3>
         <p className="text-sm text-gray-500">
-          {FormatUtils.formatNumber(category.recipeCount || 0)} recipes
+          {FormatUtils.formatNumber(recipeCount)} recipes
         </p>
       </div>
     </Link>
