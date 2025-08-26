@@ -6,15 +6,19 @@ import Link from 'next/link';
 import { recipeService, categoryService, authService } from '@/services';
 import { Recipe, Category } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { ApiErrorBoundary } from '@/components/ApiErrorBoundary';
 import Navbar from '@/components/Navbar';
 
 export default function HomePage() {
   const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
   const [popularRecipes, setPopularRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryRecipes, setCategoryRecipes] = useState<Record<string, any[]>>({});
+  const [categoryRecipes, setCategoryRecipes] = useState<Record<string, Recipe[]>>({});
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const { handleApiError } = useErrorHandler();
 
   useEffect(() => {
     const loadData = async () => {
@@ -40,7 +44,7 @@ export default function HomePage() {
         setCategories(categoriesList);
 
         // Fetch recipes for each category to get counts
-        const recipesMap: Record<string, any[]> = {};
+        const recipesMap: Record<string, Recipe[]> = {};
         for (const category of categoriesList) {
           try {
             const recipesResponse = await recipeService.getPublicRecipes({ categoryId: category.id, limit: 6 });
@@ -52,7 +56,10 @@ export default function HomePage() {
         }
         setCategoryRecipes(recipesMap);
       } catch (error) {
-        console.error('Error loading homepage data:', error);
+        handleApiError(error, {
+          showToast: true,
+          customMessage: 'Failed to load recipes. Please refresh the page.',
+        });
         // Set empty arrays as fallback
         setFeaturedRecipes([]);
         setPopularRecipes([]);
@@ -112,20 +119,34 @@ export default function HomePage() {
 
       {/* Featured Recipes Section */}
       {featuredRecipes.length > 0 && (
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Recipes</h2>
-              <p className="text-gray-600">Discover amazing recipes from our community</p>
+        <ApiErrorBoundary
+          fallback={(error, retry) => (
+            <section className="py-16">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Recipes</h2>
+                  <p className="text-red-600">Failed to load featured recipes. Please try again.</p>
+                  <button onClick={retry} className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded">Retry</button>
+                </div>
+              </div>
+            </section>
+          )}
+        >
+          <section className="py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Recipes</h2>
+                <p className="text-gray-600">Discover amazing recipes from our community</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {featuredRecipes.map((recipe) => (
+                  <RecipeCard key={recipe.id} recipe={recipe} />
+                ))}
+              </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredRecipes.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} />
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
+        </ApiErrorBoundary>
       )}
 
       {/* Categories Section */}

@@ -32,7 +32,11 @@ export class AuthResponseDto {
   @ApiProperty({ description: 'Authentication message' })
   message: string;
 
-  constructor(user: UserResponseDto, tokens: TokenResponseDto, message: string) {
+  constructor(
+    user: UserResponseDto,
+    tokens: TokenResponseDto,
+    message: string,
+  ) {
     this.user = user;
     this.tokens = tokens;
     this.message = message;
@@ -40,11 +44,11 @@ export class AuthResponseDto {
 }
 
 export class RefreshTokenDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'JWT refresh token',
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' 
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
   })
   @IsString()
   @IsNotEmpty()
   refreshToken: string;
-} 
+}

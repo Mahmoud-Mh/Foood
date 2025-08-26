@@ -3,17 +3,30 @@ import {
   AuthResponse, 
   LoginForm, 
   RegisterForm, 
-  User,
-  ApiResponse 
+  User
 } from '@/types/api.types';
 
 export class AuthService {
   private httpService: HttpService;
   private readonly TOKEN_KEY = 'recipe_app_token';
   private readonly REFRESH_TOKEN_KEY = 'recipe_app_refresh_token';
+  private refreshPromise: Promise<AuthResponse | null> | null = null;
 
   constructor(httpService?: HttpService) {
     this.httpService = httpService || new HttpService();
+  }
+
+  private setAuthCookie(token: string): void {
+    if (typeof document === 'undefined') return
+    // Parse JWT to get expiry time for better cookie sync
+    const tokenData = this.parseJwtPayload(token)
+    const maxAgeSeconds = tokenData?.exp ? Math.max(0, tokenData.exp - Math.floor(Date.now() / 1000)) : 3600
+    document.cookie = `auth_token=${encodeURIComponent(token)}; Max-Age=${maxAgeSeconds}; Path=/; SameSite=Lax`
+  }
+
+  private removeAuthCookie(): void {
+    if (typeof document === 'undefined') return
+    document.cookie = 'auth_token=; Max-Age=0; Path=/; SameSite=Lax'
   }
 
   public async login(credentials: LoginForm): Promise<AuthResponse> {
@@ -22,9 +35,11 @@ export class AuthService {
     if (response.success && response.data) {
       this.setTokens(response.data.tokens.accessToken, response.data.tokens.refreshToken);
       this.httpService.setAuthToken(response.data.tokens.accessToken);
+      this.setAuthCookie(response.data.tokens.accessToken);
+      return response.data;
     }
-    
-    return response.data;
+
+    throw new Error(response.message || 'Login failed');
   }
 
   public async register(userData: RegisterForm): Promise<AuthResponse> {
@@ -33,18 +48,38 @@ export class AuthService {
     if (response.success && response.data) {
       this.setTokens(response.data.tokens.accessToken, response.data.tokens.refreshToken);
       this.httpService.setAuthToken(response.data.tokens.accessToken);
+      this.setAuthCookie(response.data.tokens.accessToken);
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Registration failed');
   }
 
   public async refreshToken(): Promise<AuthResponse | null> {
+    // If a refresh is already in progress, return the existing promise
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
     const refreshToken = this.getRefreshToken();
     
     if (!refreshToken) {
       return null;
     }
 
+    // Create a new refresh promise
+    this.refreshPromise = this.performTokenRefresh(refreshToken);
+    
+    try {
+      const result = await this.refreshPromise;
+      return result;
+    } finally {
+      // Clear the refresh promise when done
+      this.refreshPromise = null;
+    }
+  }
+
+  private async performTokenRefresh(refreshToken: string): Promise<AuthResponse | null> {
     try {
       const response = await this.httpService.post<AuthResponse>('/auth/refresh', {
         refreshToken
@@ -53,10 +88,11 @@ export class AuthService {
       if (response.success && response.data) {
         this.setTokens(response.data.tokens.accessToken, response.data.tokens.refreshToken);
         this.httpService.setAuthToken(response.data.tokens.accessToken);
+        this.setAuthCookie(response.data.tokens.accessToken);
         return response.data;
       }
     } catch (error) {
-      // If refresh fails, clear all tokens
+      console.error('Token refresh failed:', error);
       this.logout();
       return null;
     }
@@ -112,7 +148,7 @@ export class AuthService {
       if (response.success && response.data) {
         return response.data;
       }
-    } catch (error) {
+    } catch {
       // If getting current user fails, try to refresh token
       const refreshResult = await this.refreshToken();
       
@@ -120,7 +156,7 @@ export class AuthService {
         try {
           // Fixed: Changed from GET to POST to match backend endpoint
           const response = await this.httpService.post<User>('/auth/me');
-          return response.success ? response.data : null;
+          return response.success ? (response.data ?? null) : null;
         } catch {
           this.logout();
           return null;
@@ -137,10 +173,32 @@ export class AuthService {
   public logout(): void {
     this.removeTokens();
     this.httpService.removeAuthToken();
+    this.removeAuthCookie();
   }
 
   public isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+    
+    // Check if token is expired
+    const payload = this.parseJwtPayload(token);
+    if (!payload || !payload.exp) return false;
+    
+    const currentTime = Math.floor(Date.now() / 1000);
+    return payload.exp > currentTime;
+  }
+
+  /**
+   * Parse JWT payload without verification (client-side only for expiry check)
+   */
+  private parseJwtPayload(token: string): Record<string, unknown> {
+    try {
+      const base64Payload = token.split('.')[1];
+      const payload = atob(base64Payload);
+      return JSON.parse(payload);
+    } catch {
+      return null;
+    }
   }
 
   public getToken(): string | null {
@@ -178,6 +236,7 @@ export class AuthService {
     const token = this.getToken();
     if (token) {
       this.httpService.setAuthToken(token);
+      this.setAuthCookie(token);
     }
   }
 } 

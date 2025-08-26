@@ -16,6 +16,18 @@ export interface JwtConfig {
 export interface AppConfig {
   port: number;
   nodeEnv: string;
+  productionDomain?: string;
+  frontendUrl: string;
+}
+
+export interface EmailConfig {
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  password: string;
+  fromAddress: string;
+  fromName: string;
 }
 
 export interface ThrottleConfig {
@@ -28,6 +40,7 @@ export interface Configuration {
   jwt: JwtConfig;
   app: AppConfig;
   throttle: ThrottleConfig;
+  email: EmailConfig;
 }
 
 export default (): Configuration => ({
@@ -47,9 +60,20 @@ export default (): Configuration => ({
   app: {
     port: parseInt(process.env.PORT || '3000', 10),
     nodeEnv: process.env.NODE_ENV || 'development',
+    productionDomain: process.env.PRODUCTION_DOMAIN,
+    frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+  },
+  email: {
+    host: process.env.EMAIL_HOST || 'smtp.ethereal.email',
+    port: parseInt(process.env.EMAIL_PORT || '587', 10),
+    secure: process.env.EMAIL_SECURE === 'true',
+    user: process.env.EMAIL_USER || '',
+    password: process.env.EMAIL_PASSWORD || '',
+    fromAddress: process.env.EMAIL_FROM_ADDRESS || 'noreply@recipehub.com',
+    fromName: process.env.EMAIL_FROM_NAME || 'Recipe Hub',
   },
   throttle: {
     ttl: parseInt(process.env.THROTTLE_TTL || '60', 10),
     limit: parseInt(process.env.THROTTLE_LIMIT || '100', 10), // Increased from 10 to 100 for development
   },
-}); 
+});

@@ -10,4 +10,4 @@ import { Ingredient } from './entities/ingredient.entity';
   providers: [IngredientsService],
   exports: [IngredientsService], // Export for use in other modules (like Recipes)
 })
-export class IngredientsModule {} 
+export class IngredientsModule {}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { recipeService, authService } from '@/services';
 import { Recipe, RecipeStatus } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
@@ -227,10 +228,12 @@ export default function AdminRecipesPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10">
-                          <img
+                          <Image
                             className="h-10 w-10 rounded-lg object-cover"
                             src={FormatUtils.getImageUrl(recipe.imageUrl)}
                             alt={recipe.title}
+                            width={40}
+                            height={40}
                           />
                         </div>
                         <div className="ml-4">

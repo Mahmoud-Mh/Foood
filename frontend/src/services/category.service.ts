@@ -1,5 +1,5 @@
 import { HttpService } from './base/http.service';
-import { Category, PaginatedResult, ApiResponse } from '@/types/api.types';
+import { Category, PaginatedResult } from '@/types/api.types';
 
 export interface CreateCategoryForm {
   name: string;
@@ -24,51 +24,51 @@ export class CategoryService {
       { params: { page, limit } }
     );
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch categories');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch categories');
   }
 
   public async getAllPublicCategories(): Promise<Category[]> {
     const response = await this.httpService.get<Category[]>('/categories/active');
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch all public categories');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch all public categories');
   }
 
   public async getCategoryById(id: string): Promise<Category> {
     const response = await this.httpService.get<Category>(`/categories/${id}`);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch category');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch category');
   }
 
   public async createCategory(categoryData: CreateCategoryForm): Promise<Category> {
     const response = await this.httpService.post<Category>('/categories', categoryData);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to create category');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to create category');
   }
 
   public async updateCategory(id: string, categoryData: Partial<CreateCategoryForm>): Promise<Category> {
     const response = await this.httpService.patch<Category>(`/categories/${id}`, categoryData);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to update category');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to update category');
   }
 
   public async deleteCategory(id: string): Promise<void> {
@@ -78,6 +78,4 @@ export class CategoryService {
       throw new Error(response.message || 'Failed to delete category');
     }
   }
-
-
 } 

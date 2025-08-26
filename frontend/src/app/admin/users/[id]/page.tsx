@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { userService, authService } from '@/services';
 import { User, UserRole } from '@/types/api.types';
 import Navbar from '@/components/Navbar';
@@ -14,6 +15,26 @@ export default function AdminUserDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCurrentUser, setIsCurrentUser] = useState(false);
+
+  const loadUserData = useCallback(async () => {
+    try {
+      const userId = params.id as string;
+      const currentUser = await authService.getCurrentUser();
+      
+      // Check if viewing own profile
+      if (currentUser?.id === userId) {
+        setIsCurrentUser(true);
+      }
+
+      // Note: This endpoint might not exist yet in the backend
+      // We'll need to implement it in the backend
+      const userData = await userService.getUserById(userId);
+      setUser(userData);
+    } catch (error) {
+      console.error('Failed to load user data:', error);
+      setError('Failed to load user data. The backend endpoint might not be implemented yet.');
+    }
+  }, [params.id]);
 
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -40,27 +61,7 @@ export default function AdminUserDetailPage() {
     };
 
     checkAdminAccess();
-  }, [router]);
-
-  const loadUserData = async () => {
-    try {
-      const userId = params.id as string;
-      const currentUser = await authService.getCurrentUser();
-      
-      // Check if viewing own profile
-      if (currentUser?.id === userId) {
-        setIsCurrentUser(true);
-      }
-
-      // Note: This endpoint might not exist yet in the backend
-      // We'll need to implement it in the backend
-      const userData = await userService.getUserById(userId);
-      setUser(userData);
-    } catch (error) {
-      console.error('Failed to load user data:', error);
-      setError('Failed to load user data. The backend endpoint might not be implemented yet.');
-    }
-  };
+  }, [router, loadUserData]);
 
   const handleToggleRole = async () => {
     if (!user) return;
@@ -70,14 +71,16 @@ export default function AdminUserDetailPage() {
     try {
       await userService.updateUserRole(user.id, newRole);
       await loadUserData(); // Reload the user data
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update user role:', error);
       let errorMessage = 'Failed to update user role.';
       
-      if (error.message?.includes('404')) {
-        errorMessage = 'User not found or role update endpoint not available.';
-      } else if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
-        errorMessage = 'You cannot change your own role.';
+      if (error instanceof Error) {
+        if (error.message?.includes('404')) {
+          errorMessage = 'User not found or role update endpoint not available.';
+        } else if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
+          errorMessage = 'You cannot change your own role.';
+        }
       }
       
       setError(errorMessage);
@@ -94,16 +97,18 @@ export default function AdminUserDetailPage() {
     try {
       await userService.deleteUser(user.id);
       router.push('/admin/users');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to delete user:', error);
       let errorMessage = 'Failed to delete user.';
       
-      if (error.message?.includes('500')) {
-        errorMessage = 'Failed to delete user. The user may have associated data (recipes, etc.) that prevents deletion.';
-      } else if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
-        errorMessage = 'You cannot delete yourself. Please use a different admin account.';
-      } else if (error.message?.includes('404')) {
-        errorMessage = 'User not found.';
+      if (error instanceof Error) {
+        if (error.message?.includes('500')) {
+          errorMessage = 'Failed to delete user. The user may have associated data (recipes, etc.) that prevents deletion.';
+        } else if (error.message?.includes('403') || error.message?.includes('Forbidden')) {
+          errorMessage = 'You cannot delete yourself. Please use a different admin account.';
+        } else if (error.message?.includes('404')) {
+          errorMessage = 'User not found.';
+        }
       }
       
       setError(errorMessage);
@@ -274,7 +279,7 @@ export default function AdminUserDetailPage() {
                   <dt className="text-sm font-medium text-gray-500">Avatar</dt>
                   <dd className="mt-1">
                     {user.avatar ? (
-                      <img src={user.avatar} alt="Avatar" className="h-12 w-12 rounded-full" />
+                      <Image src={user.avatar} alt="Avatar" className="h-12 w-12 rounded-full" width={48} height={48} />
                     ) : (
                       <span className="text-sm text-gray-500">No avatar</span>
                     )}

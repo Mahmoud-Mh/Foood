@@ -15,9 +15,9 @@ export class IngredientResponseDto {
   @Expose()
   description: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Ingredient category',
-    enum: IngredientCategory
+    enum: IngredientCategory,
   })
   @Expose()
   category: IngredientCategory;
@@ -42,7 +42,9 @@ export class IngredientResponseDto {
   @Expose()
   allergenInfo?: string;
 
-  @ApiPropertyOptional({ description: 'Number of recipes using this ingredient' })
+  @ApiPropertyOptional({
+    description: 'Number of recipes using this ingredient',
+  })
   @Expose()
   usageCount?: number;
 
@@ -53,4 +55,4 @@ export class IngredientResponseDto {
   @ApiProperty({ description: 'Ingredient last update date' })
   @Expose()
   updatedAt: Date;
-} 
+}

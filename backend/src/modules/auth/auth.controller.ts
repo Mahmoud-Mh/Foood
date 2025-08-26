@@ -6,6 +6,7 @@ import {
   UseGuards,
   HttpCode,
   Patch,
+  Request,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,12 +18,26 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
-import { AuthResponseDto, TokenResponseDto, RefreshTokenDto } from './dto/auth-response.dto';
+import {
+  AuthResponseDto,
+  TokenResponseDto,
+  RefreshTokenDto,
+} from './dto/auth-response.dto';
+import {
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  PasswordResetResponseDto,
+} from './dto/password-reset.dto';
 import { LocalAuthGuard } from '../../common/guards/local-auth.guard';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CurrentUser, CurrentUserId, Public } from '../../common/decorators/auth.decorators';
+import {
+  CurrentUser,
+  CurrentUserId,
+  Public,
+} from '../../common/decorators/auth.decorators';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import { ApiResponseDto } from '../../common/dto/response.dto';
+
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -45,7 +60,9 @@ export class AuthController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid input data or passwords do not match',
   })
-  async register(@Body() registerDto: RegisterDto): Promise<ApiResponseDto<AuthResponseDto>> {
+  async register(
+    @Body() registerDto: RegisterDto,
+  ): Promise<ApiResponseDto<AuthResponseDto>> {
     const result = await this.authService.register(registerDto);
     return ApiResponseDto.success('User registered successfully', result);
   }
@@ -66,7 +83,6 @@ export class AuthController {
   })
   async login(
     @Body() loginDto: LoginDto,
-    @CurrentUser() user: UserResponseDto,
   ): Promise<ApiResponseDto<AuthResponseDto>> {
     const result = await this.authService.login(loginDto);
     return ApiResponseDto.success('Login successful', result);
@@ -85,8 +101,12 @@ export class AuthController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Invalid or expired refresh token',
   })
-  async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto): Promise<ApiResponseDto<TokenResponseDto>> {
-    const result = await this.authService.refreshTokens(refreshTokenDto.refreshToken);
+  async refreshTokens(
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ): Promise<ApiResponseDto<TokenResponseDto>> {
+    const result = await this.authService.refreshTokens(
+      refreshTokenDto.refreshToken,
+    );
     return ApiResponseDto.success('Token refreshed successfully', result);
   }
 
@@ -95,16 +115,13 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Logout current user' })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Logout successful',
-  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Logout successful' })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
     description: 'Authentication required',
   })
-  async logout(@CurrentUserId() userId: string): Promise<ApiResponseDto<{ message: string }>> {
-    const result = await this.authService.logout(userId);
+  logout(): ApiResponseDto<{ message: string }> {
+    const result = this.authService.logout();
     return ApiResponseDto.success('Logout successful', result);
   }
 
@@ -146,7 +163,55 @@ export class AuthController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Authentication required',
   })
-  async getProfile(@CurrentUser() user: UserResponseDto): Promise<ApiResponseDto<UserResponseDto>> {
+  getProfile(
+    @CurrentUser() user: UserResponseDto,
+  ): ApiResponseDto<UserResponseDto> {
     return ApiResponseDto.success('User profile retrieved successfully', user);
   }
-} 
+
+  // === Password reset ===
+
+  @Post('forgot-password')
+  @Public()
+  @ApiOperation({ summary: 'Request password reset link' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'If the email exists, a reset link has been sent',
+    type: PasswordResetResponseDto,
+  })
+  async forgotPassword(
+    @Body() dto: ForgotPasswordDto,
+    @Request() req: any,
+  ): Promise<ApiResponseDto<PasswordResetResponseDto>> {
+    const result = await this.authService.requestPasswordReset(
+      dto.email,
+      req.ip,
+      req.get('user-agent'),
+    );
+    return ApiResponseDto.success(
+      result.message,
+      result,
+    );
+  }
+
+  @Post('reset-password')
+  @Public()
+  @ApiOperation({ summary: 'Reset password using token' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Password reset successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid or expired token',
+  })
+  async resetPassword(
+    @Body() dto: ResetPasswordDto,
+  ): Promise<ApiResponseDto<{ message: string }>> {
+    const result = await this.authService.resetPassword(
+      dto.token,
+      dto.newPassword,
+    );
+    return ApiResponseDto.success(result.message, result);
+  }
+}

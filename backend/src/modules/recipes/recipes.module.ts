@@ -8,22 +8,23 @@ import { Category } from '../categories/entities/category.entity';
 import { Ingredient } from '../ingredients/entities/ingredient.entity';
 import { RecipesService } from './recipes.service';
 import { RecipesController } from './recipes.controller';
+import { RecipeSearchService } from './services/recipe-search.service';
 import { IngredientsModule } from '../ingredients/ingredients.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Recipe,
-      RecipeIngredient, 
+      RecipeIngredient,
       RecipeStep,
       User,
       Category,
-      Ingredient
+      Ingredient,
     ]),
-    IngredientsModule
+    IngredientsModule,
   ],
-  providers: [RecipesService],
+  providers: [RecipesService, RecipeSearchService],
   controllers: [RecipesController],
   exports: [RecipesService],
 })
-export class RecipesModule {} 
+export class RecipesModule {}

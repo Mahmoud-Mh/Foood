@@ -1,23 +1,37 @@
-import { 
-  Injectable, 
-  NotFoundException, 
-  ConflictException, 
+import {
+  Injectable,
+  NotFoundException,
   BadRequestException,
-  ForbiddenException 
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, ILike, In, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { plainToClass } from 'class-transformer';
-import { Recipe, RecipeStatus, DifficultyLevel } from './entities/recipe.entity';
+import {
+  Recipe,
+  RecipeStatus,
+  DifficultyLevel,
+} from './entities/recipe.entity';
 import { RecipeIngredient } from './entities/recipe-ingredient.entity';
 import { RecipeStep } from './entities/recipe-step.entity';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
-import { RecipeResponseDto, RecipeListResponseDto } from './dto/recipe-response.dto';
-import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
+import {
+  RecipeResponseDto,
+  RecipeListResponseDto,
+} from './dto/recipe-response.dto';
+import {
+  PaginationDto,
+  PaginatedResultDto,
+} from '../../common/dto/pagination.dto';
 import { UserRole } from '../users/entities/user.entity';
 import { IngredientsService } from '../ingredients/ingredients.service';
 import { IngredientCategory } from '../ingredients/entities/ingredient.entity';
+import {
+  CreateRecipeIngredientDto,
+  CreateRecipeStepDto,
+} from './dto/create-recipe.dto';
+import { RecipeSearchService, RecipeSearchOptions } from './services/recipe-search.service';
 
 export interface RecipeFilters {
   categoryId?: string;
@@ -37,13 +51,21 @@ export interface RecipeFilters {
 }
 
 export interface RecipeSortOptions {
-  sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'viewsCount' | 'likesCount' | 'totalTimeMinutes';
+  sortBy?:
+    | 'createdAt'
+    | 'updatedAt'
+    | 'title'
+    | 'viewsCount'
+    | 'likesCount'
+    | 'totalTimeMinutes';
   sortOrder?: 'ASC' | 'DESC';
 }
 
 export interface RecipeSearchFilters {
   categoryId?: string;
   difficulty?: DifficultyLevel;
+  maxTime?: number;
+  minRating?: number;
   maxPrepTime?: number;
   maxCookTime?: number;
   maxServings?: number;
@@ -55,18 +77,44 @@ export interface RecipeSearchFilters {
   searchTerm?: string;
 }
 
+// Type definitions for raw query results
+interface AverageTimesRawResult {
+  avgPrep: string | null;
+  avgCook: string | null;
+}
+
+interface CategoryStatsRawResult {
+  categoryName: string | null;
+  count: string;
+}
+
+interface DifficultyStatsRawResult {
+  difficulty: DifficultyLevel;
+  count: string;
+}
+
+interface ProcessedIngredient {
+  ingredientId: string;
+  quantity: number;
+  unit: string;
+  preparation?: string;
+  isOptional?: boolean;
+  order: number;
+  recipeId: string;
+}
+
 @Injectable()
 export class RecipesService {
   constructor(
     @InjectRepository(Recipe)
     private readonly recipeRepository: Repository<Recipe>,
-    
+
     @InjectRepository(RecipeIngredient)
     private readonly recipeIngredientRepository: Repository<RecipeIngredient>,
-    
+
     @InjectRepository(RecipeStep)
     private readonly recipeStepRepository: Repository<RecipeStep>,
-    
+
     private readonly ingredientsService: IngredientsService,
   ) {}
 
@@ -74,14 +122,17 @@ export class RecipesService {
    * Create a new recipe with ingredients and steps
    */
   async create(
-    createRecipeDto: CreateRecipeDto, 
-    authorId: string
+    createRecipeDto: CreateRecipeDto,
+    authorId: string,
   ): Promise<RecipeResponseDto> {
-    console.log('RecipesService.create called with:', { authorId, ingredientsCount: createRecipeDto.ingredients.length });
-    
+    console.log('RecipesService.create called with:', {
+      authorId,
+      ingredientsCount: createRecipeDto.ingredients.length,
+    });
+
     try {
       // Validate ingredients and steps order
-      await this.validateCreateRecipeDto(createRecipeDto);
+      this.validateCreateRecipeDto(createRecipeDto);
       console.log('Validation passed');
 
       // Create recipe entity
@@ -98,11 +149,11 @@ export class RecipesService {
       console.log('Recipe saved with ID:', savedRecipe.id);
 
       // Process ingredients - create new ingredients if needed
-      const processedIngredients: any[] = [];
+      const processedIngredients: ProcessedIngredient[] = [];
       for (const ingredient of createRecipeDto.ingredients) {
         console.log('Processing ingredient:', ingredient.ingredientId);
         let ingredientId = ingredient.ingredientId;
-        
+
         // If ingredientId is not a UUID, create a new ingredient
         if (!this.isUUID(ingredientId)) {
           console.log('Creating new ingredient for:', ingredientId);
@@ -115,21 +166,29 @@ export class RecipesService {
             });
             ingredientId = newIngredient.id;
             console.log('New ingredient created with ID:', ingredientId);
-          } catch (error) {
-            console.log('Failed to create ingredient, searching for existing:', error.message);
+          } catch (error: unknown) {
+            const errorMessage =
+              error instanceof Error ? error.message : 'Unknown error';
+            console.log(
+              'Failed to create ingredient, searching for existing:',
+              errorMessage,
+            );
             // If ingredient already exists, try to find it
-            const existingIngredients = await this.ingredientsService.searchByName(ingredientId);
+            const existingIngredients =
+              await this.ingredientsService.searchByName(ingredientId);
             if (existingIngredients.length > 0) {
               ingredientId = existingIngredients[0].id;
               console.log('Found existing ingredient with ID:', ingredientId);
             } else {
-              throw new BadRequestException(`Failed to create or find ingredient: ${ingredientId}`);
+              throw new BadRequestException(
+                `Failed to create or find ingredient: ${ingredientId}`,
+              );
             }
           }
         } else {
           console.log('Using existing ingredient ID:', ingredientId);
         }
-        
+
         processedIngredients.push({
           ...ingredient,
           ingredientId,
@@ -140,18 +199,18 @@ export class RecipesService {
       console.log('All ingredients processed');
 
       // Create ingredients with order
-      const ingredients = processedIngredients.map(ingredient => 
-        this.recipeIngredientRepository.create(ingredient)
+      const ingredients = processedIngredients.map((ingredient) =>
+        this.recipeIngredientRepository.create(ingredient),
       );
-      await this.recipeIngredientRepository.save(ingredients as any);
+      await this.recipeIngredientRepository.save(ingredients);
       console.log('Ingredients saved');
 
       // Create steps with validation
-      const steps = createRecipeDto.steps.map(step =>
+      const steps = createRecipeDto.steps.map((step) =>
         this.recipeStepRepository.create({
           ...step,
           recipeId: savedRecipe.id,
-        })
+        }),
       );
       await this.recipeStepRepository.save(steps);
       console.log('Steps saved');
@@ -160,7 +219,7 @@ export class RecipesService {
       const result = await this.findOneForResponse(savedRecipe.id);
       console.log('Recipe creation completed successfully');
       return result;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error in RecipesService.create:', error);
       throw error;
     }
@@ -172,19 +231,20 @@ export class RecipesService {
   async findAll(
     pagination: PaginationDto,
     filters: RecipeFilters = {},
-    sort: RecipeSortOptions = {}
+    sort: RecipeSortOptions = {},
   ): Promise<PaginatedResultDto<RecipeListResponseDto>> {
     const { page = 1, limit = 10 } = pagination;
     const { sortBy = 'createdAt', sortOrder = 'DESC' } = sort;
 
-    const queryBuilder = this.recipeRepository.createQueryBuilder('recipe')
+    const queryBuilder = this.recipeRepository
+      .createQueryBuilder('recipe')
       .leftJoinAndSelect('recipe.author', 'author')
       .leftJoinAndSelect('recipe.category', 'category')
       .leftJoin('recipe.recipeIngredients', 'ingredients')
       .leftJoin('recipe.steps', 'steps')
       .addSelect([
         'COUNT(DISTINCT ingredients.id) as ingredientsCount',
-        'COUNT(DISTINCT steps.id) as stepsCount'
+        'COUNT(DISTINCT steps.id) as stepsCount',
       ])
       .groupBy('recipe.id, author.id, category.id');
 
@@ -193,7 +253,11 @@ export class RecipesService {
 
     // Apply sorting
     if (sortBy === 'totalTimeMinutes') {
-      queryBuilder.addSelect('(recipe.prepTimeMinutes + recipe.cookTimeMinutes)', 'totalTime')
+      queryBuilder
+        .addSelect(
+          '(recipe.prepTimeMinutes + recipe.cookTimeMinutes)',
+          'totalTime',
+        )
         .orderBy('totalTime', sortOrder);
     } else {
       queryBuilder.orderBy(`recipe.${sortBy}`, sortOrder);
@@ -206,8 +270,8 @@ export class RecipesService {
       .getManyAndCount();
 
     // Transform to response DTOs
-    const transformedRecipes = recipes.map(recipe => 
-      this.transformToListResponseDto(recipe)
+    const transformedRecipes = recipes.map((recipe) =>
+      this.transformToListResponseDto(recipe),
     );
 
     return {
@@ -228,16 +292,16 @@ export class RecipesService {
     return this.recipeRepository.findOne({
       where: { id },
       relations: [
-        'author', 
-        'category', 
-        'recipeIngredients', 
+        'author',
+        'category',
+        'recipeIngredients',
         'recipeIngredients.ingredient',
-        'steps'
+        'steps',
       ],
       order: {
         recipeIngredients: { order: 'ASC' },
-        steps: { stepNumber: 'ASC' }
-      }
+        steps: { stepNumber: 'ASC' },
+      },
     });
   }
 
@@ -256,10 +320,10 @@ export class RecipesService {
    * Update recipe with permission check
    */
   async update(
-    id: string, 
+    id: string,
     updateRecipeDto: UpdateRecipeDto,
     userId: string,
-    userRole: UserRole
+    userRole: UserRole,
   ): Promise<RecipeResponseDto> {
     const recipe = await this.findOne(id);
     if (!recipe) {
@@ -323,10 +387,10 @@ export class RecipesService {
     } else {
       await this.recipeRepository.decrement({ id }, 'likesCount', 1);
     }
-    
-    const recipe = await this.recipeRepository.findOne({ 
-      where: { id }, 
-      select: ['likesCount'] 
+
+    const recipe = await this.recipeRepository.findOne({
+      where: { id },
+      select: ['likesCount'],
     });
     return recipe?.likesCount || 0;
   }
@@ -337,27 +401,32 @@ export class RecipesService {
   async findByAuthor(
     authorId: string,
     pagination: PaginationDto,
-    includePrivate: boolean = false
+    includePrivate: boolean = false,
   ): Promise<PaginatedResultDto<RecipeListResponseDto>> {
-    const filters: RecipeFilters = { 
+    const filters: RecipeFilters = {
       authorId,
-      ...(includePrivate ? {} : { status: RecipeStatus.PUBLISHED })
+      ...(includePrivate ? {} : { status: RecipeStatus.PUBLISHED }),
     };
-    
+
     return this.findAll(pagination, filters);
   }
 
   /**
    * Find featured recipes
    */
-  async findFeatured(pagination: PaginationDto): Promise<PaginatedResultDto<RecipeListResponseDto>> {
-    const filters: RecipeFilters = { 
+  async findFeatured(
+    pagination: PaginationDto,
+  ): Promise<PaginatedResultDto<RecipeListResponseDto>> {
+    const filters: RecipeFilters = {
       isFeatured: true,
       status: RecipeStatus.PUBLISHED,
-      isActive: true
+      isActive: true,
     };
-    
-    return this.findAll(pagination, filters, { sortBy: 'likesCount', sortOrder: 'DESC' });
+
+    return this.findAll(pagination, filters, {
+      sortBy: 'likesCount',
+      sortOrder: 'DESC',
+    });
   }
 
   /**
@@ -366,15 +435,15 @@ export class RecipesService {
   async search(
     query: string,
     pagination: PaginationDto,
-    filters: RecipeSearchFilters = {}
+    filters: RecipeSearchFilters = {},
   ): Promise<PaginatedResultDto<RecipeListResponseDto>> {
     const searchFilters: RecipeFilters = {
       ...filters,
       search: query,
       status: RecipeStatus.PUBLISHED,
-      isActive: true
+      isActive: true,
     };
-    
+
     return this.findAll(pagination, searchFilters);
   }
 
@@ -383,9 +452,12 @@ export class RecipesService {
    */
   async findPublished(
     paginationDto: PaginationDto,
-    filters: Omit<RecipeSearchFilters, 'status'> = {}
+    filters: Omit<RecipeSearchFilters, 'status'> = {},
   ): Promise<PaginatedResultDto<RecipeListResponseDto>> {
-    return this.findAll(paginationDto, { ...filters, status: RecipeStatus.PUBLISHED });
+    return this.findAll(paginationDto, {
+      ...filters,
+      status: RecipeStatus.PUBLISHED,
+    });
   }
 
   /**
@@ -401,17 +473,11 @@ export class RecipesService {
     mostPopularCategory: string;
     recipesPerDifficulty: { [key in DifficultyLevel]: number };
   }> {
-    const [
-      totalRecipes,
-      publishedRecipes,
-      draftRecipes,
-      featuredRecipes,
-      avgTimes,
-      mostPopular,
-      difficultyStats
-    ] = await Promise.all([
+    const results = await Promise.all([
       this.recipeRepository.count(),
-      this.recipeRepository.count({ where: { status: RecipeStatus.PUBLISHED } }),
+      this.recipeRepository.count({
+        where: { status: RecipeStatus.PUBLISHED },
+      }),
       this.recipeRepository.count({ where: { status: RecipeStatus.DRAFT } }),
       this.recipeRepository.count({ where: { isFeatured: true } }),
       this.recipeRepository
@@ -433,23 +499,41 @@ export class RecipesService {
         .select('recipe.difficulty', 'difficulty')
         .addSelect('COUNT(*)', 'count')
         .groupBy('recipe.difficulty')
-        .getRawMany()
+        .getRawMany(),
     ]);
 
-    const recipesPerDifficulty = difficultyStats.reduce((acc, stat) => {
-      acc[stat.difficulty] = parseInt(stat.count);
-      return acc;
-    }, {} as { [key in DifficultyLevel]: number });
+    const totalRecipes = results[0];
+    const publishedRecipes = results[1];
+    const draftRecipes = results[2];
+    const featuredRecipes = results[3];
+    const typedAvgTimes = results[4] as AverageTimesRawResult;
+    const typedMostPopular = results[5] as CategoryStatsRawResult | undefined;
+    const typedDifficultyStats = results[6] as DifficultyStatsRawResult[];
+
+    const recipesPerDifficulty = typedDifficultyStats.reduce(
+      (
+        acc: { [key in DifficultyLevel]: number },
+        stat: DifficultyStatsRawResult,
+      ) => {
+        acc[stat.difficulty] = parseInt(stat.count, 10);
+        return acc;
+      },
+      {} as { [key in DifficultyLevel]: number },
+    );
 
     return {
       total: totalRecipes,
       published: publishedRecipes,
       draft: draftRecipes,
       featured: featuredRecipes,
-      averagePreparationTime: Math.round(avgTimes?.avgPrep || 0),
-      averageCookingTime: Math.round(avgTimes?.avgCook || 0),
-      mostPopularCategory: mostPopular?.categoryName || 'N/A',
-      recipesPerDifficulty
+      averagePreparationTime: Math.round(
+        typedAvgTimes?.avgPrep ? parseFloat(typedAvgTimes.avgPrep) : 0,
+      ),
+      averageCookingTime: Math.round(
+        typedAvgTimes?.avgCook ? parseFloat(typedAvgTimes.avgCook) : 0,
+      ),
+      mostPopularCategory: typedMostPopular?.categoryName || 'N/A',
+      recipesPerDifficulty,
     };
   }
 
@@ -469,7 +553,12 @@ export class RecipesService {
   /**
    * Change recipe status
    */
-  async changeStatus(id: string, status: RecipeStatus, userId: string, userRole: UserRole): Promise<RecipeResponseDto> {
+  async changeStatus(
+    id: string,
+    status: RecipeStatus,
+    userId: string,
+    userRole: UserRole,
+  ): Promise<RecipeResponseDto> {
     const recipe = await this.findOne(id);
     if (!recipe) {
       throw new NotFoundException('Recipe not found');
@@ -477,7 +566,9 @@ export class RecipesService {
 
     // Check permissions
     if (recipe.authorId !== userId && userRole !== UserRole.ADMIN) {
-      throw new ForbiddenException('You can only change status of your own recipes');
+      throw new ForbiddenException(
+        'You can only change status of your own recipes',
+      );
     }
 
     await this.recipeRepository.update(id, { status });
@@ -485,7 +576,7 @@ export class RecipesService {
   }
 
   // Private helper methods
-  private async validateCreateRecipeDto(dto: CreateRecipeDto): Promise<void> {
+  private validateCreateRecipeDto(dto: CreateRecipeDto): void {
     // Validate ingredients exist
     if (dto.ingredients.length === 0) {
       throw new BadRequestException('Recipe must have at least one ingredient');
@@ -496,63 +587,90 @@ export class RecipesService {
       throw new BadRequestException('Recipe must have at least one step');
     }
 
-    const stepNumbers = dto.steps.map(s => s.stepNumber).sort((a, b) => a - b);
+    const stepNumbers = dto.steps
+      .map((s) => s.stepNumber)
+      .sort((a, b) => a - b);
     for (let i = 0; i < stepNumbers.length; i++) {
       if (stepNumbers[i] !== i + 1) {
-        throw new BadRequestException('Step numbers must be consecutive starting from 1');
+        throw new BadRequestException(
+          'Step numbers must be consecutive starting from 1',
+        );
       }
     }
   }
 
-  private applyFilters(queryBuilder: any, filters: RecipeFilters): void {
+  private applyFilters(
+    queryBuilder: SelectQueryBuilder<Recipe>,
+    filters: RecipeFilters,
+  ): void {
     if (filters.search) {
       queryBuilder.andWhere(
         '(LOWER(recipe.title) LIKE LOWER(:search) OR LOWER(recipe.description) LIKE LOWER(:search) OR recipe.tags::text ILIKE :searchTags)',
-        { 
+        {
           search: `%${filters.search}%`,
-          searchTags: `%${filters.search}%`
-        }
+          searchTags: `%${filters.search}%`,
+        },
       );
     }
 
     if (filters.categoryId) {
-      queryBuilder.andWhere('recipe.categoryId = :categoryId', { categoryId: filters.categoryId });
+      queryBuilder.andWhere('recipe.categoryId = :categoryId', {
+        categoryId: filters.categoryId,
+      });
     }
 
     if (filters.difficulty) {
-      queryBuilder.andWhere('recipe.difficulty = :difficulty', { difficulty: filters.difficulty });
+      queryBuilder.andWhere('recipe.difficulty = :difficulty', {
+        difficulty: filters.difficulty,
+      });
     }
 
     if (filters.status) {
-      queryBuilder.andWhere('recipe.status = :status', { status: filters.status });
+      queryBuilder.andWhere('recipe.status = :status', {
+        status: filters.status,
+      });
     }
 
     if (filters.authorId) {
-      queryBuilder.andWhere('recipe.authorId = :authorId', { authorId: filters.authorId });
+      queryBuilder.andWhere('recipe.authorId = :authorId', {
+        authorId: filters.authorId,
+      });
     }
 
     if (filters.minPrepTime) {
-      queryBuilder.andWhere('recipe.prepTimeMinutes >= :minPrepTime', { minPrepTime: filters.minPrepTime });
+      queryBuilder.andWhere('recipe.prepTimeMinutes >= :minPrepTime', {
+        minPrepTime: filters.minPrepTime,
+      });
     }
 
     if (filters.maxPrepTime) {
-      queryBuilder.andWhere('recipe.prepTimeMinutes <= :maxPrepTime', { maxPrepTime: filters.maxPrepTime });
+      queryBuilder.andWhere('recipe.prepTimeMinutes <= :maxPrepTime', {
+        maxPrepTime: filters.maxPrepTime,
+      });
     }
 
     if (filters.minCookTime) {
-      queryBuilder.andWhere('recipe.cookTimeMinutes >= :minCookTime', { minCookTime: filters.minCookTime });
+      queryBuilder.andWhere('recipe.cookTimeMinutes >= :minCookTime', {
+        minCookTime: filters.minCookTime,
+      });
     }
 
     if (filters.maxCookTime) {
-      queryBuilder.andWhere('recipe.cookTimeMinutes <= :maxCookTime', { maxCookTime: filters.maxCookTime });
+      queryBuilder.andWhere('recipe.cookTimeMinutes <= :maxCookTime', {
+        maxCookTime: filters.maxCookTime,
+      });
     }
 
     if (filters.minServings) {
-      queryBuilder.andWhere('recipe.servings >= :minServings', { minServings: filters.minServings });
+      queryBuilder.andWhere('recipe.servings >= :minServings', {
+        minServings: filters.minServings,
+      });
     }
 
     if (filters.maxServings) {
-      queryBuilder.andWhere('recipe.servings <= :maxServings', { maxServings: filters.maxServings });
+      queryBuilder.andWhere('recipe.servings <= :maxServings', {
+        maxServings: filters.maxServings,
+      });
     }
 
     if (filters.tags && filters.tags.length > 0) {
@@ -560,18 +678,25 @@ export class RecipesService {
     }
 
     if (filters.isFeatured !== undefined) {
-      queryBuilder.andWhere('recipe.isFeatured = :isFeatured', { isFeatured: filters.isFeatured });
+      queryBuilder.andWhere('recipe.isFeatured = :isFeatured', {
+        isFeatured: filters.isFeatured,
+      });
     }
 
     if (filters.isActive !== undefined) {
-      queryBuilder.andWhere('recipe.isActive = :isActive', { isActive: filters.isActive });
+      queryBuilder.andWhere('recipe.isActive = :isActive', {
+        isActive: filters.isActive,
+      });
     }
   }
 
-  private async updateRecipeIngredients(recipeId: string, ingredients: any[]): Promise<void> {
+  private async updateRecipeIngredients(
+    recipeId: string,
+    ingredients: CreateRecipeIngredientDto[],
+  ): Promise<void> {
     // Delete existing ingredients
     await this.recipeIngredientRepository.delete({ recipeId });
-    
+
     // Create new ingredients
     const newIngredients = ingredients.map((ingredient, index) => ({
       ...ingredient,
@@ -581,12 +706,15 @@ export class RecipesService {
     await this.recipeIngredientRepository.save(newIngredients);
   }
 
-  private async updateRecipeSteps(recipeId: string, steps: any[]): Promise<void> {
+  private async updateRecipeSteps(
+    recipeId: string,
+    steps: CreateRecipeStepDto[],
+  ): Promise<void> {
     // Delete existing steps
     await this.recipeStepRepository.delete({ recipeId });
-    
+
     // Create new steps
-    const newSteps = steps.map(step => ({
+    const newSteps = steps.map((step) => ({
       ...step,
       recipeId,
     }));
@@ -621,7 +749,8 @@ export class RecipesService {
   }
 
   private isUUID(value: string): boolean {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     return uuidRegex.test(value);
   }
-} 
+}

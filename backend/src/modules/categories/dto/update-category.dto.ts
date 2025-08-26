@@ -3,11 +3,11 @@ import { CreateCategoryDto } from './create-category.dto';
 import { IsOptional, IsBoolean } from 'class-validator';
 
 export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Is category active/visible',
-    example: true
+    example: true,
   })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
-} 
+}

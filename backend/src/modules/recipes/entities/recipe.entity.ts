@@ -1,12 +1,13 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn
+  JoinColumn,
+  Index,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { User } from '../../users/entities/user.entity';
@@ -28,6 +29,9 @@ export enum DifficultyLevel {
 }
 
 @Entity('recipes')
+@Index('IDX_RECIPE_STATUS_CATEGORY', ['status', 'categoryId'])
+@Index('IDX_RECIPE_AUTHOR_STATUS', ['authorId', 'status'])
+@Index('IDX_RECIPE_CREATED_AT', ['createdAt'])
 export class Recipe {
   @ApiProperty({ description: 'Recipe unique identifier' })
   @PrimaryGeneratedColumn('uuid')
@@ -35,13 +39,20 @@ export class Recipe {
 
   @ApiProperty({ description: 'Recipe title', example: 'Spaghetti Carbonara' })
   @Column()
+  @Index('IDX_RECIPE_TITLE')
   title: string;
 
-  @ApiProperty({ description: 'Recipe description', example: 'A classic Italian pasta dish' })
+  @ApiProperty({
+    description: 'Recipe description',
+    example: 'A classic Italian pasta dish',
+  })
   @Column('text')
   description: string;
 
-  @ApiProperty({ description: 'Recipe instructions', example: 'Step by step cooking instructions' })
+  @ApiProperty({
+    description: 'Recipe instructions',
+    example: 'Step by step cooking instructions',
+  })
   @Column('text')
   instructions: string;
 
@@ -57,10 +68,10 @@ export class Recipe {
   @Column()
   servings: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe difficulty level',
     enum: DifficultyLevel,
-    example: DifficultyLevel.MEDIUM
+    example: DifficultyLevel.MEDIUM,
   })
   @Column({
     type: 'enum',
@@ -69,41 +80,48 @@ export class Recipe {
   })
   difficulty: DifficultyLevel;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe status',
     enum: RecipeStatus,
-    example: RecipeStatus.PUBLISHED
+    example: RecipeStatus.PUBLISHED,
   })
   @Column({
     type: 'enum',
     enum: RecipeStatus,
     default: RecipeStatus.DRAFT,
   })
+  @Index('IDX_RECIPE_STATUS')
   status: RecipeStatus;
 
   @ApiPropertyOptional({ description: 'Recipe main image URL' })
   @Column({ nullable: true })
   imageUrl?: string;
 
-  @ApiPropertyOptional({ description: 'Additional recipe images', type: [String] })
-  @Column('text', { 
-    array: true, 
+  @ApiPropertyOptional({
+    description: 'Additional recipe images',
+    type: [String],
+  })
+  @Column('text', {
+    array: true,
     nullable: true,
     transformer: {
       to: (value: string[]) => value,
       from: (value: string[]) => value || [],
-    }
+    },
   })
   additionalImages?: string[];
 
-  @ApiPropertyOptional({ description: 'Recipe tags for search', type: [String] })
-  @Column('text', { 
-    array: true, 
+  @ApiPropertyOptional({
+    description: 'Recipe tags for search',
+    type: [String],
+  })
+  @Column('text', {
+    array: true,
     nullable: true,
     transformer: {
       to: (value: string[]) => value,
       from: (value: string[]) => value || [],
-    }
+    },
   })
   tags?: string[];
 
@@ -140,31 +158,37 @@ export class Recipe {
   // Relations
   @ApiProperty({ description: 'Recipe author ID' })
   @Column('uuid')
+  @Index('IDX_RECIPE_AUTHOR')
   authorId: string;
 
-  @ManyToOne(() => User, { eager: false })
+  @ManyToOne(() => User, { eager: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'authorId' })
   author: User;
 
   @ApiProperty({ description: 'Recipe category ID' })
   @Column('uuid')
+  @Index('IDX_RECIPE_CATEGORY')
   categoryId: string;
 
-  @ManyToOne(() => Category, { eager: false })
+  @ManyToOne(() => Category, { eager: false, onDelete: 'RESTRICT' })
   @JoinColumn({ name: 'categoryId' })
   category: Category;
 
   // Recipe ingredients relation
-  @OneToMany(() => RecipeIngredient, recipeIngredient => recipeIngredient.recipe, { 
-    cascade: true,
-    eager: false 
-  })
+  @OneToMany(
+    () => RecipeIngredient,
+    (recipeIngredient) => recipeIngredient.recipe,
+    {
+      cascade: true,
+      eager: false,
+    },
+  )
   recipeIngredients: RecipeIngredient[];
 
   // Recipe steps relation
-  @OneToMany(() => RecipeStep, recipeStep => recipeStep.recipe, { 
+  @OneToMany(() => RecipeStep, (recipeStep) => recipeStep.recipe, {
     cascade: true,
-    eager: false 
+    eager: false,
   })
   steps: RecipeStep[];
 
@@ -203,4 +227,4 @@ export class Recipe {
 
   @ApiProperty({ description: 'Number of steps' })
   stepsCount?: number;
-} 
+}

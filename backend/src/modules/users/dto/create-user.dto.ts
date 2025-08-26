@@ -11,11 +11,11 @@ import {
 import { UserRole } from '../entities/user.entity';
 
 export class CreateUserDto {
-  @ApiProperty({ 
-    description: 'User first name', 
-    minLength: 2, 
+  @ApiProperty({
+    description: 'User first name',
+    minLength: 2,
     maxLength: 50,
-    example: 'John' 
+    example: 'John',
   })
   @IsString()
   @IsNotEmpty()
@@ -23,11 +23,11 @@ export class CreateUserDto {
   @MaxLength(50)
   firstName: string;
 
-  @ApiProperty({ 
-    description: 'User last name', 
-    minLength: 2, 
+  @ApiProperty({
+    description: 'User last name',
+    minLength: 2,
     maxLength: 50,
-    example: 'Doe' 
+    example: 'Doe',
   })
   @IsString()
   @IsNotEmpty()
@@ -35,51 +35,51 @@ export class CreateUserDto {
   @MaxLength(50)
   lastName: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'User email address',
-    example: 'john.doe@example.com' 
+    example: 'john.doe@example.com',
   })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ 
-    description: 'User password', 
+  @ApiProperty({
+    description: 'User password',
     minLength: 8,
-    example: 'securePassword123!' 
+    example: 'securePassword123!',
   })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
   password: string;
 
-  @ApiProperty({ 
-    description: 'User role', 
+  @ApiProperty({
+    description: 'User role',
     enum: UserRole,
     required: false,
-    default: UserRole.USER 
+    default: UserRole.USER,
   })
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole = UserRole.USER;
 
-  @ApiProperty({ 
-    description: 'User avatar URL', 
+  @ApiProperty({
+    description: 'User avatar URL',
     required: false,
-    example: 'https://example.com/avatar.jpg' 
+    example: 'https://example.com/avatar.jpg',
   })
   @IsOptional()
   @IsString()
   avatar?: string;
 
-  @ApiProperty({ 
-    description: 'User bio/description', 
+  @ApiProperty({
+    description: 'User bio/description',
     required: false,
     maxLength: 500,
-    example: 'Passionate home cook and recipe enthusiast.' 
+    example: 'Passionate home cook and recipe enthusiast.',
   })
   @IsOptional()
   @IsString()
   @MaxLength(500)
   bio?: string;
-} 
+}

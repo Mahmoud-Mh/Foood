@@ -25,11 +25,14 @@ import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
 import { IngredientResponseDto } from './dto/ingredient-response.dto';
 import { IngredientCategory } from './entities/ingredient.entity';
-import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
+import {
+  PaginationDto,
+  PaginatedResultDto,
+} from '../../common/dto/pagination.dto';
 import { ApiResponseDto } from '../../common/dto/response.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { Public, AdminOnly, UserOrAdmin } from '../../common/decorators/auth.decorators';
+import { Public, AdminOnly } from '../../common/decorators/auth.decorators';
 
 @ApiTags('Ingredients')
 @Controller('ingredients')
@@ -53,15 +56,29 @@ export class IngredientsController {
   async create(
     @Body() createIngredientDto: CreateIngredientDto,
   ): Promise<ApiResponseDto<IngredientResponseDto>> {
-    const ingredient = await this.ingredientsService.create(createIngredientDto);
-    return ApiResponseDto.success('Ingredient created successfully', ingredient);
+    const ingredient =
+      await this.ingredientsService.create(createIngredientDto);
+    return ApiResponseDto.success(
+      'Ingredient created successfully',
+      ingredient,
+    );
   }
 
   @Get()
   @Public()
   @ApiOperation({ summary: 'Get all ingredients with pagination' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Ingredients retrieved successfully',
@@ -71,7 +88,10 @@ export class IngredientsController {
     @Query() paginationDto: PaginationDto,
   ): Promise<ApiResponseDto<PaginatedResultDto<IngredientResponseDto>>> {
     const ingredients = await this.ingredientsService.findAll(paginationDto);
-    return ApiResponseDto.success('Ingredients retrieved successfully', ingredients);
+    return ApiResponseDto.success(
+      'Ingredients retrieved successfully',
+      ingredients,
+    );
   }
 
   @Get('active')
@@ -84,13 +104,21 @@ export class IngredientsController {
   })
   async findActive(): Promise<ApiResponseDto<IngredientResponseDto[]>> {
     const ingredients = await this.ingredientsService.findActive();
-    return ApiResponseDto.success('Active ingredients retrieved successfully', ingredients);
+    return ApiResponseDto.success(
+      'Active ingredients retrieved successfully',
+      ingredients,
+    );
   }
 
   @Get('search')
   @Public()
   @ApiOperation({ summary: 'Search ingredients by name' })
-  @ApiQuery({ name: 'name', required: true, type: String, description: 'Ingredient name to search' })
+  @ApiQuery({
+    name: 'name',
+    required: true,
+    type: String,
+    description: 'Ingredient name to search',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Ingredients search completed',
@@ -107,7 +135,11 @@ export class IngredientsController {
   @Public()
   @SkipThrottle()
   @ApiOperation({ summary: 'Get ingredients by category' })
-  @ApiParam({ name: 'category', enum: IngredientCategory, description: 'Ingredient category' })
+  @ApiParam({
+    name: 'category',
+    enum: IngredientCategory,
+    description: 'Ingredient category',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Ingredients by category retrieved successfully',
@@ -117,7 +149,10 @@ export class IngredientsController {
     @Param('category') category: IngredientCategory,
   ): Promise<ApiResponseDto<IngredientResponseDto[]>> {
     const ingredients = await this.ingredientsService.findByCategory(category);
-    return ApiResponseDto.success('Ingredients by category retrieved successfully', ingredients);
+    return ApiResponseDto.success(
+      'Ingredients by category retrieved successfully',
+      ingredients,
+    );
   }
 
   @Get('stats')
@@ -127,15 +162,30 @@ export class IngredientsController {
     status: HttpStatus.OK,
     description: 'Ingredient statistics retrieved successfully',
   })
-  async getIngredientStats(): Promise<ApiResponseDto<any>> {
+  async getIngredientStats(): Promise<
+    ApiResponseDto<{
+      total: number;
+      active: number;
+      inactive: number;
+      byCategory: Record<string, number>;
+    }>
+  > {
     const stats = await this.ingredientsService.getIngredientStats();
-    return ApiResponseDto.success('Ingredient statistics retrieved successfully', stats);
+    return ApiResponseDto.success(
+      'Ingredient statistics retrieved successfully',
+      stats,
+    );
   }
 
   @Get('most-used')
   @Public()
   @ApiOperation({ summary: 'Get most used ingredients (public)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of ingredients to return' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of ingredients to return',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Most used ingredients retrieved successfully',
@@ -144,8 +194,13 @@ export class IngredientsController {
   async getMostUsedIngredients(
     @Query('limit') limit?: number,
   ): Promise<ApiResponseDto<IngredientResponseDto[]>> {
-    const ingredients = await this.ingredientsService.getMostUsedIngredients(limit || 10);
-    return ApiResponseDto.success('Most used ingredients retrieved successfully', ingredients);
+    const ingredients = await this.ingredientsService.getMostUsedIngredients(
+      limit || 10,
+    );
+    return ApiResponseDto.success(
+      'Most used ingredients retrieved successfully',
+      ingredients,
+    );
   }
 
   @Get(':id')
@@ -165,7 +220,10 @@ export class IngredientsController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<ApiResponseDto<IngredientResponseDto>> {
     const ingredient = await this.ingredientsService.findOne(id);
-    return ApiResponseDto.success('Ingredient retrieved successfully', ingredient);
+    return ApiResponseDto.success(
+      'Ingredient retrieved successfully',
+      ingredient,
+    );
   }
 
   @Patch(':id')
@@ -189,8 +247,14 @@ export class IngredientsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateIngredientDto: UpdateIngredientDto,
   ): Promise<ApiResponseDto<IngredientResponseDto>> {
-    const ingredient = await this.ingredientsService.update(id, updateIngredientDto);
-    return ApiResponseDto.success('Ingredient updated successfully', ingredient);
+    const ingredient = await this.ingredientsService.update(
+      id,
+      updateIngredientDto,
+    );
+    return ApiResponseDto.success(
+      'Ingredient updated successfully',
+      ingredient,
+    );
   }
 
   @Patch(':id/toggle-active')
@@ -210,7 +274,10 @@ export class IngredientsController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<ApiResponseDto<IngredientResponseDto>> {
     const ingredient = await this.ingredientsService.toggleActive(id);
-    return ApiResponseDto.success('Ingredient status toggled successfully', ingredient);
+    return ApiResponseDto.success(
+      'Ingredient status toggled successfully',
+      ingredient,
+    );
   }
 
   @Delete(':id')
@@ -235,4 +302,4 @@ export class IngredientsController {
     await this.ingredientsService.remove(id);
     return ApiResponseDto.success('Ingredient deleted successfully', null);
   }
-} 
+}

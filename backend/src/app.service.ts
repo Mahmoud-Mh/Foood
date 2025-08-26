@@ -94,14 +94,17 @@ export class AppService {
         timestamp: new Date().toISOString(),
         beforeCounts,
         afterCounts,
-        totalRecordsDeleted: Object.values(beforeCounts).reduce((sum, count) => sum + count, 0),
+        totalRecordsDeleted: Object.values(beforeCounts).reduce(
+          (sum, count) => sum + count,
+          0,
+        ),
       };
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('❌ Database cleanup failed:', error);
       return {
         success: false,
         message: 'Database cleanup failed',
-        error: error.message,
+        error: (error as Error).message,
         timestamp: new Date().toISOString(),
       };
     }

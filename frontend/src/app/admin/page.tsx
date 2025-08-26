@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { recipeService, categoryService, ingredientService, userService, authService } from '@/services';
-import { Recipe, Category, Ingredient } from '@/types/api.types';
-import { FormatUtils } from '@/utils/formatters';
+import { Recipe, User } from '@/types/api.types';
 import Navbar from '@/components/Navbar';
 
 interface AdminStats {
@@ -17,20 +16,46 @@ interface AdminStats {
   featuredRecipes: number;
 }
 
-interface RecentActivity {
-  type: 'user' | 'recipe' | 'category' | 'ingredient';
-  action: string;
-  item: any;
-  timestamp: string;
-}
-
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [recentRecipes, setRecentRecipes] = useState<Recipe[]>([]);
-  const [recentUsers, setRecentUsers] = useState<any[]>([]);
+  const [recentUsers, setRecentUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const loadDashboardData = useCallback(async () => {
+    try {
+      const [recipesData, categoriesData, ingredientsData, usersData] = await Promise.all([
+        recipeService.getPublicRecipes({ limit: 100 }).catch(() => ({ data: [] })),
+        categoryService.getAllPublicCategories().catch(() => []),
+        ingredientService.getAllPublicIngredients().catch(() => []),
+        userService.getAllUsers({ limit: 100 }).catch(() => ({ data: [] })),
+      ]);
+
+      const allRecipes = recipesData.data || [];
+      const categories = Array.isArray(categoriesData) ? categoriesData : [];
+      const ingredients = Array.isArray(ingredientsData) ? ingredientsData : [];
+      const allUsers = usersData.data || [];
+
+      const newStats: AdminStats = {
+        totalUsers: allUsers.length,
+        totalRecipes: allRecipes.length,
+        totalCategories: categories.length,
+        totalIngredients: ingredients.length,
+        publishedRecipes: allRecipes.filter((r: Recipe) => r.status === 'published').length,
+        draftRecipes: allRecipes.filter((r: Recipe) => r.status === 'draft').length,
+        featuredRecipes: allRecipes.filter((r: Recipe) => r.isFeatured).length,
+      };
+
+      setStats(newStats);
+      setRecentRecipes(allRecipes.slice(0, 5));
+      setRecentUsers(allUsers.slice(0, 5));
+    } catch (err) {
+      console.error('Error loading dashboard data:', err);
+      setError('Failed to load dashboard data');
+    }
+  }, []);
 
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -48,56 +73,16 @@ export default function AdminDashboard() {
 
         setIsAdmin(true);
         await loadDashboardData();
-      } catch (error) {
-        console.error('Error checking admin access:', error);
+      } catch (err) {
+        console.error('Error checking admin access:', err);
         setError('Failed to verify admin permissions');
       } finally {
         setLoading(false);
       }
     };
 
-    checkAdminAccess();
-  }, []);
-
-  const loadDashboardData = async () => {
-    try {
-      // Load all data in parallel
-      const [
-        recipesData,
-        categoriesData,
-        ingredientsData,
-        usersData
-      ] = await Promise.all([
-        recipeService.getPublicRecipes({ limit: 100 }).catch(() => ({ data: [] })),
-        categoryService.getAllPublicCategories().catch(() => []),
-        ingredientService.getAllPublicIngredients().catch(() => []),
-        userService.getAllUsers({ limit: 100 }).catch(() => ({ data: [] }))
-      ]);
-
-      const allRecipes = recipesData.data || [];
-      const categories = Array.isArray(categoriesData) ? categoriesData : [];
-      const ingredients = Array.isArray(ingredientsData) ? ingredientsData : [];
-      const allUsers = usersData.data || [];
-
-      // Calculate stats
-      const stats: AdminStats = {
-        totalUsers: allUsers.length,
-        totalRecipes: allRecipes.length,
-        totalCategories: categories.length,
-        totalIngredients: ingredients.length,
-        publishedRecipes: allRecipes.filter((r: Recipe) => r.status === 'published').length,
-        draftRecipes: allRecipes.filter((r: Recipe) => r.status === 'draft').length,
-        featuredRecipes: allRecipes.filter((r: Recipe) => r.isFeatured).length
-      };
-
-      setStats(stats);
-      setRecentRecipes(allRecipes.slice(0, 5)); // Show 5 most recent
-      setRecentUsers(allUsers.slice(0, 5)); // Show 5 most recent users
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
-      setError('Failed to load dashboard data');
-    }
-  };
+    void checkAdminAccess();
+  }, [loadDashboardData]);
 
   if (loading) {
     return (

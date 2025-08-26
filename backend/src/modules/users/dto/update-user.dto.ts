@@ -5,29 +5,29 @@ import { CreateUserDto } from './create-user.dto';
 export class UpdateUserDto extends PartialType(
   OmitType(CreateUserDto, ['password', 'role'] as const),
 ) {
-  @ApiPropertyOptional({ 
-    description: 'New password for the user', 
-    minLength: 8 
+  @ApiPropertyOptional({
+    description: 'New password for the user',
+    minLength: 8,
   })
   password?: string;
 }
 
 export class UpdateProfileDto {
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'User avatar URL',
-    example: 'https://example.com/avatar.jpg' 
+    example: 'https://example.com/avatar.jpg',
   })
   @IsOptional()
   @IsString()
   avatar?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'User bio/description',
     maxLength: 500,
-    example: 'Passionate home cook and recipe enthusiast.' 
+    example: 'Passionate home cook and recipe enthusiast.',
   })
   @IsOptional()
   @IsString()
   @MaxLength(500)
   bio?: string;
-} 
+}

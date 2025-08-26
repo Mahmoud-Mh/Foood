@@ -1,7 +1,6 @@
 import { HttpService } from './base/http.service';
 import { 
   Recipe, 
-  ApiResponse, 
   PaginatedResult, 
   CreateRecipeForm,
   Category,
@@ -37,21 +36,21 @@ export class RecipeService {
   public async createRecipe(recipeData: CreateRecipeForm): Promise<Recipe> {
     const response = await this.httpService.post<Recipe>('/recipes', recipeData);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to create recipe');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to create recipe');
   }
 
   public async updateRecipe(id: string, recipeData: Partial<CreateRecipeForm>): Promise<Recipe> {
     const response = await this.httpService.patch<Recipe>(`/recipes/${id}`, recipeData);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to update recipe');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to update recipe');
   }
 
   public async deleteRecipe(id: string): Promise<void> {
@@ -66,7 +65,7 @@ export class RecipeService {
   public async getPublicRecipes(params: RecipeListParams = {}): Promise<PaginatedResult<Recipe>> {
     // If search term is provided, use the search endpoint
     if (params.search) {
-      const searchParams: any = {
+      const searchParams: Record<string, string | number> = {
         q: params.search,
         page: params.page || 1,
         limit: params.limit || 10,
@@ -79,15 +78,15 @@ export class RecipeService {
         params: searchParams
       });
       
-      if (!response.success) {
-        throw new Error(response.message || 'Failed to search recipes');
+      if (response.success && response.data) {
+        return response.data;
       }
       
-      return response.data;
+      throw new Error(response.message || 'Failed to search recipes');
     }
     
     // Otherwise use the published recipes endpoint
-    const publishedParams: any = {
+    const publishedParams: Record<string, string | number> = {
       page: params.page || 1,
       limit: params.limit || 10,
     };
@@ -99,33 +98,33 @@ export class RecipeService {
       params: publishedParams
     });
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch recipes');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch recipes');
   }
 
   public async getPublicRecipeById(id: string): Promise<Recipe> {
     const response = await this.httpService.get<Recipe>(`/recipes/${id}`);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch recipe');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch recipe');
   }
 
   public async searchPublicRecipes(params: SearchParams): Promise<PaginatedResult<Recipe>> {
     const response = await this.httpService.get<PaginatedResult<Recipe>>('/recipes/search', {
-      params: params as Record<string, any>
+      params: params as Record<string, string | number>
     });
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to search recipes');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to search recipes');
   }
 
   // User-specific recipes
@@ -138,41 +137,41 @@ export class RecipeService {
       }
     });
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch my recipes');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch my recipes');
   }
 
   public async getRecipeById(id: string): Promise<Recipe> {
     const response = await this.httpService.get<Recipe>(`/recipes/${id}`);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch recipe');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch recipe');
   }
 
   // Categories and Ingredients
   public async getActiveCategories(): Promise<Category[]> {
     const response = await this.httpService.get<Category[]>('/categories/active');
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch categories');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch categories');
   }
 
   public async getIngredientsByCategory(category: string): Promise<Ingredient[]> {
     const response = await this.httpService.get<Ingredient[]>(`/ingredients/category/${category}`);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch ingredients');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch ingredients');
   }
 } 

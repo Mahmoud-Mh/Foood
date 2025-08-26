@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  Index,
+  OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import * as bcrypt from 'bcryptjs';
@@ -32,16 +34,17 @@ export class User {
 
   @ApiProperty({ description: 'User email address', uniqueItems: true })
   @Column({ type: 'varchar', length: 100, unique: true })
+  @Index('IDX_USER_EMAIL')
   email: string;
 
   @Exclude()
   @Column({ type: 'varchar' })
   password: string;
 
-  @ApiProperty({ 
-    description: 'User role', 
+  @ApiProperty({
+    description: 'User role',
     enum: UserRole,
-    default: UserRole.USER 
+    default: UserRole.USER,
   })
   @Column({
     type: 'enum',
@@ -64,6 +67,7 @@ export class User {
 
   @ApiProperty({ description: 'Account active status' })
   @Column({ type: 'boolean', default: true })
+  @Index('IDX_USER_ACTIVE')
   isActive: boolean;
 
   @ApiProperty({ description: 'Last login timestamp', required: false })
@@ -77,6 +81,10 @@ export class User {
   @ApiProperty({ description: 'Account last update timestamp' })
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // Relationships - will be properly typed when entities are imported
+  emailVerifications?: any[];
+  passwordResets?: any[];
 
   // Virtual field for full name
   @ApiProperty({ description: 'User full name' })
@@ -109,4 +117,4 @@ export class User {
   updateLastLogin(): void {
     this.lastLoginAt = new Date();
   }
-} 
+}

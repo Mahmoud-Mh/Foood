@@ -1,30 +1,45 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
+import { ValidationPipe, Logger, BadRequestException } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
-  
+
   const app = await NestFactory.create(AppModule);
-  
+
   // Get configuration service
   const configService = app.get(ConfigService);
-  
+
   // Security middleware
   app.use(helmet());
-  
+
   // CORS configuration
+  const devOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
+  const prodOrigins = (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+  const allowedOrigins = configService.isDevelopment ? devOrigins : prodOrigins;
+
   app.enableCors({
-    origin: configService.isDevelopment 
-      ? ['http://localhost:3000', 'http://localhost:3001'] 
-      : [], // Configure production origins as needed
+    origin: allowedOrigins.length > 0 ? allowedOrigins : false,
     credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
-  
-  // Global validation pipe with detailed error logging
+
+  // Global exception filters
+  app.useGlobalFilters(
+    new GlobalExceptionFilter(),
+    new ValidationExceptionFilter(),
+  );
+
+  // Global validation pipe with enhanced error handling
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -34,12 +49,12 @@ async function bootstrap() {
         enableImplicitConversion: true,
       },
       exceptionFactory: (errors) => {
-        console.error('Validation errors:', JSON.stringify(errors, null, 2));
-        return new Error('Validation failed');
+        logger.debug('Validation errors:', JSON.stringify(errors, null, 2));
+        return new BadRequestException(errors);
       },
     }),
   );
-  
+
   // API Documentation with Swagger
   if (configService.isDevelopment) {
     const config = new DocumentBuilder()
@@ -58,20 +73,22 @@ async function bootstrap() {
         'access-token',
       )
       .build();
-    
+
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api/docs', app, document);
-    
-    logger.log(`Swagger documentation available at: http://localhost:${configService.app.port}/api/docs`);
+
+    logger.log(
+      `Swagger documentation available at: http://localhost:${configService.app.port}/api/docs`,
+    );
   }
-  
+
   // Global prefix
   app.setGlobalPrefix('api/v1');
-  
+
   // Start the application
   const port = configService.app.port;
   await app.listen(port);
-  
+
   logger.log(`Application is running on: http://localhost:${port}/api/v1`);
   if (configService.isDevelopment) {
     logger.log(`Environment: ${configService.app.nodeEnv}`);

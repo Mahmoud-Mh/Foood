@@ -1,8 +1,7 @@
-import { 
-  Injectable, 
-  NotFoundException, 
+import {
+  Injectable,
+  NotFoundException,
   ConflictException,
-  BadRequestException 
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,7 +10,10 @@ import { Category } from './entities/category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryResponseDto } from './dto/category-response.dto';
-import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
+import {
+  PaginationDto,
+  PaginatedResultDto,
+} from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -20,7 +22,9 @@ export class CategoriesService {
     private readonly categoriesRepository: Repository<Category>,
   ) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<CategoryResponseDto> {
+  async create(
+    createCategoryDto: CreateCategoryDto,
+  ): Promise<CategoryResponseDto> {
     // Check if category name already exists
     const existingCategory = await this.categoriesRepository.findOne({
       where: { name: createCategoryDto.name },
@@ -32,14 +36,16 @@ export class CategoriesService {
 
     // Generate slug from name
     const slug = this.generateSlug(createCategoryDto.name);
-    
+
     // Check if slug already exists
     const existingSlug = await this.categoriesRepository.findOne({
       where: { slug },
     });
 
     if (existingSlug) {
-      throw new ConflictException('Category slug already exists, please use a different name');
+      throw new ConflictException(
+        'Category slug already exists, please use a different name',
+      );
     }
 
     // Create new category
@@ -53,22 +59,24 @@ export class CategoriesService {
     return this.transformToResponseDto(savedCategory);
   }
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginatedResultDto<CategoryResponseDto>> {
+  async findAll(
+    paginationDto: PaginationDto,
+  ): Promise<PaginatedResultDto<CategoryResponseDto>> {
     const page = paginationDto.page ?? 1;
     const limit = paginationDto.limit ?? 10;
     const skip = (page - 1) * limit;
 
     const [categories, total] = await this.categoriesRepository.findAndCount({
-      order: { 
-        sortOrder: 'DESC', 
-        name: 'ASC' 
+      order: {
+        sortOrder: 'DESC',
+        name: 'ASC',
       },
       skip,
       take: limit,
     });
 
-    const transformedCategories = categories.map(category => 
-      this.transformToResponseDto(category)
+    const transformedCategories = categories.map((category) =>
+      this.transformToResponseDto(category),
     );
 
     return new PaginatedResultDto(transformedCategories, total, page, limit);
@@ -77,13 +85,13 @@ export class CategoriesService {
   async findActive(): Promise<CategoryResponseDto[]> {
     const categories = await this.categoriesRepository.find({
       where: { isActive: true },
-      order: { 
-        sortOrder: 'DESC', 
-        name: 'ASC' 
+      order: {
+        sortOrder: 'DESC',
+        name: 'ASC',
       },
     });
 
-    return categories.map(category => this.transformToResponseDto(category));
+    return categories.map((category) => this.transformToResponseDto(category));
   }
 
   async findOne(id: string): Promise<CategoryResponseDto> {
@@ -110,7 +118,10 @@ export class CategoriesService {
     return this.transformToResponseDto(category);
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<CategoryResponseDto> {
+  async update(
+    id: string,
+    updateCategoryDto: UpdateCategoryDto,
+  ): Promise<CategoryResponseDto> {
     const category = await this.categoriesRepository.findOne({
       where: { id },
     });
@@ -130,15 +141,16 @@ export class CategoriesService {
       }
 
       // Regenerate slug if name changed
-      updateCategoryDto.name = updateCategoryDto.name;
       const newSlug = this.generateSlug(updateCategoryDto.name);
-      
+
       const existingSlug = await this.categoriesRepository.findOne({
         where: { slug: newSlug },
       });
 
       if (existingSlug && existingSlug.id !== id) {
-        throw new ConflictException('Category slug already exists, please use a different name');
+        throw new ConflictException(
+          'Category slug already exists, please use a different name',
+        );
       }
 
       category.slug = newSlug;
@@ -184,17 +196,23 @@ export class CategoriesService {
     return this.transformToResponseDto(updatedCategory);
   }
 
-  async getCategoryStats(): Promise<any> {
+  async getCategoryStats(): Promise<{
+    totalCategories: number;
+    activeCategories: number;
+    recipesByCategory: Record<string, number>;
+  }> {
     const total = await this.categoriesRepository.count();
     const active = await this.categoriesRepository.count({
       where: { isActive: true },
     });
-    const inactive = total - active;
+    
+    // Get recipe count by category (simplified for now)
+    const recipesByCategory: Record<string, number> = {};
 
     return {
-      total,
-      active,
-      inactive,
+      totalCategories: total,
+      activeCategories: active,
+      recipesByCategory,
     };
   }
 
@@ -212,4 +230,4 @@ export class CategoriesService {
       .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
       .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
   }
-} 
+}

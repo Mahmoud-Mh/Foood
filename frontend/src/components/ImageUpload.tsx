@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import { httpService, authService } from '@/services';
 
@@ -26,20 +26,23 @@ export default function ImageUpload({
   onError,
   type = 'avatar',
   className = '',
-  size = 'md'
+  size = 'md',
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const currentBlobUrlRef = useRef<string | null>(null);
 
   const sizeClasses = {
     sm: 'w-16 h-16',
     md: 'w-24 h-24',
-    lg: 'w-32 h-32'
+    lg: 'w-32 h-32',
   };
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = useCallback(async (file: File) => {
     if (!file) return;
 
     // Validate file type
@@ -55,7 +58,17 @@ export default function ImageUpload({
     }
 
     setIsUploading(true);
-    setPreviewUrl(URL.createObjectURL(file));
+    setImageLoadError(false);
+
+    // Clean up previous blob URL
+    if (currentBlobUrlRef.current) {
+      URL.revokeObjectURL(currentBlobUrlRef.current);
+    }
+
+    // Create new blob URL for preview
+    const blobUrl = URL.createObjectURL(file);
+    currentBlobUrlRef.current = blobUrl;
+    setPreviewUrl(blobUrl);
 
     try {
       const formData = new FormData();
@@ -65,30 +78,39 @@ export default function ImageUpload({
 
       // Use public endpoint for registration (when not authenticated)
       const isAuthenticated = authService.isAuthenticated();
-      const endpoint = isAuthenticated 
-        ? `/uploads/${type}` 
-        : `/uploads/${type}/public`;
+      const endpoint = isAuthenticated
+        ? `/uploads/${type}`
+        : type === 'avatar'
+          ? `/uploads/avatar/public`
+          : (() => {
+              throw new Error('You must be logged in to upload recipe images');
+            })();
 
-      const response = await httpService.post<UploadResponse>(
-        endpoint,
-        formData
-        // Don't set Content-Type manually - let browser set it with boundary
-      );
+      const response = await httpService.post<UploadResponse>(endpoint, formData);
 
       if (response.success && response.data) {
         onImageChange(response.data.url);
-        setPreviewUrl(null); // Clear preview since we have the real URL
+        // Clear preview and cleanup blob URL
+        setPreviewUrl(null);
+        if (currentBlobUrlRef.current) {
+          URL.revokeObjectURL(currentBlobUrlRef.current);
+          currentBlobUrlRef.current = null;
+        }
       } else {
         throw new Error(response.message || 'Upload failed');
       }
     } catch (error) {
       console.error('Upload error:', error);
       setPreviewUrl(null);
+      if (currentBlobUrlRef.current) {
+        URL.revokeObjectURL(currentBlobUrlRef.current);
+        currentBlobUrlRef.current = null;
+      }
       onError?.(error instanceof Error ? error.message : 'Upload failed');
     } finally {
       setIsUploading(false);
     }
-  };
+  }, [onError, onImageChange, type]);
 
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -97,9 +119,9 @@ export default function ImageUpload({
 
     const files = e.dataTransfer.files;
     if (files && files[0]) {
-      uploadFile(files[0]);
+      void uploadFile(files[0]);
     }
-  }, []);
+  }, [uploadFile]);
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -116,7 +138,7 @@ export default function ImageUpload({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) {
-      uploadFile(files[0]);
+      void uploadFile(files[0]);
     }
   };
 
@@ -125,6 +147,21 @@ export default function ImageUpload({
   };
 
   const displayImageUrl = previewUrl || currentImageUrl;
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      if (currentBlobUrlRef.current) {
+        URL.revokeObjectURL(currentBlobUrlRef.current);
+      }
+    };
+  }, []);
+
+  // Reset error state when image URL changes
+  useEffect(() => {
+    setImageLoadError(false);
+    setIsImageLoading(false);
+  }, [displayImageUrl]);
 
   return (
     <div className={`relative ${className}`}>
@@ -141,66 +178,72 @@ export default function ImageUpload({
           transition-colors duration-200 flex items-center justify-center overflow-hidden
         `}
       >
-        {displayImageUrl ? (
+        {displayImageUrl && !imageLoadError ? (
           <>
-            {/* Use Next.js Image for all images now that CORS is fixed */}
             <Image
               src={displayImageUrl}
               alt="Upload preview"
               fill
               className="object-cover rounded-full"
-              onError={(e) => {
+              onLoad={() => setIsImageLoading(false)}
+              onLoadStart={() => setIsImageLoading(true)}
+              onError={() => {
                 console.error('Image failed to load:', displayImageUrl);
+                setImageLoadError(true);
+                setIsImageLoading(false);
                 onError?.(`Failed to load image: ${displayImageUrl}`);
-              }}
-              onLoad={() => {
-                console.log('Image loaded successfully:', displayImageUrl);
               }}
               unoptimized={displayImageUrl.startsWith('blob:')} // Don't optimize blob URLs (preview)
             />
-            {/* Temporarily remove hover overlay - it's covering the image */}
-            {/* {!isUploading && (
-              <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center rounded-full">
-                <svg 
-                  className="w-6 h-6 text-white opacity-0 hover:opacity-100 transition-opacity duration-200" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" 
-                  />
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" 
-                  />
-                </svg>
+            
+            {/* Loading overlay */}
+            {isImageLoading && (
+              <div className="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center rounded-full">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
               </div>
-            )} */}
+            )}
           </>
         ) : (
           <div className="text-center">
-            <svg
-              className="mx-auto h-8 w-8 text-gray-400"
-              stroke="currentColor"
-              fill="none"
-              viewBox="0 0 48 48"
-            >
-              <path
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <p className="mt-1 text-xs text-gray-500">
-              {size === 'lg' ? 'Click or drag to upload' : 'Upload'}
-            </p>
+            {imageLoadError ? (
+              <>
+                <svg
+                  className="mx-auto h-8 w-8 text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
+                </svg>
+                <p className="mt-1 text-xs text-red-500">
+                  {size === 'lg' ? 'Failed to load. Click to retry' : 'Error'}
+                </p>
+              </>
+            ) : (
+              <>
+                <svg
+                  className="mx-auto h-8 w-8 text-gray-400"
+                  stroke="currentColor"
+                  fill="none"
+                  viewBox="0 0 48 48"
+                >
+                  <path
+                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                    strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <p className="mt-1 text-xs text-gray-500">
+                  {size === 'lg' ? 'Click or drag to upload' : 'Upload'}
+                </p>
+              </>
+            )}
           </div>
         )}
 
@@ -235,9 +278,7 @@ export default function ImageUpload({
 
       {size === 'lg' && (
         <div className="mt-2 text-center">
-          <p className="text-xs text-gray-500">
-            Supports JPG, PNG, GIF, WebP up to 5MB
-          </p>
+          <p className="text-xs text-gray-500">Supports JPG, PNG, GIF, WebP up to 5MB</p>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ApiResponseDto<T = any> {
+export class ApiResponseDto<T = unknown> {
   @ApiProperty({ description: 'Success status' })
   success: boolean;
 
@@ -11,9 +11,14 @@ export class ApiResponseDto<T = any> {
   data?: T;
 
   @ApiProperty({ description: 'Error details', required: false })
-  error?: any;
+  error?: string | Record<string, unknown>;
 
-  constructor(success: boolean, message: string, data?: T, error?: any) {
+  constructor(
+    success: boolean,
+    message: string,
+    data?: T,
+    error?: string | Record<string, unknown>,
+  ) {
     this.success = success;
     this.message = message;
     this.data = data;
@@ -24,7 +29,10 @@ export class ApiResponseDto<T = any> {
     return new ApiResponseDto(true, message, data);
   }
 
-  static error(message: string, error?: any): ApiResponseDto {
+  static error(
+    message: string,
+    error?: string | Record<string, unknown>,
+  ): ApiResponseDto {
     return new ApiResponseDto(false, message, undefined, error);
   }
-} 
+}

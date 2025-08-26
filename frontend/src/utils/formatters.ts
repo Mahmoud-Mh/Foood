@@ -37,7 +37,8 @@ export class FormatUtils {
     const difficultyMap: Record<DifficultyLevel, string> = {
       [DifficultyLevel.EASY]: 'Easy',
       [DifficultyLevel.MEDIUM]: 'Medium',
-      [DifficultyLevel.HARD]: 'Hard'
+      [DifficultyLevel.HARD]: 'Hard',
+      [DifficultyLevel.EXPERT]: 'Expert'
     };
     
     return difficultyMap[difficulty] || difficulty;
@@ -47,7 +48,8 @@ export class FormatUtils {
     const colorMap: Record<DifficultyLevel, string> = {
       [DifficultyLevel.EASY]: 'text-green-600 bg-green-50',
       [DifficultyLevel.MEDIUM]: 'text-yellow-600 bg-yellow-50',
-      [DifficultyLevel.HARD]: 'text-red-600 bg-red-50'
+      [DifficultyLevel.HARD]: 'text-red-600 bg-red-50',
+      [DifficultyLevel.EXPERT]: 'text-purple-600 bg-purple-50'
     };
     
     return colorMap[difficulty] || 'text-gray-600 bg-gray-50';

@@ -1,23 +1,23 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { 
-  IsString, 
-  IsNotEmpty, 
-  IsOptional, 
-  MaxLength, 
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
   MinLength,
   IsEnum,
   IsNumber,
   Min,
-  IsUrl
+  IsUrl,
 } from 'class-validator';
 import { IngredientCategory } from '../entities/ingredient.entity';
 
 export class CreateIngredientDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Ingredient name',
     example: 'Fresh Tomato',
     minLength: 2,
-    maxLength: 100
+    maxLength: 100,
   })
   @IsString()
   @IsNotEmpty()
@@ -25,61 +25,61 @@ export class CreateIngredientDto {
   @MaxLength(100)
   name: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Ingredient description',
     example: 'Fresh red tomato, perfect for salads and cooking',
-    maxLength: 500
+    maxLength: 500,
   })
   @IsString()
   @IsNotEmpty()
   @MaxLength(500)
   description: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Ingredient category',
     enum: IngredientCategory,
-    example: IngredientCategory.VEGETABLE
+    example: IngredientCategory.VEGETABLE,
   })
   @IsOptional()
   @IsEnum(IngredientCategory)
   category?: IngredientCategory;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Ingredient image URL',
-    example: 'https://example.com/tomato.jpg'
+    example: 'https://example.com/tomato.jpg',
   })
   @IsOptional()
   @IsUrl()
   @MaxLength(255)
   imageUrl?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Nutritional info (calories per 100g)',
     example: 18,
-    minimum: 0
+    minimum: 0,
   })
   @IsOptional()
   @IsNumber()
   @Min(0)
   caloriesPerUnit?: number;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Default unit of measurement',
     example: 'grams',
-    maxLength: 20
+    maxLength: 20,
   })
   @IsOptional()
   @IsString()
   @MaxLength(20)
   defaultUnit?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Allergen information',
     example: 'May contain traces of nuts',
-    maxLength: 255
+    maxLength: 255,
   })
   @IsOptional()
   @IsString()
   @MaxLength(255)
   allergenInfo?: string;
-} 
+}

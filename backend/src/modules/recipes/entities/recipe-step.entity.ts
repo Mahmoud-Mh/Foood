@@ -1,11 +1,11 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Recipe } from './recipe.entity';
@@ -24,14 +24,18 @@ export class RecipeStep {
   @Column()
   title: string;
 
-  @ApiProperty({ 
-    description: 'Step detailed instructions', 
-    example: 'Bring a large pot of salted water to boil and cook pasta according to package directions' 
+  @ApiProperty({
+    description: 'Step detailed instructions',
+    example:
+      'Bring a large pot of salted water to boil and cook pasta according to package directions',
   })
   @Column('text')
   instructions: string;
 
-  @ApiPropertyOptional({ description: 'Time required for this step in minutes', example: 10 })
+  @ApiPropertyOptional({
+    description: 'Time required for this step in minutes',
+    example: 10,
+  })
   @Column({ nullable: true })
   timeMinutes?: number;
 
@@ -39,29 +43,32 @@ export class RecipeStep {
   @Column({ nullable: true })
   imageUrl?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Important tips or notes for this step',
-    example: 'Make sure water is boiling vigorously before adding pasta'
+    example: 'Make sure water is boiling vigorously before adding pasta',
   })
   @Column('text', { nullable: true })
   tips?: string;
 
-  @ApiPropertyOptional({ description: 'Temperature if applicable', example: '180°C' })
+  @ApiPropertyOptional({
+    description: 'Temperature if applicable',
+    example: '180°C',
+  })
   @Column({ nullable: true })
   temperature?: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Equipment needed for this step',
     type: [String],
-    example: ['Large pot', 'Colander']
+    example: ['Large pot', 'Colander'],
   })
-  @Column('text', { 
-    array: true, 
+  @Column('text', {
+    array: true,
     nullable: true,
     transformer: {
       to: (value: string[]) => value,
       from: (value: string[]) => value || [],
-    }
+    },
   })
   equipment?: string[];
 
@@ -100,4 +107,4 @@ export class RecipeStep {
     const minutes = this.timeMinutes % 60;
     return minutes > 0 ? `${hours}h ${minutes}min` : `${hours}h`;
   }
-} 
+}

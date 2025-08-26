@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -8,8 +9,21 @@ import { recipeService, categoryService } from '@/services';
 import { Recipe, Category } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
 import Navbar from '@/components/Navbar';
+import { ApiErrorBoundary } from '@/components/ApiErrorBoundary';
 
 export default function BrowseRecipesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    }>
+      <BrowseRecipesContent />
+    </Suspense>
+  );
+}
+
+function BrowseRecipesContent() {
   const searchParams = useSearchParams();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);

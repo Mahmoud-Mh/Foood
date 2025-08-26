@@ -28,17 +28,17 @@ import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateProfileDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
-import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
+import { PaginatedResultDto } from '../../common/dto/pagination.dto';
 import { ApiResponseDto } from '../../common/dto/response.dto';
 import { UserRole } from './entities/user.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { 
-  Public, 
-  AdminOnly, 
-  CurrentUser, 
+import {
+  Public,
+  AdminOnly,
+  CurrentUser,
   CurrentUserId,
-  Roles 
+  Roles,
 } from '../../common/decorators/auth.decorators';
 import { GetUsersDto } from './dto/get-users.dto';
 
@@ -50,7 +50,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     @Inject(forwardRef(() => AuthService))
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   @Post()
@@ -69,7 +69,9 @@ export class UsersController {
     status: HttpStatus.FORBIDDEN,
     description: 'Admin access required',
   })
-  async create(@Body() createUserDto: CreateUserDto): Promise<ApiResponseDto<UserResponseDto>> {
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<ApiResponseDto<UserResponseDto>> {
     const user = await this.usersService.create(createUserDto);
     return ApiResponseDto.success('User created successfully', user);
   }
@@ -77,10 +79,30 @@ export class UsersController {
   @Get()
   @AdminOnly()
   @ApiOperation({ summary: 'Get all users with pagination (Admin only)' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
-  @ApiQuery({ name: 'search', required: false, type: String, description: 'Search term for name or email' })
-  @ApiQuery({ name: 'role', required: false, enum: UserRole, description: 'Filter by user role' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page',
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    type: String,
+    description: 'Search term for name or email',
+  })
+  @ApiQuery({
+    name: 'role',
+    required: false,
+    enum: UserRole,
+    description: 'Filter by user role',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Users retrieved successfully',
@@ -89,7 +111,11 @@ export class UsersController {
   async findAll(
     @Query() getUsersDto: GetUsersDto,
   ): Promise<ApiResponseDto<PaginatedResultDto<UserResponseDto>>> {
-    const users = await this.usersService.findAll(getUsersDto, getUsersDto.search, getUsersDto.role);
+    const users = await this.usersService.findAll(
+      getUsersDto,
+      getUsersDto.search,
+      getUsersDto.role,
+    );
     return ApiResponseDto.success('Users retrieved successfully', users);
   }
 
@@ -100,9 +126,21 @@ export class UsersController {
     status: HttpStatus.OK,
     description: 'User statistics retrieved successfully',
   })
-  async getUserStats(): Promise<ApiResponseDto<any>> {
+  async getUserStats(): Promise<
+    ApiResponseDto<{
+      totalUsers: number;
+      activeUsers: number;
+      inactiveUsers: number;
+      adminUsers: number;
+      regularUsers: number;
+      recentUsers: number;
+    }>
+  > {
     const stats = await this.usersService.getUserStats();
-    return ApiResponseDto.success('User statistics retrieved successfully', stats);
+    return ApiResponseDto.success(
+      'User statistics retrieved successfully',
+      stats,
+    );
   }
 
   @Get('active')
@@ -121,15 +159,24 @@ export class UsersController {
   @Get('role/:role')
   @AdminOnly()
   @ApiOperation({ summary: 'Get users by role (Admin only)' })
-  @ApiParam({ name: 'role', enum: UserRole, description: 'User role to filter by' })
+  @ApiParam({
+    name: 'role',
+    enum: UserRole,
+    description: 'User role to filter by',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Users by role retrieved successfully',
     type: [UserResponseDto],
   })
-  async getUsersByRole(@Param('role') role: UserRole): Promise<ApiResponseDto<UserResponseDto[]>> {
+  async getUsersByRole(
+    @Param('role') role: UserRole,
+  ): Promise<ApiResponseDto<UserResponseDto[]>> {
     const users = await this.usersService.getUsersByRole(role);
-    return ApiResponseDto.success(`Users with role ${role} retrieved successfully`, users);
+    return ApiResponseDto.success(
+      `Users with role ${role} retrieved successfully`,
+      users,
+    );
   }
 
   @Get('profile')
@@ -139,7 +186,9 @@ export class UsersController {
     description: 'User profile retrieved successfully',
     type: UserResponseDto,
   })
-  async getMyProfile(@CurrentUser() user: UserResponseDto): Promise<ApiResponseDto<UserResponseDto>> {
+  getMyProfile(
+    @CurrentUser() user: UserResponseDto,
+  ): ApiResponseDto<UserResponseDto> {
     return ApiResponseDto.success('User profile retrieved successfully', user);
   }
 
@@ -165,7 +214,7 @@ export class UsersController {
       const user = await this.usersService.findOne(currentUser.id);
       return ApiResponseDto.success('User retrieved successfully', user);
     }
-    
+
     const user = await this.usersService.findOne(id);
     return ApiResponseDto.success('User retrieved successfully', user);
   }
@@ -241,7 +290,9 @@ export class UsersController {
     status: HttpStatus.NOT_FOUND,
     description: 'User not found',
   })
-  async deleteMyAccount(@CurrentUserId() userId: string): Promise<ApiResponseDto<null>> {
+  async deleteMyAccount(
+    @CurrentUserId() userId: string,
+  ): Promise<ApiResponseDto<null>> {
     await this.usersService.deleteUserAccount(userId);
     return ApiResponseDto.success('Account deleted successfully');
   }
@@ -255,7 +306,9 @@ export class UsersController {
     description: 'User deactivated successfully',
     type: UserResponseDto,
   })
-  async deactivateUser(@Param('id', ParseUUIDPipe) id: string): Promise<ApiResponseDto<UserResponseDto>> {
+  async deactivateUser(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ApiResponseDto<UserResponseDto>> {
     const user = await this.usersService.deactivateUser(id);
     return ApiResponseDto.success('User deactivated successfully', user);
   }
@@ -269,7 +322,9 @@ export class UsersController {
     description: 'User activated successfully',
     type: UserResponseDto,
   })
-  async activateUser(@Param('id', ParseUUIDPipe) id: string): Promise<ApiResponseDto<UserResponseDto>> {
+  async activateUser(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ApiResponseDto<UserResponseDto>> {
     const user = await this.usersService.activateUser(id);
     return ApiResponseDto.success('User activated successfully', user);
   }
@@ -283,7 +338,9 @@ export class UsersController {
     description: 'Email verified successfully',
     type: UserResponseDto,
   })
-  async verifyEmail(@Param('id', ParseUUIDPipe) id: string): Promise<ApiResponseDto<UserResponseDto>> {
+  async verifyEmail(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<ApiResponseDto<UserResponseDto>> {
     const user = await this.usersService.verifyEmail(id);
     return ApiResponseDto.success('Email verified successfully', user);
   }
@@ -315,7 +372,11 @@ export class UsersController {
   @AdminOnly()
   @ApiOperation({ summary: 'Change user role (Admin only)' })
   @ApiParam({ name: 'id', description: 'User unique identifier' })
-  @ApiQuery({ name: 'role', enum: UserRole, description: 'New role for the user' })
+  @ApiQuery({
+    name: 'role',
+    enum: UserRole,
+    description: 'New role for the user',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'User role changed successfully',
@@ -331,9 +392,9 @@ export class UsersController {
 
   @Patch('promote-to-admin/:email')
   @AdminOnly()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Promote user to admin by email (Admin only)',
-    description: 'Promote any user to admin role. Requires admin privileges.'
+    description: 'Promote any user to admin role. Requires admin privileges.',
   })
   @ApiParam({ name: 'email', description: 'User email to promote' })
   @ApiResponse({
@@ -341,45 +402,57 @@ export class UsersController {
     description: 'User promoted to admin successfully',
     type: UserResponseDto,
   })
-  async promoteToAdmin(@Param('email') email: string): Promise<ApiResponseDto<UserResponseDto>> {
+  async promoteToAdmin(
+    @Param('email') email: string,
+  ): Promise<ApiResponseDto<UserResponseDto>> {
     const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
+
     // ONLY change role, keep password unchanged
     const promotedUser = await this.usersService.promoteToAdmin(user.id);
-    return ApiResponseDto.success('User promoted to admin successfully', promotedUser);
+    return ApiResponseDto.success(
+      'User promoted to admin successfully',
+      promotedUser,
+    );
   }
 
   @Patch('bootstrap-admin/:email')
   @Public()
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Bootstrap first admin for testing (DEVELOPMENT ONLY)',
-    description: 'Create the first admin user for automated testing. Should be removed in production.'
+    description:
+      'Create the first admin user for automated testing. Should be removed in production.',
   })
   @ApiParam({ name: 'email', description: 'User email to promote to admin' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'First admin user created successfully with new admin tokens',
   })
-  async bootstrapAdmin(@Param('email') email: string): Promise<ApiResponseDto<any>> {
+  async bootstrapAdmin(@Param('email') email: string): Promise<
+    ApiResponseDto<{
+      user: UserResponseDto;
+      tokens: { accessToken: string; refreshToken: string };
+      message: string;
+    }>
+  > {
     const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
+
     // 1. Promote user to admin in database
     const promotedUser = await this.usersService.promoteToAdmin(user.id);
-    
+
     // 2. Generate new JWT tokens with admin role using the same approach as login
-    const tokens = await this.authService.generateTokensForUser(promotedUser);
-    
+    const tokens = this.authService.generateTokensForUser(promotedUser);
+
     // 3. Return promoted user with new admin tokens
     return ApiResponseDto.success('First admin user created successfully', {
       user: promotedUser,
       tokens: tokens,
-      message: 'Admin privileges granted with new tokens'
+      message: 'Admin privileges granted with new tokens',
     });
   }
-} 
+}

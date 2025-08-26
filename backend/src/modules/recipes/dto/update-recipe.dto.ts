@@ -4,21 +4,21 @@ import { IsOptional, IsBoolean } from 'class-validator';
 
 // Exclude categoryId from updates (should be changed via dedicated endpoint)
 export class UpdateRecipeDto extends PartialType(
-  OmitType(CreateRecipeDto, ['categoryId'] as const)
+  OmitType(CreateRecipeDto, ['categoryId'] as const),
 ) {
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Is recipe active/visible',
-    example: true
+    example: true,
   })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Is recipe featured',
-    example: false
+    example: false,
   })
   @IsOptional()
   @IsBoolean()
   isFeatured?: boolean;
-} 
+}

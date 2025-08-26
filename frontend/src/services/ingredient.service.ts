@@ -1,5 +1,5 @@
 import { HttpService } from './base/http.service';
-import { Ingredient, PaginatedResult, NutritionalInfo, ApiResponse } from '@/types/api.types';
+import { Ingredient, PaginatedResult, NutritionalInfo } from '@/types/api.types';
 
 export interface CreateIngredientForm {
   name: string;
@@ -26,11 +26,11 @@ export class IngredientService {
       { params: { page, limit } }
     );
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch ingredients');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch ingredients');
   }
 
   public async getPublicIngredients(
@@ -42,71 +42,71 @@ export class IngredientService {
       { params: { page, limit } }
     );
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch public ingredients');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch public ingredients');
   }
 
   public async getAllIngredients(): Promise<Ingredient[]> {
     const response = await this.httpService.get<Ingredient[]>('/ingredients/all');
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch all ingredients');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch all ingredients');
   }
 
   public async getAllPublicIngredients(): Promise<Ingredient[]> {
     const response = await this.httpService.get<Ingredient[]>('/ingredients/active');
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch all public ingredients');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch all public ingredients');
   }
 
   public async getIngredientById(id: string): Promise<Ingredient> {
     const response = await this.httpService.get<Ingredient>(`/ingredients/${id}`);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch ingredient');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch ingredient');
   }
 
   public async getPublicIngredientById(id: string): Promise<Ingredient> {
     const response = await this.httpService.get<Ingredient>(`/ingredients/public/${id}`);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch ingredient');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch ingredient');
   }
 
   public async createIngredient(ingredientData: CreateIngredientForm): Promise<Ingredient> {
     const response = await this.httpService.post<Ingredient>('/ingredients', ingredientData);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to create ingredient');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to create ingredient');
   }
 
   public async updateIngredient(id: string, ingredientData: Partial<CreateIngredientForm>): Promise<Ingredient> {
     const response = await this.httpService.patch<Ingredient>(`/ingredients/${id}`, ingredientData);
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to update ingredient');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to update ingredient');
   }
 
   public async deleteIngredient(id: string): Promise<void> {
@@ -123,11 +123,11 @@ export class IngredientService {
       { params: { query } }
     );
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to search ingredients');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to search ingredients');
   }
 
   public async searchPublicIngredients(query: string): Promise<Ingredient[]> {
@@ -136,11 +136,11 @@ export class IngredientService {
       { params: { query } }
     );
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to search public ingredients');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to search public ingredients');
   }
 
   public async getIngredientsByCategory(category: string): Promise<Ingredient[]> {
@@ -148,11 +148,11 @@ export class IngredientService {
       `/ingredients/category/${category}`
     );
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch ingredients by category');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch ingredients by category');
   }
 
   public async getPublicIngredientsByCategory(category: string): Promise<Ingredient[]> {
@@ -160,11 +160,11 @@ export class IngredientService {
       `/ingredients/category/${category}`
     );
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch public ingredients by category');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch public ingredients by category');
   }
 
   public async getPopularIngredients(limit: number = 20): Promise<Ingredient[]> {
@@ -173,10 +173,10 @@ export class IngredientService {
       { params: { limit } }
     );
     
-    if (!response.success) {
-      throw new Error(response.message || 'Failed to fetch popular ingredients');
+    if (response.success && response.data) {
+      return response.data;
     }
     
-    return response.data;
+    throw new Error(response.message || 'Failed to fetch popular ingredients');
   }
 } 

@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { 
-  IsString, 
-  IsNotEmpty, 
-  IsOptional, 
-  MaxLength, 
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
   MinLength,
   IsNumber,
   Min,
@@ -13,20 +13,82 @@ import {
   IsArray,
   ValidateNested,
   IsUUID,
-  IsUrl,
-  IsBoolean
+  IsBoolean,
+  IsPositive,
+  ArrayMinSize,
+  ArrayMaxSize,
 } from 'class-validator';
 import { DifficultyLevel, RecipeStatus } from '../entities/recipe.entity';
 
+export class NutritionalInfoDto {
+  @ApiPropertyOptional({
+    description: 'Calories per serving',
+    minimum: 0,
+    maximum: 5000,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(5000)
+  calories?: number;
+
+  @ApiPropertyOptional({
+    description: 'Protein in grams',
+    minimum: 0,
+    maximum: 500,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(500)
+  protein?: number;
+
+  @ApiPropertyOptional({
+    description: 'Carbs in grams',
+    minimum: 0,
+    maximum: 1000,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(1000)
+  carbs?: number;
+
+  @ApiPropertyOptional({
+    description: 'Fat in grams',
+    minimum: 0,
+    maximum: 500,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(500)
+  fat?: number;
+
+  @ApiPropertyOptional({
+    description: 'Fiber in grams',
+    minimum: 0,
+    maximum: 100,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  fiber?: number;
+}
+
 export class CreateRecipeIngredientDto {
-  @ApiProperty({ description: 'Ingredient ID (UUID) or ingredient name (string)' })
+  @ApiProperty({
+    description: 'Ingredient ID (UUID) or ingredient name (string)',
+  })
   @IsNotEmpty()
   @IsString()
   ingredientId: string;
 
   @ApiProperty({ description: 'Quantity needed', example: 250 })
   @IsNumber()
-  @Min(0)
+  @IsPositive()
+  @Max(10000) // Max 10kg per ingredient
   quantity: number;
 
   @ApiProperty({ description: 'Unit of measurement', example: 'grams' })
@@ -35,13 +97,19 @@ export class CreateRecipeIngredientDto {
   @MaxLength(50)
   unit: string;
 
-  @ApiPropertyOptional({ description: 'Preparation notes', example: 'finely chopped' })
+  @ApiPropertyOptional({
+    description: 'Preparation notes',
+    example: 'finely chopped',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(200)
   preparation?: string;
 
-  @ApiPropertyOptional({ description: 'Is optional ingredient', default: false })
+  @ApiPropertyOptional({
+    description: 'Is optional ingredient',
+    default: false,
+  })
   @IsOptional()
   @IsBoolean()
   isOptional?: boolean;
@@ -71,7 +139,10 @@ export class CreateRecipeStepDto {
   @MaxLength(1000)
   instructions: string;
 
-  @ApiPropertyOptional({ description: 'Time for this step (minutes)', example: 10 })
+  @ApiPropertyOptional({
+    description: 'Time for this step (minutes)',
+    example: 10,
+  })
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -89,7 +160,10 @@ export class CreateRecipeStepDto {
   @MaxLength(500)
   tips?: string;
 
-  @ApiPropertyOptional({ description: 'Temperature if applicable', example: '180°C' })
+  @ApiPropertyOptional({
+    description: 'Temperature if applicable',
+    example: '180°C',
+  })
   @IsOptional()
   @IsString()
   @MaxLength(20)
@@ -104,11 +178,11 @@ export class CreateRecipeStepDto {
 }
 
 export class CreateRecipeDto {
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe title',
     example: 'Spaghetti Carbonara',
     minLength: 3,
-    maxLength: 200
+    maxLength: 200,
   })
   @IsString()
   @IsNotEmpty()
@@ -116,53 +190,53 @@ export class CreateRecipeDto {
   @MaxLength(200)
   title: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe description',
     example: 'A classic Italian pasta dish with eggs, cheese, and pancetta',
-    maxLength: 1000
+    maxLength: 1000,
   })
   @IsString()
   @IsNotEmpty()
   @MaxLength(1000)
   description: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe instructions',
     example: 'Follow the steps below to prepare this delicious dish',
-    maxLength: 5000
+    maxLength: 5000,
   })
   @IsString()
   @IsNotEmpty()
   @MaxLength(5000)
   instructions: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Preparation time in minutes',
     example: 15,
     minimum: 1,
-    maximum: 480
+    maximum: 480,
   })
   @IsNumber()
   @Min(1)
   @Max(480) // Max 8 hours
   prepTimeMinutes: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Cooking time in minutes',
     example: 20,
     minimum: 1,
-    maximum: 960
+    maximum: 960,
   })
   @IsNumber()
   @Min(1)
   @Max(960) // Max 16 hours
   cookTimeMinutes: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Number of servings',
     example: 4,
     minimum: 1,
-    maximum: 50
+    maximum: 50,
   })
   @IsNumber()
   @Min(1)
@@ -174,19 +248,19 @@ export class CreateRecipeDto {
   @IsUUID()
   categoryId: string;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Recipe difficulty level',
     enum: DifficultyLevel,
-    example: DifficultyLevel.MEDIUM
+    example: DifficultyLevel.MEDIUM,
   })
   @IsOptional()
   @IsEnum(DifficultyLevel)
   difficulty?: DifficultyLevel;
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Recipe status',
     enum: RecipeStatus,
-    example: RecipeStatus.DRAFT
+    example: RecipeStatus.DRAFT,
   })
   @IsOptional()
   @IsEnum(RecipeStatus)
@@ -197,31 +271,35 @@ export class CreateRecipeDto {
   @IsString()
   imageUrl?: string;
 
-  @ApiPropertyOptional({ description: 'Additional recipe images', type: [String] })
+  @ApiPropertyOptional({
+    description: 'Additional recipe images',
+    type: [String],
+  })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(10) // Max 10 additional images
   @IsString({ each: true })
   additionalImages?: string[];
 
-  @ApiPropertyOptional({ description: 'Recipe tags for search', type: [String] })
+  @ApiPropertyOptional({
+    description: 'Recipe tags for search',
+    type: [String],
+  })
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(20) // Max 20 tags
   @IsString({ each: true })
   @MaxLength(50, { each: true })
   tags?: string[];
 
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     description: 'Nutritional information per serving',
-    example: { calories: 450, protein: 20, carbs: 60, fat: 15, fiber: 3 }
+    type: NutritionalInfoDto,
   })
   @IsOptional()
-  nutritionalInfo?: {
-    calories?: number;
-    protein?: number;
-    carbs?: number;
-    fat?: number;
-    fiber?: number;
-  };
+  @ValidateNested()
+  @Type(() => NutritionalInfoDto)
+  nutritionalInfo?: NutritionalInfoDto;
 
   @ApiPropertyOptional({ description: 'Recipe notes or tips' })
   @IsOptional()
@@ -229,15 +307,22 @@ export class CreateRecipeDto {
   @MaxLength(1000)
   notes?: string;
 
-  @ApiProperty({ description: 'Recipe ingredients', type: [CreateRecipeIngredientDto] })
+  @ApiProperty({
+    description: 'Recipe ingredients',
+    type: [CreateRecipeIngredientDto],
+  })
   @IsArray()
+  @ArrayMinSize(1) // At least one ingredient required
+  @ArrayMaxSize(50) // Max 50 ingredients
   @ValidateNested({ each: true })
   @Type(() => CreateRecipeIngredientDto)
   ingredients: CreateRecipeIngredientDto[];
 
   @ApiProperty({ description: 'Recipe steps', type: [CreateRecipeStepDto] })
   @IsArray()
+  @ArrayMinSize(1) // At least one step required
+  @ArrayMaxSize(30) // Max 30 steps
   @ValidateNested({ each: true })
   @Type(() => CreateRecipeStepDto)
   steps: CreateRecipeStepDto[];
-} 
+}

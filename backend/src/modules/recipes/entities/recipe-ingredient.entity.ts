@@ -1,10 +1,10 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
   ManyToOne,
   JoinColumn,
-  CreateDateColumn
+  CreateDateColumn,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Recipe } from './recipe.entity';
@@ -16,24 +16,24 @@ export class RecipeIngredient {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ description: 'Quantity of ingredient needed', example: 250 })
-  @Column('decimal', { precision: 10, scale: 2 })
+  @ApiProperty({ description: 'Quantity of ingredient needed', example: 250.5 })
+  @Column('decimal', { precision: 12, scale: 4 })
   quantity: number;
 
   @ApiProperty({ description: 'Unit of measurement', example: 'grams' })
   @Column()
   unit: string;
 
-  @ApiPropertyOptional({ 
-    description: 'Ingredient preparation notes', 
-    example: 'finely chopped' 
+  @ApiPropertyOptional({
+    description: 'Ingredient preparation notes',
+    example: 'finely chopped',
   })
   @Column('text', { nullable: true })
   preparation?: string;
 
-  @ApiPropertyOptional({ 
-    description: 'Is this ingredient optional', 
-    default: false 
+  @ApiPropertyOptional({
+    description: 'Is this ingredient optional',
+    default: false,
   })
   @Column({ default: false })
   isOptional: boolean;
@@ -70,4 +70,4 @@ export class RecipeIngredient {
     const prepText = this.preparation ? `, ${this.preparation}` : '';
     return `${this.quantity} ${this.unit} ${this.ingredient?.name || 'Unknown'}${prepText}${optionalText}`;
   }
-} 
+}

@@ -1,17 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { recipeService, authService } from '@/services';
-import { Recipe, RecipeStatus } from '@/types/api.types';
+import { Recipe, RecipeStatus, RecipeIngredient } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
 import Navbar from '@/components/Navbar';
 
 export default function RecipeDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -245,7 +244,7 @@ export default function RecipeDetailPage() {
             <div className="bg-white rounded-xl shadow-sm p-6 sticky top-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">🥕 Ingredients</h2>
               <div className="space-y-4">
-                {recipe.ingredients?.map((ingredient: any, index: number) => (
+                {recipe.ingredients?.map((ingredient: RecipeIngredient, index: number) => (
                   <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
                     <div className="flex-1">
                       <div className="font-semibold text-gray-900">

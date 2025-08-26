@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { recipeService, categoryService, ingredientService, authService } from '@/services';
-import { Recipe, RecipeStatus, DifficultyLevel, IngredientCategory } from '@/types/api.types';
-import { FormatUtils } from '@/utils/formatters';
+import { Recipe, RecipeStatus, DifficultyLevel, Category, Ingredient, RecipeIngredient, RecipeStep } from '@/types/api.types';
 import Navbar from '@/components/Navbar';
 
 interface CreateRecipeIngredientForm {
@@ -46,9 +45,8 @@ export default function EditRecipePage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [ingredients, setIngredients] = useState<any[]>([]);
-  const [isOwner, setIsOwner] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
   // Form state
   const [recipeData, setRecipeData] = useState({
@@ -80,7 +78,7 @@ export default function EditRecipePage() {
         if (authService.isAuthenticated()) {
           const currentUser = await authService.getCurrentUser();
           if (currentUser && recipeData.authorId === currentUser.id) {
-            setIsOwner(true);
+            // User is the owner, continue
           } else {
             setError('You do not have permission to edit this recipe.');
             return;
@@ -109,14 +107,14 @@ export default function EditRecipePage() {
           categoryId: recipeData.category?.id || '',
           difficulty: recipeData.difficulty,
           status: recipeData.status,
-          ingredients: recipeData.ingredients?.map((ing: any) => ({
+          ingredients: recipeData.ingredients?.map((ing: RecipeIngredient) => ({
             ingredientId: ing.ingredient?.id || '',
             quantity: ing.quantity,
             unit: ing.unit,
             preparation: ing.preparation,
             isOptional: ing.isOptional
           })) || [],
-          steps: recipeData.steps?.map((step: any, index: number) => ({
+          steps: recipeData.steps?.map((step: RecipeStep, index: number) => ({
             title: step.title,
             instructions: step.instructions,
             stepNumber: step.stepNumber || index + 1,
@@ -227,7 +225,7 @@ export default function EditRecipePage() {
     }));
   };
 
-  const updateIngredient = (index: number, field: keyof CreateRecipeIngredientForm, value: any) => {
+  const updateIngredient = (index: number, field: keyof CreateRecipeIngredientForm, value: string | number | boolean) => {
     setRecipeData(prev => ({
       ...prev,
       ingredients: prev.ingredients.map((ing, i) => 
@@ -257,7 +255,7 @@ export default function EditRecipePage() {
     }));
   };
 
-  const updateStep = (index: number, field: keyof CreateRecipeStepForm, value: any) => {
+  const updateStep = (index: number, field: keyof CreateRecipeStepForm, value: string | number) => {
     setRecipeData(prev => ({
       ...prev,
       steps: prev.steps.map((step, i) => 

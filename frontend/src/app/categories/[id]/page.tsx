@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { CategoryService } from '@/services/category.service';
 import { RecipeService } from '@/services/recipe.service';
 import { Category, Recipe } from '@/types/api.types';
@@ -151,10 +152,12 @@ export default function CategoryDetailPage() {
               >
                 {recipe.imageUrl && (
                   <div className="aspect-w-16 aspect-h-9">
-                    <img
+                    <Image
                       src={recipe.imageUrl}
                       alt={recipe.title}
                       className="w-full h-48 object-cover"
+                      width={400}
+                      height={192}
                     />
                   </div>
                 )}

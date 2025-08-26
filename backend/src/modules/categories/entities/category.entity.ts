@@ -1,12 +1,14 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
   UpdateDateColumn,
-  OneToMany
+  OneToMany,
+  Index,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Recipe } from '../../recipes/entities/recipe.entity';
 
 @Entity('categories')
 export class Category {
@@ -18,7 +20,10 @@ export class Category {
   @Column({ unique: true })
   name: string;
 
-  @ApiProperty({ description: 'Category description', example: 'Traditional Italian dishes and recipes' })
+  @ApiProperty({
+    description: 'Category description',
+    example: 'Traditional Italian dishes and recipes',
+  })
   @Column('text')
   description: string;
 
@@ -30,12 +35,17 @@ export class Category {
   @Column({ nullable: true })
   imageUrl?: string;
 
-  @ApiProperty({ description: 'Category slug for URLs', example: 'italian-cuisine' })
+  @ApiProperty({
+    description: 'Category slug for URLs',
+    example: 'italian-cuisine',
+  })
   @Column({ unique: true })
+  @Index('IDX_CATEGORY_SLUG')
   slug: string;
 
   @ApiProperty({ description: 'Is category active/visible', default: true })
   @Column({ default: true })
+  @Index('IDX_CATEGORY_ACTIVE')
   isActive: boolean;
 
   @ApiProperty({ description: 'Sort order for display' })
@@ -50,11 +60,11 @@ export class Category {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // TODO: Add OneToMany relation with Recipe entity
-  // @OneToMany(() => Recipe, recipe => recipe.category)
-  // recipes: Recipe[];
+  // Recipe relation - import Recipe at top if not already done
+  @OneToMany(() => Recipe, (recipe) => recipe.category, { cascade: false })
+  recipes: Recipe[];
 
   // Virtual field for recipe count (will be implemented later)
   @ApiProperty({ description: 'Number of recipes in this category' })
   recipeCount?: number;
-} 
+}

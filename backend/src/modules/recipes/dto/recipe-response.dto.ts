@@ -30,7 +30,10 @@ export class RecipeIngredientResponseDto {
   @Expose()
   order: number;
 
-  @ApiProperty({ description: 'Ingredient details', type: IngredientResponseDto })
+  @ApiProperty({
+    description: 'Ingredient details',
+    type: IngredientResponseDto,
+  })
   @Expose()
   @Type(() => IngredientResponseDto)
   ingredient: IngredientResponseDto;
@@ -61,7 +64,9 @@ export class RecipeStepResponseDto {
   @Expose()
   instructions: string;
 
-  @ApiPropertyOptional({ description: 'Time required for this step in minutes' })
+  @ApiPropertyOptional({
+    description: 'Time required for this step in minutes',
+  })
   @Expose()
   timeMinutes?: number;
 
@@ -77,7 +82,10 @@ export class RecipeStepResponseDto {
   @Expose()
   temperature?: string;
 
-  @ApiPropertyOptional({ description: 'Equipment needed for this step', type: [String] })
+  @ApiPropertyOptional({
+    description: 'Equipment needed for this step',
+    type: [String],
+  })
   @Expose()
   equipment?: string[];
 
@@ -135,16 +143,16 @@ export class RecipeResponseDto {
   @Expose()
   servings: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe difficulty level',
-    enum: DifficultyLevel
+    enum: DifficultyLevel,
   })
   @Expose()
   difficulty: DifficultyLevel;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe status',
-    enum: RecipeStatus
+    enum: RecipeStatus,
   })
   @Expose()
   status: RecipeStatus;
@@ -153,11 +161,17 @@ export class RecipeResponseDto {
   @Expose()
   imageUrl?: string;
 
-  @ApiPropertyOptional({ description: 'Additional recipe images', type: [String] })
+  @ApiPropertyOptional({
+    description: 'Additional recipe images',
+    type: [String],
+  })
   @Expose()
   additionalImages?: string[];
 
-  @ApiPropertyOptional({ description: 'Recipe tags for search', type: [String] })
+  @ApiPropertyOptional({
+    description: 'Recipe tags for search',
+    type: [String],
+  })
   @Expose()
   tags?: string[];
 
@@ -204,30 +218,33 @@ export class RecipeResponseDto {
   @Type(() => UserResponseDto)
   author?: UserResponseDto;
 
-  @ApiProperty({ description: 'Recipe category details', type: CategoryResponseDto })
+  @ApiProperty({
+    description: 'Recipe category details',
+    type: CategoryResponseDto,
+  })
   @Expose()
   @Type(() => CategoryResponseDto)
   category?: CategoryResponseDto;
 
-  @ApiProperty({ 
-    description: 'Recipe ingredients', 
-    type: [RecipeIngredientResponseDto] 
+  @ApiProperty({
+    description: 'Recipe ingredients',
+    type: [RecipeIngredientResponseDto],
   })
   @Expose()
   @Type(() => RecipeIngredientResponseDto)
   recipeIngredients?: RecipeIngredientResponseDto[];
 
-  @ApiProperty({ 
-    description: 'Recipe ingredients (alias)', 
-    type: [RecipeIngredientResponseDto] 
+  @ApiProperty({
+    description: 'Recipe ingredients (alias)',
+    type: [RecipeIngredientResponseDto],
   })
   @Expose()
   @Type(() => RecipeIngredientResponseDto)
   ingredients?: RecipeIngredientResponseDto[];
 
-  @ApiProperty({ 
-    description: 'Recipe steps', 
-    type: [RecipeStepResponseDto] 
+  @ApiProperty({
+    description: 'Recipe steps',
+    type: [RecipeStepResponseDto],
   })
   @Expose()
   @Type(() => RecipeStepResponseDto)
@@ -292,16 +309,16 @@ export class RecipeListResponseDto {
   @Expose()
   servings: number;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe difficulty level',
-    enum: DifficultyLevel
+    enum: DifficultyLevel,
   })
   @Expose()
   difficulty: DifficultyLevel;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Recipe status',
-    enum: RecipeStatus
+    enum: RecipeStatus,
   })
   @Expose()
   status: RecipeStatus;
@@ -327,7 +344,10 @@ export class RecipeListResponseDto {
   @Type(() => UserResponseDto)
   author?: UserResponseDto;
 
-  @ApiProperty({ description: 'Recipe category details', type: CategoryResponseDto })
+  @ApiProperty({
+    description: 'Recipe category details',
+    type: CategoryResponseDto,
+  })
   @Expose()
   @Type(() => CategoryResponseDto)
   category?: CategoryResponseDto;
@@ -351,4 +371,4 @@ export class RecipeListResponseDto {
   @ApiProperty({ description: 'Recipe creation date' })
   @Expose()
   createdAt: Date;
-} 
+}

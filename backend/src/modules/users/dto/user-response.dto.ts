@@ -17,7 +17,10 @@ export class UserResponseDto {
 
   @ApiProperty({ description: 'User full name' })
   @Expose()
-  @Transform(({ obj }) => `${obj.firstName} ${obj.lastName}`)
+  @Transform(
+    ({ obj }: { obj: { firstName: string; lastName: string } }) =>
+      `${obj.firstName} ${obj.lastName}`,
+  )
   fullName: string;
 
   @ApiProperty({ description: 'User email address' })
@@ -63,4 +66,4 @@ export class UserResponseDto {
   constructor(partial: Partial<UserResponseDto>) {
     Object.assign(this, partial);
   }
-} 
+}

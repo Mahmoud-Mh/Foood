@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { userService, authService } from '@/services';
 import { User, UserRole } from '@/types/api.types';
@@ -22,6 +22,29 @@ export default function AdminUsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const loadUsers = useCallback(async () => {
+    try {
+      const response = await userService.getAllUsers({
+        page: currentPage,
+        limit: 10,
+        search: searchTerm,
+        role: roleFilter === 'all' ? undefined : roleFilter,
+      });
+
+      const currentUser = await authService.getCurrentUser();
+      const usersWithActions = response.data.map((user: User) => ({
+        ...user,
+        isCurrentUser: user.id === currentUser?.id,
+      }));
+
+      setUsers(usersWithActions);
+      setTotalPages(response.totalPages);
+    } catch (err: unknown) {
+      console.error('Failed to load users:', err);
+      setError('Failed to load users. The backend endpoint might not be implemented yet.');
+    }
+  }, [currentPage, roleFilter, searchTerm]);
+
   useEffect(() => {
     const checkAdminAccess = async () => {
       try {
@@ -38,52 +61,27 @@ export default function AdminUsersPage() {
 
         setIsAdmin(true);
         await loadUsers();
-      } catch (error) {
-        console.error('Failed to check admin access:', error);
+      } catch (err: unknown) {
+        console.error('Failed to check admin access:', err);
         setError('Failed to verify admin access.');
       } finally {
         setLoading(false);
       }
     };
 
-    checkAdminAccess();
-  }, [router]);
-
-  const loadUsers = async () => {
-    try {
-      // Note: This endpoint might not exist yet in the backend
-      // We'll need to implement it in the backend
-      const response = await userService.getAllUsers({
-        page: currentPage,
-        limit: 10,
-        search: searchTerm,
-        role: roleFilter === 'all' ? undefined : roleFilter
-      });
-
-      const currentUser = await authService.getCurrentUser();
-      const usersWithActions = response.data.map((user: User) => ({
-        ...user,
-        isCurrentUser: user.id === currentUser?.id
-      }));
-
-      setUsers(usersWithActions);
-      setTotalPages(response.totalPages);
-    } catch (error) {
-      console.error('Failed to load users:', error);
-      setError('Failed to load users. The backend endpoint might not be implemented yet.');
-    }
-  };
+    void checkAdminAccess();
+  }, [router, loadUsers]);
 
   useEffect(() => {
     if (isAdmin) {
-      loadUsers();
+      void loadUsers();
     }
-  }, [currentPage, searchTerm, roleFilter, isAdmin]);
+  }, [currentPage, searchTerm, roleFilter, isAdmin, loadUsers]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    loadUsers();
+    void loadUsers();
   };
 
   const handleRoleChange = (role: string) => {
@@ -99,20 +97,21 @@ export default function AdminUsersPage() {
     try {
       await userService.deleteUser(userId);
       await loadUsers(); // Reload the list
-    } catch (error: any) {
-      console.error('Failed to delete user:', error);
+    } catch (err: unknown) {
+      console.error('Failed to delete user:', err);
       let errorMessage = 'Failed to delete user.';
-      
-      if (error.message?.includes('500')) {
+      const message = err instanceof Error ? err.message : typeof err === 'string' ? err : '';
+
+      if (message.includes('500')) {
         errorMessage = 'Failed to delete user. The user may have associated data (recipes, etc.) that prevents deletion.';
-      } else if (error.message?.includes('403')) {
+      } else if (message.includes('403')) {
         errorMessage = 'You cannot delete yourself. Please use a different admin account.';
-      } else if (error.message?.includes('404')) {
+      } else if (message.includes('404')) {
         errorMessage = 'User not found.';
-      } else if (error.message?.includes('Forbidden')) {
+      } else if (message.includes('Forbidden')) {
         errorMessage = 'You cannot delete your own account.';
       }
-      
+
       setError(errorMessage);
     }
   };
@@ -123,15 +122,14 @@ export default function AdminUsersPage() {
     try {
       await userService.updateUserRole(userId, newRole);
       await loadUsers(); // Reload the list
-    } catch (error: any) {
-      console.error('Failed to update user role:', error);
+    } catch (err: unknown) {
+      console.error('Failed to update user role:', err);
       let errorMessage = 'Failed to update user role.';
-      
-      if (error.message?.includes('404')) {
+      const message = err instanceof Error ? err.message : typeof err === 'string' ? err : '';
+
+      if (message.includes('404')) {
         errorMessage = 'User not found or role update endpoint not available.';
-      } else if (error.message?.includes('403')) {
-        errorMessage = 'You cannot change your own role.';
-      } else if (error.message?.includes('Forbidden')) {
+      } else if (message.includes('403') || message.includes('Forbidden')) {
         errorMessage = 'You cannot change your own role.';
       }
       

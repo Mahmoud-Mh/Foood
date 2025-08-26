@@ -1,9 +1,9 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  CreateDateColumn, 
-  UpdateDateColumn
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -30,14 +30,17 @@ export class Ingredient {
   @Column({ unique: true })
   name: string;
 
-  @ApiProperty({ description: 'Ingredient description', example: 'Fresh red tomato' })
+  @ApiProperty({
+    description: 'Ingredient description',
+    example: 'Fresh red tomato',
+  })
   @Column('text')
   description: string;
 
-  @ApiProperty({ 
+  @ApiProperty({
     description: 'Ingredient category',
     enum: IngredientCategory,
-    example: IngredientCategory.VEGETABLE
+    example: IngredientCategory.VEGETABLE,
   })
   @Column({
     type: 'enum',
@@ -50,11 +53,17 @@ export class Ingredient {
   @Column({ nullable: true })
   imageUrl?: string;
 
-  @ApiPropertyOptional({ description: 'Nutritional info (calories per 100g)', example: 18 })
+  @ApiPropertyOptional({
+    description: 'Nutritional info (calories per 100g)',
+    example: 18,
+  })
   @Column({ nullable: true })
   caloriesPerUnit?: number;
 
-  @ApiPropertyOptional({ description: 'Default unit of measurement', example: 'grams' })
+  @ApiPropertyOptional({
+    description: 'Default unit of measurement',
+    example: 'grams',
+  })
   @Column({ default: 'grams' })
   defaultUnit: string;
 
@@ -62,7 +71,10 @@ export class Ingredient {
   @Column({ default: true })
   isActive: boolean;
 
-  @ApiPropertyOptional({ description: 'Allergen information', example: 'Contains gluten' })
+  @ApiPropertyOptional({
+    description: 'Allergen information',
+    example: 'Contains gluten',
+  })
   @Column({ nullable: true })
   allergenInfo?: string;
 
@@ -81,4 +93,4 @@ export class Ingredient {
   // Virtual field for usage count (will be implemented later)
   @ApiProperty({ description: 'Number of recipes using this ingredient' })
   usageCount?: number;
-} 
+}

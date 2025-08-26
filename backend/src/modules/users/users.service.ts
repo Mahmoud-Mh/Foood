@@ -1,13 +1,22 @@
-import { Injectable, ConflictException, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
-import { User } from './entities/user.entity';
+import { Repository, ILike, MoreThanOrEqual } from 'typeorm';
+import { User, UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto, UpdateProfileDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
-import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
+import {
+  PaginationDto,
+  PaginatedResultDto,
+} from '../../common/dto/pagination.dto';
 import { UploadsService } from '../uploads/uploads.service';
 import { Recipe } from '../recipes/entities/recipe.entity';
+import { UserFavorite } from './entities/user-favorite.entity';
+import { CreateUserFavoriteDto, UserFavoriteResponseDto } from './dto/user-favorite.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +25,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @InjectRepository(Recipe)
     private recipeRepository: Repository<Recipe>,
+    @InjectRepository(UserFavorite)
+    private userFavoriteRepository: Repository<UserFavorite>,
     private uploadsService: UploadsService,
   ) {}
 
@@ -32,25 +43,32 @@ export class UsersService {
     return this.transformToResponseDto(savedUser);
   }
 
-  async findAll(paginationDto: PaginationDto, search?: string, role?: any): Promise<PaginatedResultDto<UserResponseDto>> {
+  async findAll(
+    paginationDto: PaginationDto,
+    search?: string,
+    role?: string,
+  ): Promise<PaginatedResultDto<UserResponseDto>> {
     const page = paginationDto.page || 1;
     const limit = paginationDto.limit || 10;
     const skip = (page - 1) * limit;
 
     // Build where conditions
-    let whereConditions: any = {};
-    
+    let whereConditions: Record<string, unknown> | Record<string, unknown>[] =
+      {};
+
     if (role) {
       whereConditions.role = role;
     }
-    
+
     if (search) {
       // Search in email, firstName, or lastName
       // Use OR conditions for search
+      // Improved search with case-insensitive matching
+      const searchTerm = search.toLowerCase();
       whereConditions = [
-        { email: Like(`%${search}%`), ...(role ? { role } : {}) },
-        { firstName: Like(`%${search}%`), ...(role ? { role } : {}) },
-        { lastName: Like(`%${search}%`), ...(role ? { role } : {}) }
+        { email: ILike(`%${searchTerm}%`), ...(role ? { role } : {}) },
+        { firstName: ILike(`%${searchTerm}%`), ...(role ? { role } : {}) },
+        { lastName: ILike(`%${searchTerm}%`), ...(role ? { role } : {}) },
       ];
     }
 
@@ -61,14 +79,14 @@ export class UsersService {
       order: { createdAt: 'DESC' },
     });
 
-    const data = users.map(user => this.transformToResponseDto(user));
+    const data = users.map((user) => this.transformToResponseDto(user));
 
     return new PaginatedResultDto(data, total, page, limit);
   }
 
   async findOne(id: string): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -81,9 +99,21 @@ export class UsersService {
   }
 
   async findByEmailWithPassword(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ 
+    return this.usersRepository.findOne({
       where: { email },
-      select: ['id', 'email', 'password', 'firstName', 'lastName', 'role', 'isActive', 'avatar', 'bio', 'createdAt', 'updatedAt']
+      select: [
+        'id',
+        'email',
+        'password',
+        'firstName',
+        'lastName',
+        'role',
+        'isActive',
+        'avatar',
+        'bio',
+        'createdAt',
+        'updatedAt',
+      ],
     });
   }
 
@@ -91,9 +121,12 @@ export class UsersService {
     await this.usersRepository.update(id, { lastLoginAt: new Date() });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -107,7 +140,11 @@ export class UsersService {
     }
 
     // Handle avatar cleanup if new avatar is provided
-    if (updateUserDto.avatar && user.avatar && user.avatar !== updateUserDto.avatar) {
+    if (
+      updateUserDto.avatar &&
+      user.avatar &&
+      user.avatar !== updateUserDto.avatar
+    ) {
       this.cleanupOldAvatar(user.avatar);
     }
 
@@ -118,15 +155,22 @@ export class UsersService {
     return this.transformToResponseDto(updatedUser);
   }
 
-  async updateProfile(id: string, updateProfileDto: UpdateProfileDto): Promise<UserResponseDto> {
+  async updateProfile(
+    id: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
     // Handle avatar cleanup if new avatar is provided
-    if (updateProfileDto.avatar && user.avatar && user.avatar !== updateProfileDto.avatar) {
+    if (
+      updateProfileDto.avatar &&
+      user.avatar &&
+      user.avatar !== updateProfileDto.avatar
+    ) {
       this.cleanupOldAvatar(user.avatar);
     }
 
@@ -148,15 +192,19 @@ export class UsersService {
 
   async remove(id: string): Promise<void> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
     // Check if user has associated recipes
-    const recipeCount = await this.recipeRepository.count({ where: { authorId: id } });
+    const recipeCount = await this.recipeRepository.count({
+      where: { authorId: id },
+    });
     if (recipeCount > 0) {
-      throw new ConflictException(`Cannot delete user. User has ${recipeCount} associated recipe(s). Please delete the recipes first or deactivate the user instead.`);
+      throw new ConflictException(
+        `Cannot delete user. User has ${recipeCount} associated recipe(s). Please delete the recipes first or deactivate the user instead.`,
+      );
     }
 
     // Clean up user's avatar file before deleting
@@ -166,9 +214,12 @@ export class UsersService {
 
     try {
       await this.usersRepository.remove(user);
-    } catch (error) {
-      if (error.code === '23503') { // Foreign key constraint violation
-        throw new ConflictException('Cannot delete user due to associated data. Please delete associated records first or deactivate the user instead.');
+    } catch (error: unknown) {
+      if ((error as { code?: string }).code === '23503') {
+        // Foreign key constraint violation
+        throw new ConflictException(
+          'Cannot delete user due to associated data. Please delete associated records first or deactivate the user instead.',
+        );
       }
       throw error;
     }
@@ -176,7 +227,7 @@ export class UsersService {
 
   async deactivateUser(id: string): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -189,7 +240,7 @@ export class UsersService {
 
   async activateUser(id: string): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -202,7 +253,7 @@ export class UsersService {
 
   async verifyEmail(id: string): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -213,9 +264,9 @@ export class UsersService {
     return this.transformToResponseDto(updatedUser);
   }
 
-  async changeUserRole(id: string, role: any): Promise<UserResponseDto> {
+  async changeUserRole(id: string, role: UserRole): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
@@ -238,20 +289,20 @@ export class UsersService {
   private async invalidateUserTokens(userId: string): Promise<void> {
     // Update the user's lastLoginAt to invalidate existing tokens
     // This is a simple approach - in production, you might want a proper token blacklist
-    await this.usersRepository.update(userId, { 
+    await this.usersRepository.update(userId, {
       lastLoginAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
   }
 
   async promoteToAdmin(id: string): Promise<UserResponseDto> {
-    await this.usersRepository.update(id, { role: 'admin' as any });
+    await this.usersRepository.update(id, { role: UserRole.ADMIN });
     const updatedUser = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!updatedUser) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
-    
+
     return this.transformToResponseDto(updatedUser);
   }
 
@@ -261,89 +312,123 @@ export class UsersService {
       order: { createdAt: 'DESC' },
     });
 
-    return users.map(user => this.transformToResponseDto(user));
+    return users.map((user) => this.transformToResponseDto(user));
   }
 
-  async getUsersByRole(role: any): Promise<UserResponseDto[]> {
+  async getUsersByRole(role: string): Promise<UserResponseDto[]> {
     const users = await this.usersRepository.find({
-      where: { role },
+      where: { role: role as UserRole },
       order: { createdAt: 'DESC' },
     });
 
-    return users.map(user => this.transformToResponseDto(user));
+    return users.map((user) => this.transformToResponseDto(user));
   }
 
-  async getUserStats(): Promise<any> {
+  async getUserStats(): Promise<{
+    totalUsers: number;
+    activeUsers: number;
+    inactiveUsers: number;
+    adminUsers: number;
+    regularUsers: number;
+    recentUsers: number;
+  }> {
     const totalUsers = await this.usersRepository.count();
-    const activeUsers = await this.usersRepository.count({ where: { isActive: true } });
-    const verifiedUsers = await this.usersRepository.count({ where: { isEmailVerified: true } });
-    const adminUsers = await this.usersRepository.count({ where: { role: 'admin' as any } });
+    const activeUsers = await this.usersRepository.count({
+      where: { isActive: true },
+    });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const verifiedUsers = await this.usersRepository.count({
+      where: { isEmailVerified: true },
+    });
+    const adminUsers = await this.usersRepository.count({
+      where: { role: UserRole.ADMIN },
+    });
+
+    const regularUsers = totalUsers - adminUsers;
+    const recentUsers = await this.usersRepository.count({
+      where: {
+        createdAt: MoreThanOrEqual(
+          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        ), // Last 30 days
+      },
+    });
 
     return {
-      total: totalUsers,
-      active: activeUsers,
-      verified: verifiedUsers,
-      admins: adminUsers,
-      inactive: totalUsers - activeUsers,
-      unverified: totalUsers - verifiedUsers,
+      totalUsers,
+      activeUsers,
+      inactiveUsers: totalUsers - activeUsers,
+      adminUsers,
+      regularUsers,
+      recentUsers,
     };
   }
 
-  async findByRole(role: string, paginationDto: PaginationDto): Promise<PaginatedResultDto<UserResponseDto>> {
+  async findByRole(
+    role: string,
+    paginationDto: PaginationDto,
+  ): Promise<PaginatedResultDto<UserResponseDto>> {
     const page = paginationDto.page || 1;
     const limit = paginationDto.limit || 10;
     const skip = (page - 1) * limit;
 
     const [users, total] = await this.usersRepository.findAndCount({
-      where: { role: role as any },
+      where: { role: role as UserRole },
       skip,
       take: limit,
       order: { createdAt: 'DESC' },
     });
 
-    const data = users.map(user => this.transformToResponseDto(user));
+    const data = users.map((user) => this.transformToResponseDto(user));
 
     return new PaginatedResultDto(data, total, page, limit);
   }
 
-  async searchUsers(query: string, paginationDto: PaginationDto): Promise<PaginatedResultDto<UserResponseDto>> {
+  async searchUsers(
+    query: string,
+    paginationDto: PaginationDto,
+  ): Promise<PaginatedResultDto<UserResponseDto>> {
     const page = paginationDto.page || 1;
     const limit = paginationDto.limit || 10;
     const skip = (page - 1) * limit;
 
     const [users, total] = await this.usersRepository
       .createQueryBuilder('user')
-      .where('user.firstName ILIKE :query OR user.lastName ILIKE :query OR user.email ILIKE :query', {
-        query: `%${query}%`,
-      })
+      .where(
+        'user.firstName ILIKE :query OR user.lastName ILIKE :query OR user.email ILIKE :query',
+        {
+          query: `%${query}%`,
+        },
+      )
       .skip(skip)
       .take(limit)
       .orderBy('user.createdAt', 'DESC')
       .getManyAndCount();
 
-    const data = users.map(user => this.transformToResponseDto(user));
+    const data = users.map((user) => this.transformToResponseDto(user));
 
     return new PaginatedResultDto(data, total, page, limit);
   }
 
   async deleteUserAccount(id: string): Promise<void> {
     const user = await this.usersRepository.findOne({ where: { id } });
-    
+
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
 
     // Get user's recipes to clean up images
-    const userRecipes = await this.recipeRepository.find({ 
+    const userRecipes = await this.recipeRepository.find({
       where: { authorId: id },
-      select: ['id', 'imageUrl', 'additionalImages']
+      select: ['id', 'imageUrl', 'additionalImages'],
     });
 
     // Clean up recipe images
     for (const recipe of userRecipes) {
       // Clean up main recipe image
       if (recipe.imageUrl && recipe.imageUrl.includes('/uploads/recipe/')) {
-        const filename = this.uploadsService.getFilenameFromUrl(recipe.imageUrl);
+        const filename = this.uploadsService.getFilenameFromUrl(
+          recipe.imageUrl,
+        );
         if (filename) {
           const filepath = this.uploadsService.getFilePath(filename, 'recipe');
           this.uploadsService.deleteFile(filepath);
@@ -356,7 +441,10 @@ export class UsersService {
           if (imageUrl && imageUrl.includes('/uploads/recipe/')) {
             const filename = this.uploadsService.getFilenameFromUrl(imageUrl);
             if (filename) {
-              const filepath = this.uploadsService.getFilePath(filename, 'recipe');
+              const filepath = this.uploadsService.getFilePath(
+                filename,
+                'recipe',
+              );
               this.uploadsService.deleteFile(filepath);
             }
           }
@@ -377,8 +465,105 @@ export class UsersService {
   }
 
   private transformToResponseDto(user: User): UserResponseDto {
-    const { password, ...userWithoutPassword } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, emailVerifications, passwordResets, ...userWithoutPassword } = user;
     return userWithoutPassword as UserResponseDto;
+  }
+
+  async addToFavorites(
+    userId: string,
+    createFavoriteDto: CreateUserFavoriteDto,
+  ): Promise<UserFavoriteResponseDto> {
+    // Check if recipe exists
+    const recipe = await this.recipeRepository.findOne({
+      where: { id: createFavoriteDto.recipeId },
+    });
+    if (!recipe) {
+      throw new NotFoundException('Recipe not found');
+    }
+
+    // Check if already favorited
+    const existingFavorite = await this.userFavoriteRepository.findOne({
+      where: {
+        userId,
+        recipeId: createFavoriteDto.recipeId,
+      },
+    });
+    if (existingFavorite) {
+      throw new ConflictException('Recipe is already in favorites');
+    }
+
+    // Create favorite
+    const favorite = this.userFavoriteRepository.create({
+      userId,
+      recipeId: createFavoriteDto.recipeId,
+    });
+    const savedFavorite = await this.userFavoriteRepository.save(favorite);
+
+    return this.transformFavoriteToResponseDto(savedFavorite);
+  }
+
+  async removeFromFavorites(
+    userId: string,
+    recipeId: string,
+  ): Promise<void> {
+    const favorite = await this.userFavoriteRepository.findOne({
+      where: { userId, recipeId },
+    });
+
+    if (!favorite) {
+      throw new NotFoundException('Favorite not found');
+    }
+
+    await this.userFavoriteRepository.remove(favorite);
+  }
+
+  async getUserFavorites(
+    userId: string,
+    paginationDto: PaginationDto,
+  ): Promise<PaginatedResultDto<UserFavoriteResponseDto>> {
+    const page = paginationDto.page || 1;
+    const limit = paginationDto.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const [favorites, total] = await this.userFavoriteRepository.findAndCount({
+      where: { userId },
+      skip,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+
+    const data = favorites.map((favorite) =>
+      this.transformFavoriteToResponseDto(favorite),
+    );
+
+    return new PaginatedResultDto(data, total, page, limit);
+  }
+
+  async isFavorite(userId: string, recipeId: string): Promise<boolean> {
+    const favorite = await this.userFavoriteRepository.findOne({
+      where: { userId, recipeId },
+    });
+    return !!favorite;
+  }
+
+  async getUserFavoriteRecipeIds(userId: string): Promise<string[]> {
+    const favorites = await this.userFavoriteRepository.find({
+      where: { userId },
+      select: ['recipeId'],
+    });
+    return favorites.map((favorite) => favorite.recipeId);
+  }
+
+  private transformFavoriteToResponseDto(
+    favorite: UserFavorite,
+  ): UserFavoriteResponseDto {
+    return {
+      id: favorite.id,
+      userId: favorite.userId,
+      recipeId: favorite.recipeId,
+      createdAt: favorite.createdAt,
+    };
   }
 
   private cleanupOldAvatar(avatarUrl: string): void {
@@ -391,4 +576,4 @@ export class UsersService {
       }
     }
   }
-} 
+}

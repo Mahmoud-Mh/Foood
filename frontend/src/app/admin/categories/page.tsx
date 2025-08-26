@@ -92,7 +92,7 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  const handleDeleteCategory = async (categoryId: string) => {
+  const handleDeleteCategory = async (_categoryId: string) => {
     if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
       return;
     }

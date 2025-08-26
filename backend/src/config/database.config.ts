@@ -16,4 +16,4 @@ export const createTypeOrmOptions = (
   logging: configService.isDevelopment,
   ssl: configService.isProduction ? { rejectUnauthorized: false } : false,
   autoLoadEntities: true,
-}); 
+});

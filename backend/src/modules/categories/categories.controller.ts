@@ -24,11 +24,14 @@ import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryResponseDto } from './dto/category-response.dto';
-import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
+import {
+  PaginationDto,
+  PaginatedResultDto,
+} from '../../common/dto/pagination.dto';
 import { ApiResponseDto } from '../../common/dto/response.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { Public, AdminOnly, UserOrAdmin } from '../../common/decorators/auth.decorators';
+import { Public, AdminOnly } from '../../common/decorators/auth.decorators';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -59,8 +62,18 @@ export class CategoriesController {
   @Get()
   @Public()
   @ApiOperation({ summary: 'Get all categories with pagination' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Categories retrieved successfully',
@@ -70,7 +83,10 @@ export class CategoriesController {
     @Query() paginationDto: PaginationDto,
   ): Promise<ApiResponseDto<PaginatedResultDto<CategoryResponseDto>>> {
     const categories = await this.categoriesService.findAll(paginationDto);
-    return ApiResponseDto.success('Categories retrieved successfully', categories);
+    return ApiResponseDto.success(
+      'Categories retrieved successfully',
+      categories,
+    );
   }
 
   @Get('active')
@@ -84,7 +100,10 @@ export class CategoriesController {
   })
   async findActive(): Promise<ApiResponseDto<CategoryResponseDto[]>> {
     const categories = await this.categoriesService.findActive();
-    return ApiResponseDto.success('Active categories retrieved successfully', categories);
+    return ApiResponseDto.success(
+      'Active categories retrieved successfully',
+      categories,
+    );
   }
 
   @Get('stats')
@@ -94,9 +113,18 @@ export class CategoriesController {
     status: HttpStatus.OK,
     description: 'Category statistics retrieved successfully',
   })
-  async getCategoryStats(): Promise<ApiResponseDto<any>> {
+  async getCategoryStats(): Promise<
+    ApiResponseDto<{
+      totalCategories: number;
+      activeCategories: number;
+      recipesByCategory: Record<string, number>;
+    }>
+  > {
     const stats = await this.categoriesService.getCategoryStats();
-    return ApiResponseDto.success('Category statistics retrieved successfully', stats);
+    return ApiResponseDto.success(
+      'Category statistics retrieved successfully',
+      stats,
+    );
   }
 
   @Get('slug/:slug')
@@ -181,7 +209,10 @@ export class CategoriesController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<ApiResponseDto<CategoryResponseDto>> {
     const category = await this.categoriesService.toggleActive(id);
-    return ApiResponseDto.success('Category status toggled successfully', category);
+    return ApiResponseDto.success(
+      'Category status toggled successfully',
+      category,
+    );
   }
 
   @Delete(':id')
@@ -206,4 +237,4 @@ export class CategoriesController {
     await this.categoriesService.remove(id);
     return ApiResponseDto.success('Category deleted successfully', null);
   }
-} 
+}

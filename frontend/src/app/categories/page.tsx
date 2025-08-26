@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { CategoryService } from '@/services/category.service';
 import { RecipeService } from '@/services/recipe.service';
 import { Category, Recipe } from '@/types/api.types';
-import { FormatUtils } from '@/utils/formatters';
 import Navbar from '@/components/Navbar';
 
 const categoryService = new CategoryService();
@@ -14,36 +12,36 @@ const recipeService = new RecipeService();
 
 // Category icons mapping
 const categoryIcons: { [key: string]: string } = {
-  'breakfast': '🌅',
-  'lunch': '🍽️',
-  'dinner': '🌙',
-  'dessert': '🍰',
-  'snack': '🥨',
-  'appetizer': '🥟',
-  'soup': '🍲',
-  'salad': '🥗',
-  'pasta': '🍝',
-  'pizza': '🍕',
-  'seafood': '🐟',
-  'meat': '🥩',
-  'vegetarian': '🥬',
-  'vegan': '🌱',
+  breakfast: '🌅',
+  lunch: '🍽️',
+  dinner: '🌙',
+  dessert: '🍰',
+  snack: '🥨',
+  appetizer: '🥟',
+  soup: '🍲',
+  salad: '🥗',
+  pasta: '🍝',
+  pizza: '🍕',
+  seafood: '🐟',
+  meat: '🥩',
+  vegetarian: '🥬',
+  vegan: '🌱',
   'gluten-free': '🌾',
-  'quick': '⚡',
+  quick: '⚡',
   'slow-cooker': '⏰',
-  'grill': '🔥',
-  'bake': '🍞',
-  'drink': '🥤',
-  'cocktail': '🍸',
-  'smoothie': '🥤',
-  'juice': '🧃',
-  'coffee': '☕',
-  'tea': '🫖'
+  grill: '🔥',
+  bake: '🍞',
+  drink: '🥤',
+  cocktail: '🍸',
+  smoothie: '🥤',
+  juice: '🧃',
+  coffee: '☕',
+  tea: '🫖',
 };
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<any[]>([]);
-  const [categoryRecipes, setCategoryRecipes] = useState<Record<string, any[]>>({});
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryRecipes, setCategoryRecipes] = useState<Record<string, Recipe[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,19 +53,19 @@ export default function CategoriesPage() {
         setCategories(response);
         
         // Fetch recipes for each category
-        const recipesMap: Record<string, any[]> = {};
+        const recipesMap: Record<string, Recipe[]> = {};
         for (const category of response) {
           try {
-            const recipesResponse = await recipeService.getPublicRecipes({ categoryId: category.id, limit: 6 });
-            recipesMap[category.id] = recipesResponse.data || [];
-          } catch (error) {
-            console.error(`Error fetching recipes for category ${category.name}:`, error);
+            const recipesResult = await recipeService.getPublicRecipes({ categoryId: category.id, limit: 6 });
+            recipesMap[category.id] = recipesResult.data;
+          } catch (err) {
+            console.error(`Error fetching recipes for category ${category.name}:`, err);
             recipesMap[category.id] = [];
           }
         }
         setCategoryRecipes(recipesMap);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
         setError('Failed to load categories');
       } finally {
         setLoading(false);
@@ -95,7 +93,7 @@ export default function CategoriesPage() {
       'from-emerald-500 to-teal-500',
       'from-pink-500 to-rose-500',
       'from-cyan-500 to-blue-500',
-      'from-amber-500 to-yellow-500'
+      'from-amber-500 to-yellow-500',
     ];
     const selectedColor = colors[index % colors.length];
     return selectedColor;
@@ -150,7 +148,6 @@ export default function CategoriesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {categories.map((category, index) => {
             const recipes = categoryRecipes[category.id] || [];
-            const recipeCount = recipes.length;
             const icon = getCategoryIcon(category.name);
             const gradientClass = getCategoryColor(index);
             
@@ -237,7 +234,7 @@ export default function CategoriesPage() {
           <div className="mt-16 text-center">
             <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Can't find what you're looking for?
+                Can&apos;t find what you&apos;re looking for?
               </h2>
               <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
                 Create your own recipe and share it with the community! Your culinary creations can inspire others.

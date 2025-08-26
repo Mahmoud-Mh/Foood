@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
-import { DatabaseConfig, JwtConfig, AppConfig, ThrottleConfig } from './configuration';
+import {
+  DatabaseConfig,
+  JwtConfig,
+  AppConfig,
+  ThrottleConfig,
+  EmailConfig,
+} from './configuration';
 
 @Injectable()
 export class ConfigService {
@@ -22,6 +28,10 @@ export class ConfigService {
     return this.configService.get<ThrottleConfig>('throttle')!;
   }
 
+  get email(): EmailConfig {
+    return this.configService.get<EmailConfig>('email')!;
+  }
+
   get isDevelopment(): boolean {
     return this.app.nodeEnv === 'development';
   }
@@ -29,4 +39,4 @@ export class ConfigService {
   get isProduction(): boolean {
     return this.app.nodeEnv === 'production';
   }
-} 
+}

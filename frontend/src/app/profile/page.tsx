@@ -93,10 +93,7 @@ export default function ProfilePage() {
     loadUserProfile();
   }, [router]);
 
-  const handleLogout = () => {
-    authService.logout();
-    router.push('/');
-  };
+
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);

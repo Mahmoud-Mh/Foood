@@ -10,4 +10,4 @@ import { Category } from './entities/category.entity';
   providers: [CategoriesService],
   exports: [CategoriesService], // Export for use in other modules (like Recipes)
 })
-export class CategoriesModule {} 
+export class CategoriesModule {}

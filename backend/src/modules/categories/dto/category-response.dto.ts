@@ -45,4 +45,4 @@ export class CategoryResponseDto {
   @ApiProperty({ description: 'Category last update date' })
   @Expose()
   updatedAt: Date;
-} 
+}

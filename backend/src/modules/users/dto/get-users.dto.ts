@@ -6,7 +6,7 @@ import { UserRole } from '../entities/user.entity';
 export class GetUsersDto extends PaginationDto {
   @ApiPropertyOptional({
     description: 'Search term for name or email',
-    example: 'john'
+    example: 'john',
   })
   @IsOptional()
   @IsString()
@@ -15,9 +15,9 @@ export class GetUsersDto extends PaginationDto {
   @ApiPropertyOptional({
     description: 'Filter by user role',
     enum: UserRole,
-    example: UserRole.USER
+    example: UserRole.USER,
   })
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
-} 
+}

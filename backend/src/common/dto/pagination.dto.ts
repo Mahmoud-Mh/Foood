@@ -57,4 +57,4 @@ export class PaginatedResultDto<T> {
     this.hasNext = page < this.totalPages;
     this.hasPrev = page > 1;
   }
-} 
+}

@@ -2,7 +2,7 @@
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
-  data: T;
+  data?: T | null;
   error?: string;
 }
 
@@ -118,7 +118,8 @@ export interface RecipeStep {
 export enum DifficultyLevel {
   EASY = 'easy',
   MEDIUM = 'medium',
-  HARD = 'hard'
+  HARD = 'hard',
+  EXPERT = 'expert'
 }
 
 export enum RecipeStatus {

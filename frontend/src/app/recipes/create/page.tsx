@@ -214,7 +214,7 @@ export default function CreateRecipePage() {
     }
   };
 
-  const handleInputChange = (field: keyof CreateRecipeForm, value: any) => {
+  const handleInputChange = (field: keyof CreateRecipeForm, value: string | number | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field as keyof FormErrors]) {
@@ -242,7 +242,7 @@ export default function CreateRecipePage() {
     }));
   };
 
-  const updateIngredient = (index: number, field: keyof CreateRecipeIngredientForm, value: any) => {
+  const updateIngredient = (index: number, field: keyof CreateRecipeIngredientForm, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       ingredients: prev.ingredients.map((ingredient, i) => 
@@ -270,7 +270,7 @@ export default function CreateRecipePage() {
     }));
   };
 
-  const updateStep = (index: number, field: keyof CreateRecipeStepForm, value: any) => {
+  const updateStep = (index: number, field: keyof CreateRecipeStepForm, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       steps: prev.steps.map((step, i) => 
@@ -554,7 +554,7 @@ export default function CreateRecipePage() {
               <div className="text-center py-12 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
                 <div className="text-gray-400 text-lg mb-2">🥕</div>
                 <p className="text-gray-500">No ingredients added yet</p>
-                <p className="text-gray-400 text-sm">Click "Add Ingredient" to get started</p>
+                <p className="text-gray-400 text-sm">Click &quot;Add Ingredient&quot; to get started</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -693,7 +693,7 @@ export default function CreateRecipePage() {
               <div className="text-center py-12 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
                 <div className="text-gray-400 text-lg mb-2">👨‍🍳</div>
                 <p className="text-gray-500">No steps added yet</p>
-                <p className="text-gray-400 text-sm">Click "Add Step" to get started</p>
+                <p className="text-gray-400 text-sm">Click &quot;Add Step&quot; to get started</p>
               </div>
             ) : (
               <div className="space-y-4">
