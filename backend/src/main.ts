@@ -19,7 +19,14 @@ async function bootstrap() {
   app.use(helmet());
 
   // CORS configuration
-  const devOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'];
+  const devOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:3003',
+    'http://localhost:3004',
+    'http://localhost:3005',
+  ];
   const prodOrigins = (process.env.CORS_ORIGINS || '')
     .split(',')
     .map((o) => o.trim())

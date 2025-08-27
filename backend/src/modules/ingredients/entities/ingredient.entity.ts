@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -21,6 +22,8 @@ export enum IngredientCategory {
 }
 
 @Entity('ingredients')
+@Index('IDX_INGREDIENT_NAME', ['name'])
+@Index('IDX_INGREDIENT_CATEGORY_ACTIVE', ['category', 'isActive'])
 export class Ingredient {
   @ApiProperty({ description: 'Ingredient unique identifier' })
   @PrimaryGeneratedColumn('uuid')

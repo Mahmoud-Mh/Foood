@@ -6,7 +6,31 @@ export interface SendEmailOptions {
   to: string;
   subject: string;
   template: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
+}
+
+interface MailInfo {
+  messageId: string;
+  [key: string]: unknown;
+}
+
+interface EmailVerificationContext {
+  name: string;
+  appName: string;
+  verificationUrl: string;
+}
+
+interface PasswordResetContext {
+  name: string;
+  appName: string;
+  resetUrl: string;
+  expirationTime: string;
+}
+
+interface WelcomeContext {
+  name: string;
+  appName: string;
+  dashboardUrl: string;
 }
 
 @Injectable()
@@ -23,7 +47,7 @@ export class EmailService {
 
     if (this.configService.isDevelopment) {
       // In development, use ethereal email for testing
-      this.createTestAccount();
+      void this.createTestAccount();
     } else {
       this.transporter = nodemailer.createTransport({
         host: emailConfig.host,
@@ -58,9 +82,9 @@ export class EmailService {
   async sendEmail(options: SendEmailOptions): Promise<boolean> {
     try {
       const { to, subject, template, context = {} } = options;
-      
+
       const html = this.renderTemplate(template, context);
-      
+
       const mailOptions = {
         from: `"${this.configService.email.fromName}" <${this.configService.email.fromAddress}>`,
         to,
@@ -68,10 +92,12 @@ export class EmailService {
         html,
       };
 
-      const info = await this.transporter.sendMail(mailOptions);
-      
+      const info = (await this.transporter.sendMail(mailOptions)) as MailInfo;
+
       if (this.configService.isDevelopment) {
-        this.logger.log(`Email sent to ${to}: ${nodemailer.getTestMessageUrl(info)}`);
+        this.logger.log(
+          `Email sent to ${to}: ${nodemailer.getTestMessageUrl(info as any)}`,
+        );
       } else {
         this.logger.log(`Email sent to ${to}: ${info.messageId}`);
       }
@@ -83,9 +109,13 @@ export class EmailService {
     }
   }
 
-  async sendVerificationEmail(email: string, name: string, token: string): Promise<boolean> {
+  async sendVerificationEmail(
+    email: string,
+    name: string,
+    token: string,
+  ): Promise<boolean> {
     const verificationUrl = `${this.configService.app.frontendUrl}/auth/verify-email?token=${token}`;
-    
+
     return this.sendEmail({
       to: email,
       subject: 'Verify your Recipe Hub account',
@@ -98,9 +128,13 @@ export class EmailService {
     });
   }
 
-  async sendPasswordResetEmail(email: string, name: string, token: string): Promise<boolean> {
+  async sendPasswordResetEmail(
+    email: string,
+    name: string,
+    token: string,
+  ): Promise<boolean> {
     const resetUrl = `${this.configService.app.frontendUrl}/auth/reset-password?token=${token}`;
-    
+
     return this.sendEmail({
       to: email,
       subject: 'Reset your Recipe Hub password',
@@ -127,17 +161,29 @@ export class EmailService {
     });
   }
 
-  private renderTemplate(templateName: string, context: Record<string, any>): string {
+  private renderTemplate(
+    templateName: string,
+    context: Record<string, unknown>,
+  ): string {
     const templates = {
-      'email-verification': this.getEmailVerificationTemplate(context),
-      'password-reset': this.getPasswordResetTemplate(context),
-      'welcome': this.getWelcomeTemplate(context),
+      'email-verification': this.getEmailVerificationTemplate(
+        context as unknown as EmailVerificationContext,
+      ),
+      'password-reset': this.getPasswordResetTemplate(
+        context as unknown as PasswordResetContext,
+      ),
+      welcome: this.getWelcomeTemplate(context as unknown as WelcomeContext),
     };
 
-    return templates[templateName] || `<p>Template "${templateName}" not found</p>`;
+    return (
+      templates[templateName as keyof typeof templates] ||
+      `<p>Template "${templateName}" not found</p>`
+    );
   }
 
-  private getEmailVerificationTemplate(context: any): string {
+  private getEmailVerificationTemplate(
+    context: EmailVerificationContext,
+  ): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -180,7 +226,7 @@ export class EmailService {
     `;
   }
 
-  private getPasswordResetTemplate(context: any): string {
+  private getPasswordResetTemplate(context: PasswordResetContext): string {
     return `
       <!DOCTYPE html>
       <html>
@@ -227,7 +273,7 @@ export class EmailService {
     `;
   }
 
-  private getWelcomeTemplate(context: any): string {
+  private getWelcomeTemplate(context: WelcomeContext): string {
     return `
       <!DOCTYPE html>
       <html>

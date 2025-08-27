@@ -11,6 +11,7 @@ import {
   ParseUUIDPipe,
   HttpStatus,
 } from '@nestjs/common';
+import { AuthenticatedRequest } from '../../common/interfaces/request.interface';
 import {
   ApiTags,
   ApiOperation,
@@ -20,8 +21,14 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { CreateUserFavoriteDto, UserFavoriteResponseDto } from './dto/user-favorite.dto';
-import { PaginationDto, PaginatedResultDto } from '../../common/dto/pagination.dto';
+import {
+  CreateUserFavoriteDto,
+  UserFavoriteResponseDto,
+} from './dto/user-favorite.dto';
+import {
+  PaginationDto,
+  PaginatedResultDto,
+} from '../../common/dto/pagination.dto';
 import { ApiResponseDto } from '../../common/dto/response.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
@@ -48,14 +55,17 @@ export class UsersFavoritesController {
     description: 'Recipe is already in favorites',
   })
   async addToFavorites(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Body() createFavoriteDto: CreateUserFavoriteDto,
   ): Promise<ApiResponseDto<UserFavoriteResponseDto>> {
     const favorite = await this.usersService.addToFavorites(
       req.user.id,
       createFavoriteDto,
     );
-    return ApiResponseDto.success('Recipe added to favorites successfully', favorite);
+    return ApiResponseDto.success(
+      'Recipe added to favorites successfully',
+      favorite,
+    );
   }
 
   @Delete(':recipeId')
@@ -70,11 +80,14 @@ export class UsersFavoritesController {
     description: 'Favorite not found',
   })
   async removeFromFavorites(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('recipeId', ParseUUIDPipe) recipeId: string,
   ): Promise<ApiResponseDto<null>> {
     await this.usersService.removeFromFavorites(req.user.id, recipeId);
-    return ApiResponseDto.success('Recipe removed from favorites successfully', null);
+    return ApiResponseDto.success(
+      'Recipe removed from favorites successfully',
+      null,
+    );
   }
 
   @Get()
@@ -97,14 +110,17 @@ export class UsersFavoritesController {
     type: PaginatedResultDto<UserFavoriteResponseDto>,
   })
   async getUserFavorites(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Query() paginationDto: PaginationDto,
   ): Promise<ApiResponseDto<PaginatedResultDto<UserFavoriteResponseDto>>> {
     const favorites = await this.usersService.getUserFavorites(
       req.user.id,
       paginationDto,
     );
-    return ApiResponseDto.success('User favorites retrieved successfully', favorites);
+    return ApiResponseDto.success(
+      'User favorites retrieved successfully',
+      favorites,
+    );
   }
 
   @Get(':recipeId/check')
@@ -115,11 +131,16 @@ export class UsersFavoritesController {
     description: 'Favorite status retrieved successfully',
   })
   async checkFavoriteStatus(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
     @Param('recipeId', ParseUUIDPipe) recipeId: string,
   ): Promise<ApiResponseDto<{ isFavorite: boolean }>> {
-    const isFavorite = await this.usersService.isFavorite(req.user.id, recipeId);
-    return ApiResponseDto.success('Favorite status retrieved successfully', { isFavorite });
+    const isFavorite = await this.usersService.isFavorite(
+      req.user.id,
+      recipeId,
+    );
+    return ApiResponseDto.success('Favorite status retrieved successfully', {
+      isFavorite,
+    });
   }
 
   @Get('recipe-ids')
@@ -129,9 +150,14 @@ export class UsersFavoritesController {
     description: 'User favorite recipe IDs retrieved successfully',
   })
   async getUserFavoriteRecipeIds(
-    @Request() req: any,
+    @Request() req: AuthenticatedRequest,
   ): Promise<ApiResponseDto<{ recipeIds: string[] }>> {
-    const recipeIds = await this.usersService.getUserFavoriteRecipeIds(req.user.id);
-    return ApiResponseDto.success('User favorite recipe IDs retrieved successfully', { recipeIds });
+    const recipeIds = await this.usersService.getUserFavoriteRecipeIds(
+      req.user.id,
+    );
+    return ApiResponseDto.success(
+      'User favorite recipe IDs retrieved successfully',
+      { recipeIds },
+    );
   }
 }

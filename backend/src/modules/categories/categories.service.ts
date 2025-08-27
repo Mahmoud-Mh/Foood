@@ -205,7 +205,7 @@ export class CategoriesService {
     const active = await this.categoriesRepository.count({
       where: { isActive: true },
     });
-    
+
     // Get recipe count by category (simplified for now)
     const recipesByCategory: Record<string, number> = {};
 

@@ -16,7 +16,10 @@ import {
 import { UploadsService } from '../uploads/uploads.service';
 import { Recipe } from '../recipes/entities/recipe.entity';
 import { UserFavorite } from './entities/user-favorite.entity';
-import { CreateUserFavoriteDto, UserFavoriteResponseDto } from './dto/user-favorite.dto';
+import {
+  CreateUserFavoriteDto,
+  UserFavoriteResponseDto,
+} from './dto/user-favorite.dto';
 
 @Injectable()
 export class UsersService {
@@ -465,9 +468,22 @@ export class UsersService {
   }
 
   private transformToResponseDto(user: User): UserResponseDto {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, emailVerifications, passwordResets, ...userWithoutPassword } = user;
-    return userWithoutPassword as UserResponseDto;
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      fullName: `${user.firstName} ${user.lastName}`,
+      role: user.role,
+      avatar: user.avatar,
+      bio: user.bio,
+      isActive: user.isActive,
+      isEmailVerified: user.isEmailVerified,
+      lastLoginAt: user.lastLoginAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      password: '', // This will be excluded by the @Exclude decorator
+    };
   }
 
   async addToFavorites(
@@ -503,10 +519,7 @@ export class UsersService {
     return this.transformFavoriteToResponseDto(savedFavorite);
   }
 
-  async removeFromFavorites(
-    userId: string,
-    recipeId: string,
-  ): Promise<void> {
+  async removeFromFavorites(userId: string, recipeId: string): Promise<void> {
     const favorite = await this.userFavoriteRepository.findOne({
       where: { userId, recipeId },
     });

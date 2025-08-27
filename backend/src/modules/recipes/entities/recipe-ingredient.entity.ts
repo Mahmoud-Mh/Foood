@@ -5,12 +5,16 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  Index,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Recipe } from './recipe.entity';
 import { Ingredient } from '../../ingredients/entities/ingredient.entity';
 
 @Entity('recipe_ingredients')
+@Index('IDX_RECIPE_INGREDIENT_RECIPE', ['recipeId'])
+@Index('IDX_RECIPE_INGREDIENT_INGREDIENT', ['ingredientId'])
+@Index('IDX_RECIPE_INGREDIENT_ORDER', ['recipeId', 'order'])
 export class RecipeIngredient {
   @ApiProperty({ description: 'Recipe ingredient unique identifier' })
   @PrimaryGeneratedColumn('uuid')

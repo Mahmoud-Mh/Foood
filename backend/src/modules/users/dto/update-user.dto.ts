@@ -1,5 +1,5 @@
 import { ApiPropertyOptional, PartialType, OmitType } from '@nestjs/swagger';
-import { IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsOptional, MaxLength, IsBoolean } from 'class-validator';
 import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto extends PartialType(
@@ -10,6 +10,13 @@ export class UpdateUserDto extends PartialType(
     minLength: 8,
   })
   password?: string;
+
+  @ApiPropertyOptional({
+    description: 'Email verification status',
+  })
+  @IsOptional()
+  @IsBoolean()
+  isEmailVerified?: boolean;
 }
 
 export class UpdateProfileDto {

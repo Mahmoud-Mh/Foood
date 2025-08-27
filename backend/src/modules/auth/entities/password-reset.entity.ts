@@ -6,15 +6,20 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  Index,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity('password_resets')
+@Index('IDX_PASSWORD_RESET_TOKEN', ['token'])
+@Index('IDX_PASSWORD_RESET_USER_USED', ['userId', 'isUsed'])
+@Index('IDX_PASSWORD_RESET_EXPIRES_AT', ['expiresAt'])
 export class PasswordReset {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ type: 'uuid' })
+  @Index('IDX_PASSWORD_RESET_USER_ID')
   userId: string;
 
   @Column({ unique: true })

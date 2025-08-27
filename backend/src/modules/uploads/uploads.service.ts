@@ -1,6 +1,9 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '../../config/config.service';
-import { ImageOptimizerService, OptimizedImageResult } from './image-optimizer.service';
+import {
+  ImageOptimizerService,
+  OptimizedImageResult,
+} from './image-optimizer.service';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -33,6 +36,9 @@ export class UploadsService {
       throw new BadRequestException('No file uploaded');
     }
 
+    // Validate filename - sanitize dangerous characters
+    this.validateFilename(file.originalname);
+
     const allowedMimeTypes = [
       'image/jpeg',
       'image/png',
@@ -50,8 +56,17 @@ export class UploadsService {
       throw new BadRequestException('File size cannot exceed 5MB');
     }
 
+    // Validate minimum file size (avoid empty/corrupted files)
+    const minSize = 1024; // 1KB minimum
+    if (file.size < minSize) {
+      throw new BadRequestException('File is too small or corrupted');
+    }
+
     // Validate file content using magic numbers (file signatures)
     this.validateFileSignature(file);
+
+    // Additional malware/script detection
+    this.scanForMaliciousContent(file);
   }
 
   /**
@@ -126,6 +141,95 @@ export class UploadsService {
   }
 
   /**
+   * Validate filename for security
+   */
+  private validateFilename(originalName: string): void {
+    if (!originalName) {
+      throw new BadRequestException('Filename is required');
+    }
+
+    // Check for dangerous characters and patterns
+    const dangerousPatterns = [
+      /\.\./, // Directory traversal
+      /[<>:"|?*]/, // Invalid filename characters
+      /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i, // Windows reserved names
+      /^\./, // Hidden files starting with dot
+      /\.(exe|bat|cmd|com|pif|scr|vbs|js|jar|sh|php|pl|py|rb)$/i, // Executable extensions
+    ];
+
+    for (const pattern of dangerousPatterns) {
+      if (pattern.test(originalName)) {
+        throw new BadRequestException(
+          'Filename contains invalid characters or patterns',
+        );
+      }
+    }
+
+    // Check filename length
+    if (originalName.length > 255) {
+      throw new BadRequestException('Filename is too long');
+    }
+
+    // Ensure filename has valid extension
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const extension = path.extname(originalName).toLowerCase();
+    if (!allowedExtensions.includes(extension)) {
+      throw new BadRequestException('File extension not allowed');
+    }
+  }
+
+  /**
+   * Scan file content for malicious patterns
+   */
+  private scanForMaliciousContent(file: Express.Multer.File): void {
+    const buffer = file.buffer;
+    const content = buffer.toString('utf8', 0, Math.min(buffer.length, 8192)); // Check first 8KB
+
+    // Look for script tags, PHP tags, and other potentially dangerous content
+    const maliciousPatterns = [
+      /<script[\s\S]*?>/i,
+      /<\?php/i,
+      /<%[\s\S]*?%>/i,
+      /javascript:/i,
+      /vbscript:/i,
+      /onload\s*=/i,
+      /onerror\s*=/i,
+      /eval\s*\(/i,
+      /document\.write/i,
+    ];
+
+    for (const pattern of maliciousPatterns) {
+      if (pattern.test(content)) {
+        this.logger.warn(
+          `Malicious content detected in file: ${file.originalname}`,
+        );
+        throw new BadRequestException(
+          'File contains potentially malicious content',
+        );
+      }
+    }
+
+    // Check for suspicious binary patterns that might indicate embedded scripts
+    const suspiciousBinaryPatterns = [
+      Buffer.from('#!/bin/sh'),
+      Buffer.from('#!/bin/bash'),
+      Buffer.from('MZ'), // PE header
+      Buffer.from('PK'), // ZIP header (could contain malware)
+    ];
+
+    for (const pattern of suspiciousBinaryPatterns) {
+      if (buffer.indexOf(pattern) !== -1) {
+        this.logger.warn(
+          `Suspicious binary pattern detected in file: ${file.originalname}`,
+        );
+        throw new BadRequestException(
+          'File contains suspicious binary patterns',
+        );
+      }
+    }
+  }
+
+  /**
    * Delete old file when updating
    */
   deleteFile(filepath: string): void {
@@ -191,7 +295,10 @@ export class UploadsService {
 
     try {
       // Define output directory
-      const outputDir = path.join('./uploads', type === 'avatar' ? 'avatars' : 'recipes');
+      const outputDir = path.join(
+        './uploads',
+        type === 'avatar' ? 'avatars' : 'recipes',
+      );
       await fs.promises.mkdir(outputDir, { recursive: true });
 
       let optimizationResult: OptimizedImageResult;
@@ -214,10 +321,12 @@ export class UploadsService {
       // Generate URLs
       const optimizedFilename = path.basename(optimizationResult.optimizedPath);
       const optimizedUrl = this.getFileUrl(optimizedFilename, type);
-      
+
       let thumbnailUrl: string | undefined;
       if (optimizationResult.thumbnailPath) {
-        const thumbnailFilename = path.basename(optimizationResult.thumbnailPath);
+        const thumbnailFilename = path.basename(
+          optimizationResult.thumbnailPath,
+        );
         thumbnailUrl = this.getFileUrl(thumbnailFilename, type);
       }
 
@@ -248,7 +357,8 @@ export class UploadsService {
       const filename = this.getFilenameFromUrl(originalUrl);
       if (!filename) return null;
 
-      const thumbnailFilename = this.imageOptimizer.getThumbnailFilename(filename);
+      const thumbnailFilename =
+        this.imageOptimizer.getThumbnailFilename(filename);
       return this.getFileUrl(thumbnailFilename, 'recipe');
     } catch {
       return null;
@@ -268,7 +378,8 @@ export class UploadsService {
 
     // Delete thumbnail if it exists (for recipes)
     if (type === 'recipe') {
-      const thumbnailFilename = this.imageOptimizer.getThumbnailFilename(filename);
+      const thumbnailFilename =
+        this.imageOptimizer.getThumbnailFilename(filename);
       const thumbnailPath = this.getFilePath(thumbnailFilename, type);
       this.deleteFile(thumbnailPath);
     }
@@ -281,7 +392,7 @@ export class UploadsService {
     const directories = [
       './uploads',
       './uploads/temp',
-      './uploads/avatars', 
+      './uploads/avatars',
       './uploads/recipes',
     ];
 

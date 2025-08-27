@@ -50,6 +50,7 @@ export class UploadsController {
   @Post('avatar')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 uploads per minute for authenticated users
   @ApiOperation({ summary: 'Upload user avatar image' })
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
@@ -92,9 +93,14 @@ export class UploadsController {
         mimetype: 'image/jpeg', // Optimized images are converted to JPEG
       };
 
-      return ApiResponseDto.success('Avatar uploaded and optimized successfully', response);
+      return ApiResponseDto.success(
+        'Avatar uploaded and optimized successfully',
+        response,
+      );
     } catch (error) {
-      throw new BadRequestException(error.message || 'Failed to upload avatar');
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to upload avatar';
+      throw new BadRequestException(errorMessage);
     }
   }
 
@@ -147,9 +153,14 @@ export class UploadsController {
         mimetype: 'image/jpeg', // Optimized images are converted to JPEG
       };
 
-      return ApiResponseDto.success('Avatar uploaded and optimized successfully', response);
+      return ApiResponseDto.success(
+        'Avatar uploaded and optimized successfully',
+        response,
+      );
     } catch (error) {
-      throw new BadRequestException(error.message || 'Failed to upload avatar');
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to upload avatar';
+      throw new BadRequestException(errorMessage);
     }
   }
 
@@ -198,6 +209,7 @@ export class UploadsController {
   @Post('recipe')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
+  @Throttle({ default: { limit: 15, ttl: 60000 } }) // 15 uploads per minute for recipes
   @ApiOperation({ summary: 'Upload recipe image' })
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
@@ -242,7 +254,11 @@ export class UploadsController {
         response,
       );
     } catch (error) {
-      throw new BadRequestException(error.message || 'Failed to upload recipe image');
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to upload recipe image';
+      throw new BadRequestException(errorMessage);
     }
   }
 

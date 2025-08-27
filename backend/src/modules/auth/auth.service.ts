@@ -4,6 +4,7 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
+import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BusinessException } from '../../common/exceptions/business.exception';
@@ -17,6 +18,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthResponseDto, TokenResponseDto } from './dto/auth-response.dto';
 import { PasswordReset } from './entities/password-reset.entity';
+import { EmailVerification } from './entities/email-verification.entity';
 import { EmailService } from '../email/email.service';
 
 export interface JwtPayload {
@@ -43,6 +45,8 @@ export class AuthService {
     private readonly configService: ConfigService,
     @InjectRepository(PasswordReset)
     private passwordResetRepository: Repository<PasswordReset>,
+    @InjectRepository(EmailVerification)
+    private emailVerificationRepository: Repository<EmailVerification>,
     private emailService: EmailService,
   ) {}
 
@@ -312,6 +316,84 @@ export class AuthService {
     return { message: 'Password reset successfully' };
   }
 
+  async sendEmailVerification(
+    userId: string,
+  ): Promise<{ message: string; token?: string }> {
+    const user = await this.usersService.findOne(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.isEmailVerified) {
+      throw new BadRequestException('Email is already verified');
+    }
+
+    // Invalidate any existing email verification tokens for this user
+    await this.emailVerificationRepository.update(
+      { userId: user.id, isUsed: false },
+      { isUsed: true },
+    );
+
+    // Generate a new email verification token
+    const token = this.generateSecureToken();
+    const emailVerification = this.emailVerificationRepository.create({
+      userId: user.id,
+      token,
+    });
+
+    await this.emailVerificationRepository.save(emailVerification);
+
+    // Send email verification email
+    try {
+      await this.emailService.sendVerificationEmail(
+        user.email,
+        user.fullName,
+        token,
+      );
+    } catch (error) {
+      console.error('Failed to send email verification email:', error);
+      throw new BadRequestException('Failed to send verification email');
+    }
+
+    // In development mode, return the token for convenience
+    if (this.configService.isDevelopment) {
+      return {
+        message: 'Email verification sent (development mode)',
+        token,
+      };
+    }
+
+    return { message: 'Email verification sent successfully' };
+  }
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    const emailVerification = await this.emailVerificationRepository.findOne({
+      where: { token, isUsed: false },
+      relations: ['user'],
+    });
+
+    if (!emailVerification || !emailVerification.isValid()) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    // Mark the user's email as verified
+    await this.usersService.update(emailVerification.userId, {
+      isEmailVerified: true,
+    });
+
+    // Mark the token as used
+    emailVerification.isUsed = true;
+    await this.emailVerificationRepository.save(emailVerification);
+
+    // Invalidate all other existing tokens for this user
+    await this.emailVerificationRepository.update(
+      { userId: emailVerification.userId, isUsed: false },
+      { isUsed: true },
+    );
+
+    return { message: 'Email verified successfully' };
+  }
+
   private generateTokens(
     userId: string,
     email: string,
@@ -371,7 +453,6 @@ export class AuthService {
   }
 
   private generateSecureToken(): string {
-    const crypto = require('crypto');
     return crypto.randomBytes(32).toString('hex');
   }
 }

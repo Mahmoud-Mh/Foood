@@ -113,12 +113,8 @@ export class ImageOptimizerService {
       // Create Sharp instance
       let sharpInstance = sharp(inputPath);
 
-      // Get original image metadata
-      const metadata = await sharpInstance.metadata();
-      const originalDimensions = {
-        width: metadata.width || 0,
-        height: metadata.height || 0,
-      };
+      // Get original image metadata (for future use)
+      await sharpInstance.metadata();
 
       // Apply transformations for main image
       if (options.width || options.height) {
@@ -160,16 +156,10 @@ export class ImageOptimizerService {
       // Generate thumbnail if requested
       if (generateThumbnail && thumbnailPath) {
         await sharp(inputPath)
-          .resize(
-            this.thumbnailOptions.width,
-            this.thumbnailOptions.height,
-            {
-              fit: this.thumbnailOptions.maintainAspectRatio
-                ? 'inside'
-                : 'cover',
-              withoutEnlargement: true,
-            },
-          )
+          .resize(this.thumbnailOptions.width, this.thumbnailOptions.height, {
+            fit: this.thumbnailOptions.maintainAspectRatio ? 'inside' : 'cover',
+            withoutEnlargement: true,
+          })
           .jpeg({ quality: this.thumbnailOptions.quality || 80 })
           .toFile(thumbnailPath);
       }
@@ -177,7 +167,8 @@ export class ImageOptimizerService {
       // Get optimized file stats
       const optimizedStats = await fs.stat(optimizedPath);
       const optimizedSize = optimizedStats.size;
-      const compressionRatio = ((originalSize - optimizedSize) / originalSize) * 100;
+      const compressionRatio =
+        ((originalSize - optimizedSize) / originalSize) * 100;
 
       // Get final dimensions
       const finalMetadata = await sharp(optimizedPath).metadata();
@@ -203,7 +194,9 @@ export class ImageOptimizerService {
       return result;
     } catch (error) {
       this.logger.error(`Failed to optimize image ${filename}:`, error);
-      throw new Error(`Image optimization failed: ${error.message}`);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Image optimization failed: ${errorMessage}`);
     }
   }
 
@@ -236,7 +229,10 @@ export class ImageOptimizerService {
   /**
    * Get optimized filename with extension
    */
-  getOptimizedFilename(originalFilename: string, format: string = 'jpeg'): string {
+  getOptimizedFilename(
+    originalFilename: string,
+    format: string = 'jpeg',
+  ): string {
     const parsedPath = path.parse(originalFilename);
     const extension = format === 'jpeg' ? 'jpg' : format;
     return `${parsedPath.name}.${extension}`;
@@ -245,7 +241,10 @@ export class ImageOptimizerService {
   /**
    * Get thumbnail filename
    */
-  getThumbnailFilename(originalFilename: string, format: string = 'jpeg'): string {
+  getThumbnailFilename(
+    originalFilename: string,
+    format: string = 'jpeg',
+  ): string {
     const parsedPath = path.parse(originalFilename);
     const extension = format === 'jpeg' ? 'jpg' : format;
     return `${parsedPath.name}_thumb.${extension}`;

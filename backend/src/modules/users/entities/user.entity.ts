@@ -7,7 +7,6 @@ import {
   BeforeInsert,
   BeforeUpdate,
   Index,
-  OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import * as bcrypt from 'bcryptjs';

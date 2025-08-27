@@ -26,7 +26,11 @@ import {
 } from '@nestjs/swagger';
 
 import { RecipesService, RecipeSearchFilters } from './recipes.service';
-import { RecipeSearchService, RecipeSearchFilters as SearchServiceFilters, RecipeSearchOptions } from './services/recipe-search.service';
+import {
+  RecipeSearchService,
+  RecipeSearchFilters as SearchServiceFilters,
+  RecipeSearchOptions,
+} from './services/recipe-search.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
 import {
@@ -292,12 +296,24 @@ export class RecipesController {
     @Query('maxTime') maxTime?: number,
     @Query('minRating') minRating?: number,
     @Query('tags') tagsString?: string,
-    @Query('sortBy', new DefaultValuePipe('createdAt')) sortBy: 'createdAt' | 'title' | 'totalTime' | 'viewsCount' | 'likesCount' = 'createdAt',
-    @Query('sortOrder', new DefaultValuePipe('DESC')) sortOrder: 'ASC' | 'DESC' = 'DESC',
+    @Query('sortBy', new DefaultValuePipe('createdAt'))
+    sortBy:
+      | 'createdAt'
+      | 'title'
+      | 'totalTime'
+      | 'viewsCount'
+      | 'likesCount' = 'createdAt',
+    @Query('sortOrder', new DefaultValuePipe('DESC'))
+    sortOrder: 'ASC' | 'DESC' = 'DESC',
   ): Promise<ApiResponseDto<PaginatedResultDto<RecipeListResponseDto>>> {
     // Parse tags from comma-separated string
-    const tags = tagsString ? tagsString.split(',').map(tag => tag.trim()).filter(tag => tag) : undefined;
-    
+    const tags = tagsString
+      ? tagsString
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter((tag) => tag)
+      : undefined;
+
     const filters: SearchServiceFilters = {
       categoryId,
       difficulty,
@@ -306,14 +322,14 @@ export class RecipesController {
       tags,
       status: RecipeStatus.PUBLISHED,
     };
-    
+
     const options: RecipeSearchOptions = {
       page,
       limit,
       sortBy,
       sortOrder,
     };
-    
+
     const result = await this.recipeSearchService.searchRecipes(
       searchTerm,
       filters,

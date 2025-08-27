@@ -7,7 +7,10 @@ import {
   HttpCode,
   Patch,
   Request,
+  Get,
+  Query,
 } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import {
   ApiTags,
   ApiOperation,
@@ -37,7 +40,6 @@ import {
 } from '../../common/decorators/auth.decorators';
 import { UserResponseDto } from '../users/dto/user-response.dto';
 import { ApiResponseDto } from '../../common/dto/response.dto';
-
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -181,17 +183,14 @@ export class AuthController {
   })
   async forgotPassword(
     @Body() dto: ForgotPasswordDto,
-    @Request() req: any,
+    @Request() req: ExpressRequest,
   ): Promise<ApiResponseDto<PasswordResetResponseDto>> {
     const result = await this.authService.requestPasswordReset(
       dto.email,
       req.ip,
       req.get('user-agent'),
     );
-    return ApiResponseDto.success(
-      result.message,
-      result,
-    );
+    return ApiResponseDto.success(result.message, result);
   }
 
   @Post('reset-password')
@@ -213,5 +212,48 @@ export class AuthController {
       dto.newPassword,
     );
     return ApiResponseDto.success(result.message, result);
+  }
+
+  // === Email verification ===
+
+  @Post('send-verification')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Send email verification to current user' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Email verification sent successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Email is already verified or failed to send',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Authentication required',
+  })
+  async sendEmailVerification(
+    @CurrentUserId() userId: string,
+  ): Promise<ApiResponseDto<{ message: string; token?: string }>> {
+    const result = await this.authService.sendEmailVerification(userId);
+    return ApiResponseDto.success('Email verification sent', result);
+  }
+
+  @Get('verify-email')
+  @Public()
+  @ApiOperation({ summary: 'Verify email address using token' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Email verified successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid or expired verification token',
+  })
+  async verifyEmail(
+    @Query('token') token: string,
+  ): Promise<ApiResponseDto<{ message: string }>> {
+    const result = await this.authService.verifyEmail(token);
+    return ApiResponseDto.success('Email verified successfully', result);
   }
 }

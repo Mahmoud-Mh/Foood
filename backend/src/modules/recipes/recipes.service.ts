@@ -31,7 +31,6 @@ import {
   CreateRecipeIngredientDto,
   CreateRecipeStepDto,
 } from './dto/create-recipe.dto';
-import { RecipeSearchService, RecipeSearchOptions } from './services/recipe-search.service';
 
 export interface RecipeFilters {
   categoryId?: string;

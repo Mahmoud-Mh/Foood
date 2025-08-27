@@ -6,11 +6,15 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Recipe } from './recipe.entity';
 
 @Entity('recipe_steps')
+@Index('IDX_RECIPE_STEP_RECIPE', ['recipeId'])
+@Index('IDX_RECIPE_STEP_ORDER', ['recipeId', 'stepNumber'])
+@Index('IDX_RECIPE_STEP_ACTIVE', ['isActive'])
 export class RecipeStep {
   @ApiProperty({ description: 'Recipe step unique identifier' })
   @PrimaryGeneratedColumn('uuid')
