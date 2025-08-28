@@ -281,12 +281,20 @@ export default function CreateRecipePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading recipe creation form...</p>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+        
+        <div className="relative">
+          <Navbar />
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading recipe creation form...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -294,26 +302,34 @@ export default function CreateRecipePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Recipe</h1>
-          <p className="text-gray-600">Share your delicious recipe with the community</p>
-        </div>
-
-        {/* Error Display */}
-        {errors.general && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
-            {errors.general}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-40 left-40 w-60 h-60 bg-gradient-to-br from-yellow-200 to-orange-200 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-pulse" style={{ animationDelay: '4s' }}></div>
+      </div>
+      
+      <div className="relative">
+        <Navbar />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">Create New Recipe</h1>
+            <p className="text-gray-600 text-xl">Share your delicious recipe with the community</p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Information */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
+          {/* Error Display */}
+          {errors.general && (
+            <div className="mb-6 bg-red-50/80 backdrop-blur-sm border border-red-200 text-red-600 px-4 py-3 rounded-xl shadow-lg">
+              {errors.general}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Basic Information */}
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8">Basic Information</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left Column */}
@@ -503,9 +519,9 @@ export default function CreateRecipePage() {
             </div>
           </div>
 
-          {/* Instructions */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Cooking Instructions</h2>
+            {/* Instructions */}
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8">Cooking Instructions</h2>
             <div>
               <label htmlFor="instructions" className="block text-sm font-medium text-gray-700 mb-2">
                 General Instructions *
@@ -527,39 +543,39 @@ export default function CreateRecipePage() {
             </div>
           </div>
 
-          {/* Ingredients */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Ingredients</h2>
-                <p className="text-gray-600">Add all ingredients needed for your recipe</p>
+            {/* Ingredients */}
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Ingredients</h2>
+                  <p className="text-gray-600 text-lg">Add all ingredients needed for your recipe</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={addIngredient}
+                  className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg transform hover:scale-105"
+                >
+                  <span className="mr-2 transform group-hover:scale-110 transition-transform">+</span>
+                  Add Ingredient
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={addIngredient}
-                className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
-              >
-                <span className="mr-2">+</span>
-                Add Ingredient
-              </button>
-            </div>
 
-            {errors.ingredients && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md mb-4">
-                {errors.ingredients}
-              </div>
-            )}
+              {errors.ingredients && (
+                <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-4 shadow-lg">
+                  {errors.ingredients}
+                </div>
+              )}
 
-            {formData.ingredients.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
-                <div className="text-gray-400 text-lg mb-2">🥕</div>
-                <p className="text-gray-500">No ingredients added yet</p>
-                <p className="text-gray-400 text-sm">Click &quot;Add Ingredient&quot; to get started</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {formData.ingredients.map((ingredient, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              {formData.ingredients.length === 0 ? (
+                <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-2xl">
+                  <div className="text-gray-400 text-3xl mb-4">🥕</div>
+                  <p className="text-gray-500 text-lg font-semibold mb-2">No ingredients added yet</p>
+                  <p className="text-gray-400">Click &quot;Add Ingredient&quot; to get started</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {formData.ingredients.map((ingredient, index) => (
+                    <div key={index} className="border border-gray-200 rounded-2xl p-6 bg-gradient-to-r from-gray-50 to-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
                       {/* Ingredient Selection */}
                       <div className="md:col-span-5">
@@ -666,44 +682,44 @@ export default function CreateRecipePage() {
             )}
           </div>
 
-          {/* Steps */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Step-by-Step Instructions</h2>
-                <p className="text-gray-600">Add detailed cooking steps</p>
+            {/* Steps */}
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Step-by-Step Instructions</h2>
+                  <p className="text-gray-600 text-lg">Add detailed cooking steps</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={addStep}
+                  className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg transform hover:scale-105"
+                >
+                  <span className="mr-2 transform group-hover:scale-110 transition-transform">+</span>
+                  Add Step
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={addStep}
-                className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
-              >
-                <span className="mr-2">+</span>
-                Add Step
-              </button>
-            </div>
 
-            {errors.steps && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md mb-4">
-                {errors.steps}
-              </div>
-            )}
+              {errors.steps && (
+                <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-4 shadow-lg">
+                  {errors.steps}
+                </div>
+              )}
 
-            {formData.steps.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg">
-                <div className="text-gray-400 text-lg mb-2">👨‍🍳</div>
-                <p className="text-gray-500">No steps added yet</p>
-                <p className="text-gray-400 text-sm">Click &quot;Add Step&quot; to get started</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {formData.steps.map((step, index) => (
-                  <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              {formData.steps.length === 0 ? (
+                <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-2xl">
+                  <div className="text-gray-400 text-3xl mb-4">👨‍🍳</div>
+                  <p className="text-gray-500 text-lg font-semibold mb-2">No steps added yet</p>
+                  <p className="text-gray-400">Click &quot;Add Step&quot; to get started</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {formData.steps.map((step, index) => (
+                    <div key={index} className="border border-gray-200 rounded-2xl p-6 bg-gradient-to-r from-gray-50 to-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                     <div className="flex items-start space-x-4">
-                      {/* Step Number */}
-                      <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
-                        {index + 1}
-                      </div>
+                        {/* Step Number */}
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center font-bold shadow-lg">
+                          {index + 1}
+                        </div>
 
                       {/* Step Content */}
                       <div className="flex-1 space-y-4">
@@ -751,24 +767,37 @@ export default function CreateRecipePage() {
             )}
           </div>
 
-          {/* Submit Buttons */}
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => router.push('/dashboard')}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-            >
-              {saving ? 'Creating Recipe...' : (isPublic ? 'Publish Recipe' : 'Save as Draft')}
-            </button>
-          </div>
-        </form>
+            {/* Submit Buttons */}
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={() => router.push('/dashboard')}
+                className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="group px-10 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg shadow-xl transform hover:scale-105 disabled:hover:scale-100"
+              >
+                {saving ? (
+                  <span className="flex items-center">
+                    <div className="animate-spin -ml-1 mr-3 h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                    Creating Recipe...
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    {isPublic ? 'Publish Recipe' : 'Save as Draft'}
+                    <svg className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { httpService } from './base/http.service';
+import { httpService } from './index';
 import { ApiResponse, PaginatedResult } from '../types/api.types';
 
 export interface UserFavorite {
@@ -54,7 +54,7 @@ class FavoritesService {
       // Check current status
       const statusResponse = await this.checkFavoriteStatus(recipeId);
       
-      if (statusResponse.data.isFavorite) {
+      if (statusResponse.data?.isFavorite) {
         // Remove from favorites
         await this.removeFromFavorites(recipeId);
         return { success: true, message: 'Removed from favorites', data: null };

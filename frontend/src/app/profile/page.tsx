@@ -270,7 +270,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     );
@@ -278,15 +278,18 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
-          <p className="text-gray-600 mb-6">Please sign in to view your profile</p>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent mb-4">Access Denied</h2>
+          <p className="text-gray-600 mb-8 text-lg">Please sign in to view your profile</p>
           <Link 
             href="/auth/login"
-            className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+            className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-xl transform hover:scale-105"
           >
             Sign In
+            <svg className="ml-2 w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
           </Link>
         </div>
       </div>
@@ -294,90 +297,100 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navbar />
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-40 left-40 w-60 h-60 bg-gradient-to-br from-yellow-200 to-orange-200 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-pulse" style={{ animationDelay: '4s' }}></div>
+      </div>
+      
+      <div className="relative">
+        <Navbar />
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-          <div className="flex items-center space-x-6">
-            <Image
-              src={FormatUtils.getAvatarUrl(user.avatar, FormatUtils.formatUserName(user.firstName, user.lastName))}
-              alt="Profile"
-              width={80}
-              height={80}
-              className="rounded-full"
-            />
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {FormatUtils.formatUserName(user.firstName, user.lastName)}
-              </h1>
-              <p className="text-gray-600 mt-1">{user.email}</p>
-              <div className="flex items-center space-x-4 mt-3">
-                <span className="text-sm text-gray-500">
-                  Member since {FormatUtils.formatDateShort(user.createdAt)}
-                </span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                }`}>
-                  {user.role === 'admin' ? 'Admin' : 'Member'}
-                </span>
-                {user.isActive && (
-                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Active
+        {/* Main Content */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 mb-8 border border-gray-100">
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                <Image
+                  src={FormatUtils.getAvatarUrl(user.avatar, FormatUtils.formatUserName(user.firstName, user.lastName))}
+                  alt="Profile"
+                  width={96}
+                  height={96}
+                  className="rounded-full shadow-lg border-4 border-white"
+                />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                  {FormatUtils.formatUserName(user.firstName, user.lastName)}
+                </h1>
+                <p className="text-gray-600 text-lg mb-3">{user.email}</p>
+                <div className="flex items-center flex-wrap gap-3">
+                  <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-lg">
+                    Member since {FormatUtils.formatDateShort(user.createdAt)}
                   </span>
-                )}
+                  <span className={`px-3 py-1 rounded-xl text-sm font-semibold shadow-sm ${
+                    user.role === 'admin' ? 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800' : 'bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-800'
+                  }`}>
+                    {user.role === 'admin' ? 'Admin' : 'Member'}
+                  </span>
+                  {user.isActive && (
+                    <span className="px-3 py-1 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 shadow-sm">
+                      Active
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-sm">
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8 px-8">
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'profile'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Profile Information
-              </button>
-              <button
-                onClick={() => setActiveTab('password')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'password'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Change Password
-              </button>
-              <button
-                onClick={() => setActiveTab('account')}
-                className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'account'
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Account Settings
-              </button>
-            </nav>
-          </div>
+          {/* Tabs */}
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-100">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-8">
+                <button
+                  onClick={() => setActiveTab('profile')}
+                  className={`py-4 px-1 border-b-2 font-semibold transition-all duration-300 ${
+                    activeTab === 'profile'
+                      ? 'border-indigo-500 text-indigo-600 transform scale-105'
+                      : 'border-transparent text-gray-500 hover:text-indigo-600 hover:border-indigo-300'
+                  }`}
+                >
+                  Profile Information
+                </button>
+                <button
+                  onClick={() => setActiveTab('password')}
+                  className={`py-4 px-1 border-b-2 font-semibold transition-all duration-300 ${
+                    activeTab === 'password'
+                      ? 'border-indigo-500 text-indigo-600 transform scale-105'
+                      : 'border-transparent text-gray-500 hover:text-indigo-600 hover:border-indigo-300'
+                  }`}
+                >
+                  Change Password
+                </button>
+                <button
+                  onClick={() => setActiveTab('account')}
+                  className={`py-4 px-1 border-b-2 font-semibold transition-all duration-300 ${
+                    activeTab === 'account'
+                      ? 'border-indigo-500 text-indigo-600 transform scale-105'
+                      : 'border-transparent text-gray-500 hover:text-indigo-600 hover:border-indigo-300'
+                  }`}
+                >
+                  Account Settings
+                </button>
+              </nav>
+            </div>
 
-          <div className="p-8">
+            <div className="p-8">
             {/* Profile Tab */}
             {activeTab === 'profile' && (
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Profile Information</h3>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">Profile Information</h3>
                 
-                {/* Information about limitations */}
-                <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
+                  {/* Information about limitations */}
+                  <div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200 rounded-xl p-4 mb-6 shadow-sm">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -393,11 +406,11 @@ export default function ProfilePage() {
                 </div>
                 
                 <form onSubmit={handleProfileSubmit} className="space-y-6">
-                  {profileSuccess && (
-                    <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm">
-                      {profileSuccess}
-                    </div>
-                  )}
+                    {profileSuccess && (
+                      <div className="bg-green-50/80 backdrop-blur-sm border border-green-200 text-green-600 px-4 py-3 rounded-xl text-sm shadow-sm">
+                        {profileSuccess}
+                      </div>
+                    )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -492,13 +505,25 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      disabled={profileSaving}
-                      className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {profileSaving ? 'Saving...' : 'Save Changes'}
-                    </button>
+                      <button
+                        type="submit"
+                        disabled={profileSaving}
+                        className="group inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold shadow-lg transform hover:scale-105 disabled:hover:scale-100"
+                      >
+                        {profileSaving ? (
+                          <span className="flex items-center">
+                            <div className="animate-spin -ml-1 mr-3 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                            Saving...
+                          </span>
+                        ) : (
+                          <span className="flex items-center">
+                            Save Changes
+                            <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </span>
+                        )}
+                      </button>
                   </div>
                 </form>
               </div>
@@ -507,14 +532,14 @@ export default function ProfilePage() {
             {/* Password Tab */}
             {activeTab === 'password' && (
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-6">Change Password</h3>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">Change Password</h3>
                 
                 <form onSubmit={handlePasswordSubmit} className="space-y-6 max-w-md">
-                  {passwordSuccess && (
-                    <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md text-sm">
-                      {passwordSuccess}
-                    </div>
-                  )}
+                    {passwordSuccess && (
+                      <div className="bg-green-50/80 backdrop-blur-sm border border-green-200 text-green-600 px-4 py-3 rounded-xl text-sm shadow-sm">
+                        {passwordSuccess}
+                      </div>
+                    )}
 
                   <div>
                     <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
@@ -571,13 +596,25 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="flex justify-end">
-                    <button
-                      type="submit"
-                      disabled={passwordSaving}
-                      className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {passwordSaving ? 'Changing...' : 'Change Password'}
-                    </button>
+                      <button
+                        type="submit"
+                        disabled={passwordSaving}
+                        className="group inline-flex items-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold shadow-lg transform hover:scale-105 disabled:hover:scale-100"
+                      >
+                        {passwordSaving ? (
+                          <span className="flex items-center">
+                            <div className="animate-spin -ml-1 mr-3 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                            Changing...
+                          </span>
+                        ) : (
+                          <span className="flex items-center">
+                            Change Password
+                            <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                          </span>
+                        )}
+                      </button>
                   </div>
                 </form>
               </div>
@@ -586,11 +623,11 @@ export default function ProfilePage() {
             {/* Account Tab */}
             {activeTab === 'account' && (
               <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-6">Account Settings</h3>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">Account Settings</h3>
                 
                 <div className="space-y-6">
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h4 className="text-base font-medium text-gray-900 mb-4">Account Information</h4>
+                    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 shadow-sm">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Account Information</h4>
                     <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                       <div>
                         <dt className="text-sm font-medium text-gray-500">User ID</dt>
@@ -620,43 +657,47 @@ export default function ProfilePage() {
                   <div className="border-t border-gray-200 pt-6">
                     <h4 className="text-base font-medium text-red-600 mb-4">Danger Zone</h4>
                     
-                    {deleteError && (
-                      <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm mb-4">
-                        {deleteError}
-                      </div>
-                    )}
+                      {deleteError && (
+                        <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm mb-4 shadow-sm">
+                          {deleteError}
+                        </div>
+                      )}
                     
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-sm text-red-600 mb-4">
-                        Once you delete your account, there is no going back. This will permanently delete your profile, 
-                        recipes, and all associated data.
-                      </p>
-                      <button
-                        onClick={() => setShowDeleteDialog(true)}
-                        className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                      >
-                        Delete Account
-                      </button>
+                      <div className="bg-red-50/80 backdrop-blur-sm border border-red-200 rounded-2xl p-6 shadow-lg">
+                        <p className="text-red-600 mb-6 leading-relaxed">
+                          Once you delete your account, there is no going back. This will permanently delete your profile, 
+                          recipes, and all associated data.
+                        </p>
+                        <button
+                          onClick={() => setShowDeleteDialog(true)}
+                          className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl font-semibold hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300 shadow-lg transform hover:scale-105"
+                        >
+                          <svg className="mr-2 w-5 h-5 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          Delete Account
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-        <ConfirmationDialog
-          isOpen={showDeleteDialog}
-          onClose={() => setShowDeleteDialog(false)}
-          onConfirm={handleDeleteAccount}
-          title="Delete Account"
-          message="Are you absolutely sure you want to delete your account? This action cannot be undone and will permanently remove all your data, including recipes and uploaded images."
-          confirmText="Yes, Delete Account"
-          cancelText="Cancel"
-          isDangerous={true}
-          isLoading={isDeleting}
-        />
+          <ConfirmationDialog
+            isOpen={showDeleteDialog}
+            onClose={() => setShowDeleteDialog(false)}
+            onConfirm={handleDeleteAccount}
+            title="Delete Account"
+            message="Are you absolutely sure you want to delete your account? This action cannot be undone and will permanently remove all your data, including recipes and uploaded images."
+            confirmText="Yes, Delete Account"
+            cancelText="Cancel"
+            isDangerous={true}
+            isLoading={isDeleting}
+          />
+        </div>
       </div>
     );
   } 

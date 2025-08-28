@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from './ErrorBoundary';
 import { PageErrorBoundary } from './PageErrorBoundary';
+import { AuthProvider } from '@/context/AuthContext';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -18,7 +19,9 @@ export function Providers({ children }: ProvidersProps) {
           console.error('Global error boundary:', error, errorInfo);
         }}
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
         
         {/* Toast notifications */}
         <Toaster

@@ -195,10 +195,30 @@ export class FormatUtils {
   public static getAvatarUrl(url?: string, name?: string): string {
     if (url) return url;
     
-    // Generate a simple avatar URL based on name initials
+    // Generate a beautiful avatar URL based on name initials
     if (name) {
-      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
-      return `https://ui-avatars.com/api/?name=${initials}&background=6366f1&color=fff&size=128`;
+      const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      
+      // Use a variety of gradient-like colors for different users
+      const colors = [
+        '6366f1', // indigo
+        '8b5cf6', // purple  
+        'ec4899', // pink
+        'ef4444', // red
+        'f59e0b', // amber
+        '10b981', // emerald
+        '06b6d4', // cyan
+        '3b82f6', // blue
+      ];
+      
+      // Generate consistent color based on name hash
+      const nameHash = name.split('').reduce((hash, char) => {
+        return char.charCodeAt(0) + ((hash << 5) - hash);
+      }, 0);
+      const colorIndex = Math.abs(nameHash) % colors.length;
+      const backgroundColor = colors[colorIndex];
+      
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=${backgroundColor}&color=ffffff&size=256&font-size=0.33&rounded=true&bold=true`;
     }
     
     return '/images/default-avatar.jpg';

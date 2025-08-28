@@ -266,12 +266,21 @@ export default function EditRecipePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+
         <Navbar />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading recipe...</p>
+            <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </div>
+            <p className="text-lg text-gray-600">Loading recipe for editing...</p>
           </div>
         </div>
       </div>
@@ -280,15 +289,25 @@ export default function EditRecipePage() {
 
   if (error || !recipe) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+
         <Navbar />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Cannot Edit Recipe</h1>
-            <p className="text-gray-600 mb-6">{error || 'The recipe you are looking for does not exist.'}</p>
+            <div className="w-24 h-24 bg-gradient-to-r from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl">
+              <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Cannot Edit Recipe</h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">{error || 'The recipe you are looking for does not exist.'}</p>
             <button 
               onClick={() => router.back()}
-              className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition"
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg transform hover:scale-105"
             >
               Go Back
             </button>
@@ -299,30 +318,59 @@ export default function EditRecipePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-200 to-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-indigo-200 to-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/3 left-1/2 w-60 h-60 bg-gradient-to-br from-green-200 to-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" style={{ animationDelay: '4s' }}></div>
+      </div>
+
       <Navbar />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Edit Recipe</h1>
-              <p className="text-gray-600 mt-2">Update your recipe details and ingredients</p>
-            </div>
-            <button
-              onClick={() => router.back()}
-              className="text-gray-600 hover:text-gray-800 transition"
-            >
-              ← Back to Recipe
-            </button>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 text-sm font-medium mb-6 animate-bounce">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Recipe Editor
           </div>
+          
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+            Edit Your 
+            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent block animate-pulse">
+              Recipe
+            </span>
+          </h1>
+          
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 mb-8">
+            Update your recipe details, ingredients, and cooking instructions to make it even better
+          </p>
+          
+          <button
+            onClick={() => router.back()}
+            className="group inline-flex items-center border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-2xl hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-300 font-semibold backdrop-blur-sm bg-white/50"
+          >
+            <svg className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Recipe
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information */}
-          <div className="bg-white rounded-xl shadow-sm p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">📝 Basic Information</h2>
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <span className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </span>
+              Basic Information
+            </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -333,8 +381,8 @@ export default function EditRecipePage() {
                   type="text"
                   value={recipeData.title}
                   onChange={(e) => setRecipeData(prev => ({ ...prev, title: e.target.value }))}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                    errors.title ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 ${
+                    errors.title ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                   placeholder="Enter recipe title"
                 />
@@ -348,8 +396,8 @@ export default function EditRecipePage() {
                 <select
                   value={recipeData.categoryId}
                   onChange={(e) => setRecipeData(prev => ({ ...prev, categoryId: e.target.value }))}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                    errors.categoryId ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 appearance-none bg-white ${
+                    errors.categoryId ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <option value="">Select a category</option>
@@ -369,7 +417,7 @@ export default function EditRecipePage() {
                 <select
                   value={recipeData.difficulty}
                   onChange={(e) => setRecipeData(prev => ({ ...prev, difficulty: e.target.value as DifficultyLevel }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 appearance-none bg-white hover:border-gray-300"
                 >
                   <option value={DifficultyLevel.EASY}>Easy</option>
                   <option value={DifficultyLevel.MEDIUM}>Medium</option>
@@ -414,8 +462,8 @@ export default function EditRecipePage() {
                 value={recipeData.description}
                 onChange={(e) => setRecipeData(prev => ({ ...prev, description: e.target.value }))}
                 rows={3}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                  errors.description ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 ${
+                  errors.description ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                 }`}
                 placeholder="Describe your recipe..."
               />
@@ -430,8 +478,8 @@ export default function EditRecipePage() {
                 value={recipeData.instructions}
                 onChange={(e) => setRecipeData(prev => ({ ...prev, instructions: e.target.value }))}
                 rows={4}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                  errors.instructions ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 ${
+                  errors.instructions ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                 }`}
                 placeholder="Provide general cooking instructions..."
               />
@@ -440,8 +488,15 @@ export default function EditRecipePage() {
           </div>
 
           {/* Recipe Details */}
-          <div className="bg-white rounded-xl shadow-sm p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">⏱️ Recipe Details</h2>
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+              <span className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </span>
+              Recipe Details
+            </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
@@ -452,8 +507,8 @@ export default function EditRecipePage() {
                   type="number"
                   value={recipeData.prepTimeMinutes}
                   onChange={(e) => setRecipeData(prev => ({ ...prev, prepTimeMinutes: parseInt(e.target.value) || 0 }))}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                    errors.prepTimeMinutes ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 ${
+                    errors.prepTimeMinutes ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                   min="0"
                 />
@@ -468,8 +523,8 @@ export default function EditRecipePage() {
                   type="number"
                   value={recipeData.cookTimeMinutes}
                   onChange={(e) => setRecipeData(prev => ({ ...prev, cookTimeMinutes: parseInt(e.target.value) || 0 }))}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                    errors.cookTimeMinutes ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 ${
+                    errors.cookTimeMinutes ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                   min="0"
                 />
@@ -484,8 +539,8 @@ export default function EditRecipePage() {
                   type="number"
                   value={recipeData.servings}
                   onChange={(e) => setRecipeData(prev => ({ ...prev, servings: parseInt(e.target.value) || 0 }))}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                    errors.servings ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 ${
+                    errors.servings ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                   min="1"
                 />
@@ -495,15 +550,25 @@ export default function EditRecipePage() {
           </div>
 
           {/* Ingredients */}
-          <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">🥕 Ingredients</h2>
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                <span className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </span>
+                Ingredients
+              </h2>
               <button
                 type="button"
                 onClick={addIngredient}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+                className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-3 rounded-2xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 font-semibold transform hover:scale-105 shadow-lg"
               >
-                + Add Ingredient
+                <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Ingredient
               </button>
             </div>
 
@@ -511,13 +576,18 @@ export default function EditRecipePage() {
 
             <div className="space-y-4">
               {recipeData.ingredients.map((ingredient, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
+                <div key={index} className="border-2 border-gray-200 rounded-2xl p-6 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium text-gray-900">Ingredient {index + 1}</h3>
+                    <h3 className="font-semibold text-gray-900 flex items-center">
+                      <span className="w-6 h-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center text-white text-xs font-bold mr-2">
+                        {index + 1}
+                      </span>
+                      Ingredient {index + 1}
+                    </h3>
                     <button
                       type="button"
                       onClick={() => removeIngredient(index)}
-                      className="text-red-500 hover:text-red-700 transition"
+                      className="text-red-500 hover:text-red-700 transition-colors bg-red-50 hover:bg-red-100 px-3 py-1 rounded-xl text-sm font-medium"
                     >
                       Remove
                     </button>
@@ -531,7 +601,7 @@ export default function EditRecipePage() {
                       <select
                         value={ingredient.ingredientId}
                         onChange={(e) => updateIngredient(index, 'ingredientId', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 hover:border-gray-300 bg-white"
                       >
                         <option value="">Select ingredient</option>
                         {ingredients.map((ing) => (
@@ -550,7 +620,7 @@ export default function EditRecipePage() {
                         type="number"
                         value={ingredient.quantity}
                         onChange={(e) => updateIngredient(index, 'quantity', parseFloat(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 hover:border-gray-300 bg-white"
                         min="0"
                         step="0.1"
                       />
@@ -564,7 +634,7 @@ export default function EditRecipePage() {
                         type="text"
                         value={ingredient.unit}
                         onChange={(e) => updateIngredient(index, 'unit', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 hover:border-gray-300 bg-white"
                         placeholder="cup, tbsp, etc."
                       />
                     </div>
@@ -600,15 +670,25 @@ export default function EditRecipePage() {
           </div>
 
           {/* Steps */}
-          <div className="bg-white rounded-xl shadow-sm p-8">
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">👨‍🍳 Cooking Steps</h2>
+              <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                <span className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mr-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </span>
+                Cooking Steps
+              </h2>
               <button
                 type="button"
                 onClick={addStep}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-semibold transform hover:scale-105 shadow-lg"
               >
-                + Add Step
+                <svg className="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Step
               </button>
             </div>
 
@@ -616,13 +696,18 @@ export default function EditRecipePage() {
 
             <div className="space-y-6">
               {recipeData.steps.map((step, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-6">
+                <div key={index} className="border-2 border-gray-200 rounded-2xl p-6 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-medium text-gray-900">Step {step.stepNumber}</h3>
+                    <h3 className="font-semibold text-gray-900 flex items-center">
+                      <span className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white text-sm font-bold mr-3">
+                        {step.stepNumber}
+                      </span>
+                      Step {step.stepNumber}
+                    </h3>
                     <button
                       type="button"
                       onClick={() => removeStep(index)}
-                      className="text-red-500 hover:text-red-700 transition"
+                      className="text-red-500 hover:text-red-700 transition-colors bg-red-50 hover:bg-red-100 px-3 py-1 rounded-xl text-sm font-medium"
                     >
                       Remove
                     </button>
@@ -637,7 +722,7 @@ export default function EditRecipePage() {
                         type="text"
                         value={step.title}
                         onChange={(e) => updateStep(index, 'title', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 hover:border-gray-300 bg-white"
                         placeholder="e.g., Prepare ingredients"
                       />
                     </div>
@@ -650,7 +735,7 @@ export default function EditRecipePage() {
                         type="number"
                         value={step.timeMinutes || ''}
                         onChange={(e) => updateStep(index, 'timeMinutes', parseInt(e.target.value) || 0)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 hover:border-gray-300 bg-white"
                         min="0"
                       />
                     </div>
@@ -678,7 +763,7 @@ export default function EditRecipePage() {
                         type="text"
                         value={step.tips || ''}
                         onChange={(e) => updateStep(index, 'tips', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 hover:border-gray-300 bg-white"
                         placeholder="Helpful tips for this step"
                       />
                     </div>
@@ -691,7 +776,7 @@ export default function EditRecipePage() {
                         type="text"
                         value={step.temperature || ''}
                         onChange={(e) => updateStep(index, 'temperature', e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 hover:border-gray-300 bg-white"
                         placeholder="e.g., 350°F, medium heat"
                       />
                     </div>
@@ -702,21 +787,45 @@ export default function EditRecipePage() {
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
-            >
-              {saving ? 'Saving...' : 'Update Recipe'}
-            </button>
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="group border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-2xl hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition-all duration-300 font-semibold backdrop-blur-sm bg-white/50 w-full sm:w-auto"
+              >
+                <span className="flex items-center justify-center">
+                  <svg className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Cancel Changes
+                </span>
+              </button>
+              <button
+                type="submit"
+                disabled={saving}
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-10 py-4 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none w-full sm:w-auto"
+              >
+                <span className="flex items-center justify-center">
+                  {saving ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Saving Recipe...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Update Recipe
+                    </>
+                  )}
+                </span>
+              </button>
+            </div>
           </div>
         </form>
       </div>

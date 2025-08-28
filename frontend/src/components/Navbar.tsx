@@ -4,37 +4,17 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services';
-import { User } from '@/types/api.types';
+import { useAuth } from '@/context/AuthContext';
 import { FormatUtils } from '@/utils/formatters';
 
 export default function Navbar() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isLoading, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<'left' | 'right'>('right');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        if (authService.isAuthenticated()) {
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        // Clear invalid auth state
-        authService.logout();
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -65,21 +45,27 @@ export default function Navbar() {
   }, [dropdownOpen]);
 
   const handleLogout = () => {
-    authService.logout();
-    setUser(null);
+    logout();
     setDropdownOpen(false);
     router.push('/');
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <nav className="bg-white shadow-sm sticky top-0 z-50">
+      <nav className="bg-white/90 backdrop-blur-lg shadow-xl sticky top-0 z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-16 sm:h-18">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-indigo-600">Recipe Hub</h1>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-2 sm:mr-3">
+                <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                </svg>
+              </div>
+              <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Recipe Hub
+              </span>
             </div>
-            <div className="animate-pulse bg-gray-200 h-8 w-32 rounded"></div>
+            <div className="animate-pulse bg-gray-200 h-8 w-32 rounded-xl"></div>
           </div>
         </div>
       </nav>
@@ -87,33 +73,59 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
+    <nav className="bg-white/90 backdrop-blur-lg shadow-lg sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 sm:h-18">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-indigo-600">
-              Recipe Hub
+            <Link href="/" className="flex items-center group">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-2 sm:mr-3 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                </svg>
+              </div>
+              <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Recipe Hub
+              </span>
             </Link>
           </div>
 
           {/* Recipe Navigation - Center */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/recipes" className="text-gray-700 hover:text-indigo-600 transition font-medium">
+            <Link href="/recipes" className="group relative text-gray-700 hover:text-indigo-600 transition-all duration-300 font-medium py-2">
               Browse Recipes
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
             </Link>
-            <Link href="/categories" className="text-gray-700 hover:text-indigo-600 transition font-medium">
+            <Link href="/categories" className="group relative text-gray-700 hover:text-indigo-600 transition-all duration-300 font-medium py-2">
               Categories
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
             </Link>
             {user && (
-              <Link href="/recipes/create" className="text-gray-700 hover:text-indigo-600 transition font-medium">
+              <Link href="/recipes/create" className="group relative text-gray-700 hover:text-indigo-600 transition-all duration-300 font-medium py-2">
                 Create Recipe
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 group-hover:w-full transition-all duration-300"></span>
               </Link>
             )}
           </div>
 
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center mr-4">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
+
           {/* User Menu / Auth Buttons */}
-          <div className="flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
             {user ? (
                               <div className="relative" ref={dropdownRef}>
                   <button
@@ -143,7 +155,7 @@ export default function Navbar() {
 
                 {/* Dropdown Menu */}
                 {dropdownOpen && (
-                  <div className={`absolute mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 ${
+                  <div className={`absolute mt-2 w-48 sm:w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 ${
                     dropdownPosition === 'right' ? 'right-0' : 'left-0'
                   }`}>
                     <div className="px-4 py-3 border-b border-gray-100">
@@ -227,24 +239,118 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3 sm:space-x-4">
                 <Link 
                   href="/auth/login"
-                  className="text-gray-700 hover:text-indigo-600 transition font-medium"
+                  className="text-gray-700 hover:text-indigo-600 transition font-medium text-sm sm:text-base"
                 >
                   Sign In
                 </Link>
                 <Link 
                   href="/auth/register"
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition font-medium"
+                  className="group inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold text-sm sm:text-base shadow-lg transform hover:scale-105"
                 >
                   Get Started
+                  <svg className="ml-1 w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
                 </Link>
               </div>
             )}
           </div>
         </div>
       </div>
+      
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+          <div className="px-4 py-2 space-y-2">
+            <Link
+              href="/recipes"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium"
+            >
+              Browse Recipes
+            </Link>
+            <Link
+              href="/categories"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium"
+            >
+              Categories
+            </Link>
+            {user && (
+              <Link
+                href="/recipes/create"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium"
+              >
+                Create Recipe
+              </Link>
+            )}
+            
+            {/* Auth Section */}
+            <div className="border-t border-gray-200 mt-3 pt-3">
+              {user ? (
+                <div>
+                  <div className="px-3 py-2 text-sm text-gray-500 font-medium">
+                    {FormatUtils.formatUserName(user.firstName, user.lastName)}
+                  </div>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  {user.role === 'admin' && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-3 py-2 text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 rounded-xl transition-all duration-300 font-semibold text-center shadow-lg transform hover:scale-105"
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 } 

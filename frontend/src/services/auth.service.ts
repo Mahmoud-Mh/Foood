@@ -20,7 +20,7 @@ export class AuthService {
     if (typeof document === 'undefined') return
     // Parse JWT to get expiry time for better cookie sync
     const tokenData = this.parseJwtPayload(token)
-    const maxAgeSeconds = tokenData?.exp ? Math.max(0, tokenData.exp - Math.floor(Date.now() / 1000)) : 3600
+    const maxAgeSeconds = tokenData?.exp ? Math.max(0, (tokenData.exp as number) - Math.floor(Date.now() / 1000)) : 3600
     document.cookie = `auth_token=${encodeURIComponent(token)}; Max-Age=${maxAgeSeconds}; Path=/; SameSite=Lax`
   }
 
@@ -185,13 +185,13 @@ export class AuthService {
     if (!payload || !payload.exp) return false;
     
     const currentTime = Math.floor(Date.now() / 1000);
-    return payload.exp > currentTime;
+    return (payload.exp as number) > currentTime;
   }
 
   /**
    * Parse JWT payload without verification (client-side only for expiry check)
    */
-  private parseJwtPayload(token: string): Record<string, unknown> {
+  private parseJwtPayload(token: string): Record<string, any> | null {
     try {
       const base64Payload = token.split('.')[1];
       const payload = atob(base64Payload);

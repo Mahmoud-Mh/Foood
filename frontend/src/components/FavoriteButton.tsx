@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, HeartIcon } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { favoritesService } from '@/services/favorites.service';
 import { useAuth } from '@/context/AuthContext';
 
@@ -40,7 +40,7 @@ export default function FavoriteButton({
     const checkFavoriteStatus = async () => {
       try {
         const response = await favoritesService.checkFavoriteStatus(recipeId);
-        setIsFavorite(response.data.isFavorite);
+        setIsFavorite(response.data?.isFavorite || false);
       } catch (error) {
         console.error('Error checking favorite status:', error);
       }
@@ -83,11 +83,7 @@ export default function FavoriteButton({
       `}
       title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
     >
-      {isFavorite ? (
-        <HeartIcon className={`${sizeClasses[size]} fill-current`} />
-      ) : (
-        <Heart className={sizeClasses[size]} />
-      )}
+      <Heart className={`${sizeClasses[size]} ${isFavorite ? 'fill-current' : ''}`} />
       {showText && (
         <span className="text-sm font-medium">
           {isFavorite ? 'Favorited' : 'Add to Favorites'}

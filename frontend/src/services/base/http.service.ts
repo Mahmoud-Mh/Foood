@@ -123,13 +123,14 @@ export class HttpService {
     }
 
     if (!response.ok) {
-      const errorMessage = (data as Record<string, unknown>).message as string || `HTTP ${response.status}: ${response.statusText}`;
+      const errorData = data as unknown as Record<string, unknown>;
+      const errorMessage = errorData.message as string || `HTTP ${response.status}: ${response.statusText}`;
       const errorDetails: ErrorDetails = {
-        statusCode: (data as Record<string, unknown>).statusCode as number || response.status,
-        errorCode: (data as Record<string, unknown>).errorCode as string,
-        details: (data as Record<string, unknown>).details as Record<string, unknown>,
-        timestamp: (data as Record<string, unknown>).timestamp as string,
-        path: (data as Record<string, unknown>).path as string,
+        statusCode: errorData.statusCode as number || response.status,
+        errorCode: errorData.errorCode as string,
+        details: errorData.details as Record<string, unknown>,
+        timestamp: errorData.timestamp as string,
+        path: errorData.path as string,
       };
       
       throw new HttpError(response.status, errorMessage, errorDetails);
