@@ -57,7 +57,7 @@ export default function CategoriesPage() {
         const recipesMap: Record<string, Recipe[]> = {};
         for (const category of response) {
           try {
-            const recipesResult = await recipeService.getPublicRecipes({ categoryId: category.id, limit: 6 });
+            const recipesResult = await recipeService.getPublicRecipes({ categoryId: category.id, limit: 3 });
             recipesMap[category.id] = recipesResult.data;
           } catch (err) {
             console.error(`Error fetching recipes for category ${category.name}:`, err);
@@ -167,7 +167,7 @@ export default function CategoriesPage() {
             return (
               <div
                 key={category.id}
-                className="group relative bg-white/80 backdrop-blur-lg rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-gray-100 animate-fadeIn"
+                className="group relative bg-white/80 backdrop-blur-lg rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-gray-100 animate-fadeIn h-full flex flex-col"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Header with gradient and icon */}
@@ -182,19 +182,20 @@ export default function CategoriesPage() {
                   </div>
                 </Link>
 
-                {/* Content Area */}
-                <div className="p-6">
-                  {/* Popular Recipes Section */}
-                  {recipes.length > 0 && (
-                    <div className="mb-6">
-                      <div className="flex items-center mb-3">
-                        <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mr-2"></div>
-                        <h4 className="font-semibold text-gray-900 text-sm">Popular Recipes</h4>
-                      </div>
+                {/* Content Area - Fixed height with flex */}
+                <div className="p-6 flex-grow flex flex-col">
+                  {/* Popular Recipes Section - Fixed height */}
+                  <div className="flex-grow min-h-[140px] mb-6">
+                    <div className="flex items-center mb-3">
+                      <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mr-2"></div>
+                      <h4 className="font-semibold text-gray-900 text-sm">Popular Recipes</h4>
+                    </div>
+                    
+                    {recipes.length > 0 ? (
                       <div className="space-y-2">
                         {recipes.slice(0, 3).map((recipe, idx) => (
                           <div key={recipe.id} className="flex items-center text-sm text-gray-600 hover:text-indigo-600 transition-colors group">
-                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mr-3 group-hover:bg-indigo-500 transition-colors"></div>
+                            <div className="w-1.5 h-1.5 bg-gray-300 rounded-full mr-3 group-hover:bg-indigo-500 transition-colors flex-shrink-0"></div>
                             <span className="truncate font-medium">{recipe.title}</span>
                           </div>
                         ))}
@@ -204,11 +205,21 @@ export default function CategoriesPage() {
                           </div>
                         )}
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400 text-sm italic">
+                        <div className="text-center">
+                          <svg className="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                          </svg>
+                          <div>No recipes yet</div>
+                          <div className="text-xs mt-1">Be the first to add one!</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Recipe Count Badge */}
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="mb-4">
                     <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-sm font-medium">
                       <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -217,8 +228,8 @@ export default function CategoriesPage() {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="space-y-3">
+                  {/* Action Buttons - Always at bottom */}
+                  <div className="space-y-3 mt-auto">
                     <Link
                       href={`/categories/${category.id}`}
                       className="group w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 text-center block transform hover:scale-105 shadow-lg"

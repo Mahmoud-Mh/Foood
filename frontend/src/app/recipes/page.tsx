@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,49 +20,83 @@ export default function BrowseRecipesPage() {
   );
 }
 
+// Custom hook for debouncing values
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 function BrowseRecipesContent() {
   const searchParams = useSearchParams();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [filters, setFilters] = useState({
     category: searchParams.get('category') || '',
     difficulty: searchParams.get('difficulty') || '',
     search: searchParams.get('search') || '',
   });
 
+  // Debounce search input to avoid excessive API calls
+  const debouncedSearch = useDebounce(filters.search, 300);
+  const debouncedFilters = { ...filters, search: debouncedSearch };
+
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true);
+        // Only show full page loading on initial load
+        if (isInitialLoad) {
+          setLoading(true);
+        } else {
+          setSearchLoading(true);
+        }
+        
         const [recipesResult, categoriesData] = await Promise.all([
           recipeService.getPublicRecipes({
             page: 1,
             limit: 20,
-            categoryId: filters.category || undefined,
-            difficulty: filters.difficulty || undefined,
-            search: filters.search || undefined,
+            categoryId: debouncedFilters.category || undefined,
+            difficulty: debouncedFilters.difficulty || undefined,
+            search: debouncedFilters.search || undefined,
           }),
-          categoryService.getAllPublicCategories()
+          // Only fetch categories on initial load
+          isInitialLoad ? categoryService.getAllPublicCategories() : Promise.resolve(categories)
         ]);
 
         setRecipes(recipesResult.data || []);
-        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+        if (isInitialLoad) {
+          setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+          setIsInitialLoad(false);
+        }
       } catch (error) {
         console.error('Failed to load recipes:', error);
         setError('Failed to load recipes. Please try again.');
       } finally {
         setLoading(false);
+        setSearchLoading(false);
       }
     };
 
     loadData();
-  }, [filters]);
+  }, [debouncedFilters.category, debouncedFilters.difficulty, debouncedSearch]);
 
-  const handleFilterChange = (key: string, value: string) => {
+  const handleFilterChange = useCallback((key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
-  };
+  }, []);
 
   const clearFilters = () => {
     setFilters({ category: '', difficulty: '', search: '' });
@@ -111,9 +145,16 @@ function BrowseRecipesContent() {
               <label className="block text-sm font-semibold text-gray-700 mb-3">Search Recipes</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                  {searchLoading ? (
+                    <svg className="animate-spin h-5 w-5 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  )}
                 </div>
                 <input
                   type="text"
@@ -283,13 +324,25 @@ function BrowseRecipesContent() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 ${searchLoading ? 'opacity-60 pointer-events-none' : ''} transition-opacity duration-300`}>
               {recipes.map((recipe, index) => (
                 <div key={recipe.id} className="animate-fadeIn" style={{ animationDelay: `${index * 0.1}s` }}>
                   <RecipeCard recipe={recipe} />
                 </div>
               ))}
             </div>
+            
+            {searchLoading && (
+              <div className="flex justify-center items-center py-8">
+                <div className="flex items-center space-x-2 text-indigo-600">
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span className="text-sm font-medium">Searching recipes...</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -300,9 +353,9 @@ function BrowseRecipesContent() {
 // Enhanced Recipe Card Component
 function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
-    <Link href={`/recipes/${recipe.id}`} className="group block">
-      <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-gray-100">
-        <div className="relative h-48">
+    <Link href={`/recipes/${recipe.id}`} className="group block h-full">
+      <div className="h-full bg-white/80 backdrop-blur-lg rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-gray-100 flex flex-col">
+        <div className="relative h-48 flex-shrink-0">
           <Image
             src={FormatUtils.getImageUrl(recipe.imageUrl)}
             alt={recipe.title}
@@ -325,15 +378,17 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
           </div>
         </div>
         
-        <div className="p-6">
-          <h3 className="font-bold text-lg mb-2 group-hover:text-indigo-600 transition-colors duration-300 line-clamp-2">
-            {recipe.title}
-          </h3>
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
-            {FormatUtils.truncateText(recipe.description, 100)}
-          </p>
+        <div className="p-6 flex-grow flex flex-col">
+          <div className="flex-grow">
+            <h3 className="font-bold text-lg mb-2 group-hover:text-indigo-600 transition-colors duration-300 line-clamp-2 min-h-[3.5rem]">
+              {recipe.title}
+            </h3>
+            <p className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed min-h-[4.5rem]">
+              {FormatUtils.truncateText(recipe.description, 100)}
+            </p>
+          </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto">
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <div className="flex items-center">
                 <svg className="w-4 h-4 mr-1 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
