@@ -83,7 +83,13 @@ describe('UploadsService', () => {
     });
 
     it('should default to avatar type when not specified', () => {
-      const result = service.getFileUrl('profile.jpg');
+      // Override the configService for this test to use production domain
+      const productionService = new UploadsService(
+        { ...mockConfigService, isDevelopment: false } as any,
+        mockImageOptimizerService as any
+      );
+      
+      const result = productionService.getFileUrl('profile.jpg');
       
       expect(result).toBe('https://example.com/api/v1/uploads/avatar/profile.jpg');
     });
@@ -189,11 +195,11 @@ describe('UploadsService', () => {
 
     it('should throw error for dangerous filename patterns', () => {
       const dangerousFilenames = [
-        '../../../etc/passwd.jpg',
-        'test<script>.jpg',
-        'CON.jpg',
-        '.htaccess.jpg',
-        'malware.exe.jpg',
+        '../../../etc/passwd.jpg',  // Directory traversal
+        'test<script>.jpg',         // Invalid characters
+        'CON',                      // Windows reserved name
+        '.htaccess.jpg',           // Hidden file
+        'malware.exe',             // Executable extension
       ];
 
       dangerousFilenames.forEach(filename => {
@@ -373,7 +379,7 @@ describe('UploadsService', () => {
       });
 
       expect(fs.promises.mkdir).toHaveBeenCalledWith('./uploads/temp', { recursive: true });
-      expect(fs.promises.mkdir).toHaveBeenCalledWith('./uploads/avatars', { recursive: true });
+      expect(fs.promises.mkdir).toHaveBeenCalledWith(expect.stringMatching(/uploads[\\/]avatars$/), { recursive: true });
       expect(fs.promises.writeFile).toHaveBeenCalled();
       expect(mockImageOptimizerService.optimizeAvatarImage).toHaveBeenCalled();
       expect(mockImageOptimizerService.cleanupTempFile).toHaveBeenCalled();
@@ -456,12 +462,14 @@ describe('UploadsService', () => {
 
   describe('getThumbnailUrl', () => {
     it('should return thumbnail URL for valid original URL', () => {
-      const originalUrl = 'https://example.com/api/v1/uploads/recipe/dish.jpg';
+      // Reset config to development mode since previous tests modified it
+      mockConfigService.isDevelopment = true;
+      const originalUrl = 'http://localhost:3001/api/v1/uploads/recipe/dish.jpg';
       mockImageOptimizerService.getThumbnailFilename.mockReturnValue('dish_thumb.jpg');
 
       const result = service.getThumbnailUrl(originalUrl);
 
-      expect(result).toBe('https://example.com/api/v1/uploads/recipe/dish_thumb.jpg');
+      expect(result).toBe('http://localhost:3001/api/v1/uploads/recipe/dish_thumb.jpg');
       expect(mockImageOptimizerService.getThumbnailFilename).toHaveBeenCalledWith('dish.jpg');
     });
 

@@ -414,7 +414,7 @@ describe('EmailService', () => {
 
   describe('error handling', () => {
     it('should handle transporter creation error gracefully', async () => {
-      const errorLogSpy = jest.spyOn(Logger.prototype, 'error');
+      const errorLogSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation();
       (nodemailer.createTestAccount as jest.Mock).mockRejectedValue(
         new Error('Failed to create test account')
       );

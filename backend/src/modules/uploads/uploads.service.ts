@@ -330,8 +330,10 @@ export class UploadsService {
         thumbnailUrl = this.getFileUrl(thumbnailFilename, type);
       }
 
-      // Clean up temporary file
-      await this.imageOptimizer.cleanupTempFile(tempPath);
+      // Clean up temporary file (gracefully handle failures)
+      await this.imageOptimizer.cleanupTempFile(tempPath).catch((error) => {
+        this.logger.warn('Failed to cleanup temp file, but processing completed successfully:', error.message);
+      });
 
       this.logger.log(
         `Image processed successfully: ${type} | ${optimizationResult.compressionRatio.toFixed(1)}% compression`,

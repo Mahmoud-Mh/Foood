@@ -13,6 +13,13 @@ describe('UploadsController', () => {
     processUploadedImage: jest.fn(),
   };
 
+  const mockResponse = {
+    sendFile: jest.fn(),
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn(),
+    setHeader: jest.fn(),
+  } as any;
+
   const mockFile: Express.Multer.File = {
     fieldname: 'avatar',
     originalname: 'test-avatar.jpg',
@@ -373,6 +380,160 @@ describe('UploadsController', () => {
       expect(result.data).toHaveProperty('size');
       expect(result.data).toHaveProperty('mimetype');
       expect(result.data?.mimetype).toBe('image/jpeg');
+    });
+  });
+
+  describe('uploadAvatarPublic', () => {
+    it('should upload avatar successfully for public users', async () => {
+      mockUploadsService.processUploadedImage.mockResolvedValue(mockOptimizationResult);
+
+      const result = await controller.uploadAvatarPublic(mockFile);
+
+      expect(result).toBeInstanceOf(ApiResponseDto);
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('Avatar uploaded and optimized successfully');
+      expect(mockUploadsService.processUploadedImage).toHaveBeenCalledWith(mockFile, 'avatar');
+    });
+
+    it('should handle public upload errors', async () => {
+      mockUploadsService.processUploadedImage.mockRejectedValue(new Error('Upload failed'));
+
+      await expect(controller.uploadAvatarPublic(mockFile)).rejects.toThrow('Upload failed');
+    });
+
+    it('should handle missing file for public upload', async () => {
+      await expect(controller.uploadAvatarPublic(null as any)).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('uploadRecipeImage', () => {
+    const recipeFile = {
+      ...mockFile,
+      fieldname: 'recipe',
+      originalname: 'recipe-image.jpg',
+    };
+
+    it('should upload recipe image successfully', async () => {
+      const recipeResult = {
+        ...mockOptimizationResult,
+        thumbnailUrl: '/uploads/recipes/thumb.jpg',
+      };
+      mockUploadsService.processUploadedImage.mockResolvedValue(recipeResult);
+
+      const result = await controller.uploadRecipeImage(recipeFile);
+
+      expect(result).toBeInstanceOf(ApiResponseDto);
+      expect(result.success).toBe(true);
+      expect(result.message).toBe('Recipe image uploaded and optimized successfully');
+      expect(result.data).toEqual({
+        filename: expect.any(String),
+        url: recipeResult.optimizedUrl,
+        thumbnailUrl: recipeResult.thumbnailUrl,
+        size: recipeResult.optimizationResult.originalSize,
+        optimizedSize: recipeResult.optimizationResult.optimizedSize,
+        compressionRatio: recipeResult.optimizationResult.compressionRatio,
+        mimetype: 'image/jpeg',
+      });
+      expect(mockUploadsService.processUploadedImage).toHaveBeenCalledWith(recipeFile, 'recipe');
+    });
+
+    it('should handle recipe upload errors', async () => {
+      mockUploadsService.processUploadedImage.mockRejectedValue(new Error('Recipe upload failed'));
+
+      await expect(controller.uploadRecipeImage(recipeFile)).rejects.toThrow('Recipe upload failed');
+    });
+
+    it('should handle missing recipe file', async () => {
+      await expect(controller.uploadRecipeImage(null as any)).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('getAvatar', () => {
+    const mockFs = require('fs');
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockFs.existsSync = jest.fn();
+    });
+
+    it('should serve existing avatar image', async () => {
+      mockFs.existsSync.mockReturnValue(true);
+      const filename = 'test-avatar.jpg';
+
+      await controller.getAvatar(filename, mockResponse);
+
+      expect(mockFs.existsSync).toHaveBeenCalledWith(expect.stringContaining(filename));
+      expect(mockResponse.sendFile).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException for non-existent avatar', async () => {
+      mockFs.existsSync.mockReturnValue(false);
+      const filename = 'non-existent.jpg';
+
+      expect(() => controller.getAvatar(filename, mockResponse))
+        .toThrow('Avatar not found');
+    });
+
+    it('should prevent path traversal attacks', async () => {
+      const maliciousFilename = '../../../etc/passwd';
+
+      expect(() => controller.getAvatar(maliciousFilename, mockResponse))
+        .toThrow('Invalid filename');
+    });
+
+    it('should sanitize filenames with special characters', async () => {
+      mockFs.existsSync.mockReturnValue(true);
+      const filename = 'test-file.jpg'; // Use a valid filename
+      
+      controller.getAvatar(filename, mockResponse);
+
+      expect(mockFs.existsSync).toHaveBeenCalledWith(expect.stringContaining(filename));
+      expect(mockResponse.setHeader).toHaveBeenCalledWith('Content-Type', expect.any(String));
+      expect(mockResponse.sendFile).toHaveBeenCalled();
+    });
+  });
+
+  describe('getRecipeImage', () => {
+    const mockFs = require('fs');
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockFs.existsSync = jest.fn();
+    });
+
+    it('should serve existing recipe image', async () => {
+      mockFs.existsSync.mockReturnValue(true);
+      const filename = 'recipe-image.jpg';
+
+      await controller.getRecipeImage(filename, mockResponse);
+
+      expect(mockFs.existsSync).toHaveBeenCalledWith(expect.stringContaining(filename));
+      expect(mockResponse.sendFile).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException for non-existent recipe image', async () => {
+      mockFs.existsSync.mockReturnValue(false);
+      const filename = 'non-existent-recipe.jpg';
+
+      expect(() => controller.getRecipeImage(filename, mockResponse))
+        .toThrow('Recipe image not found');
+    });
+
+    it('should prevent path traversal for recipe images', async () => {
+      const maliciousFilename = '..\\..\\..\\windows\\system32\\config\\sam';
+
+      expect(() => controller.getRecipeImage(maliciousFilename, mockResponse))
+        .toThrow('Invalid filename');
+    });
+
+    it('should handle file system errors gracefully', async () => {
+      mockFs.existsSync.mockImplementation(() => {
+        throw new Error('File system error');
+      });
+      const filename = 'test-recipe.jpg';
+
+      expect(() => controller.getRecipeImage(filename, mockResponse))
+        .toThrow('File system error');
     });
   });
 });
