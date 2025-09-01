@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services';
+import { useAuth } from '@/context/AuthContext';
 import { RegisterForm } from '@/types/api.types';
 import { HttpError } from '@/services/base/http.service';
 import ImageUpload from '@/components/ImageUpload';
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register } = useAuth();
   const [formData, setFormData] = useState<RegisterForm>({
     firstName: '',
     lastName: '',
@@ -122,7 +123,7 @@ export default function RegisterPage() {
         bio: formData.bio?.trim() || undefined
       };
 
-      await authService.register(registrationData);
+      await register(registrationData);
       router.push('/dashboard');
     } catch (error) {
       console.error('Registration error:', error);

@@ -1,0 +1,87 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - link "Recipe Hub" [ref=e9] [cursor=pointer]:
+        - /url: /
+        - img [ref=e11] [cursor=pointer]
+        - generic [ref=e13] [cursor=pointer]: Recipe Hub
+      - generic [ref=e14]:
+        - heading "Join Our Community" [level=2] [ref=e15]
+        - paragraph [ref=e16]: Start sharing your culinary creations today
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]:
+            - generic [ref=e22]: First Name
+            - generic [ref=e23]:
+              - generic:
+                - img
+              - textbox "First Name" [ref=e24]
+          - generic [ref=e25]:
+            - generic [ref=e26]: Last Name
+            - generic [ref=e27]:
+              - generic:
+                - img
+              - textbox "Last Name" [ref=e28]
+        - generic [ref=e29]:
+          - generic [ref=e30]: Email Address
+          - generic [ref=e31]:
+            - generic:
+              - img
+            - textbox "Email Address" [ref=e32]
+        - generic [ref=e33]:
+          - generic [ref=e34]: Password
+          - generic [ref=e35]:
+            - generic:
+              - img
+            - textbox "Password" [ref=e36]
+        - generic [ref=e37]:
+          - generic [ref=e38]: Confirm Password
+          - generic [ref=e39]:
+            - generic:
+              - img
+            - textbox "Confirm Password" [ref=e40]
+        - generic [ref=e41]:
+          - generic [ref=e42]:
+            - text: Profile Picture
+            - generic [ref=e43]: (optional)
+          - generic [ref=e44]:
+            - generic [ref=e45]:
+              - generic [ref=e47] [cursor=pointer]:
+                - img [ref=e48] [cursor=pointer]
+                - paragraph [ref=e50] [cursor=pointer]: Click or drag to upload
+              - paragraph [ref=e52]: Supports JPG, PNG, GIF, WebP up to 5MB
+            - paragraph [ref=e54]: Add a profile picture to personalize your account and connect with fellow food lovers!
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - text: Bio
+            - generic [ref=e57]: (optional)
+          - textbox "Bio(optional)" [ref=e58]
+          - paragraph [ref=e60]: 0/500 characters
+        - generic [ref=e62]:
+          - checkbox "I agree to the Terms of Service and Privacy Policy" [ref=e63]
+          - generic [ref=e64]:
+            - text: I agree to the
+            - link "Terms of Service" [ref=e65] [cursor=pointer]:
+              - /url: /terms
+            - text: and
+            - link "Privacy Policy" [ref=e66] [cursor=pointer]:
+              - /url: /privacy
+        - button "Create account" [ref=e67]:
+          - generic [ref=e68]:
+            - text: Create account
+            - img [ref=e69]
+      - generic [ref=e71]:
+        - generic [ref=e76]: Already have an account?
+        - link "Sign in instead" [ref=e77] [cursor=pointer]:
+          - /url: /auth/login
+          - generic [ref=e78] [cursor=pointer]:
+            - text: Sign in instead
+            - img [ref=e79] [cursor=pointer]
+  - button "Open Next.js Dev Tools" [ref=e86] [cursor=pointer]:
+    - img [ref=e87] [cursor=pointer]
+  - alert [ref=e90]
+```

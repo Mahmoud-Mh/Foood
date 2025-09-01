@@ -8,6 +8,7 @@ import { recipeService, authService } from '@/services';
 import { Recipe, RecipeStatus } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
 import Navbar from '@/components/Navbar';
+import { RatingDisplay } from '@/components/StarRating';
 
 export default function MyRecipesPage() {
   const router = useRouter();
@@ -170,6 +171,19 @@ export default function MyRecipesPage() {
                       <span>⏱️ {recipe.prepTimeMinutes + recipe.cookTimeMinutes} min</span>
                       <span>👥 {recipe.servings} servings</span>
                     </div>
+
+                    {/* Rating Display */}
+                    {(recipe as any).rating !== undefined && (recipe as any).ratingsCount !== undefined ? (
+                      <div className="flex items-center justify-center mb-3">
+                        <RatingDisplay
+                          rating={(recipe as any).rating || 0}
+                          count={(recipe as any).ratingsCount || 0}
+                          size="sm"
+                          showCount={true}
+                          className="text-sm"
+                        />
+                      </div>
+                    ) : null}
                     
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2 text-sm text-gray-500">

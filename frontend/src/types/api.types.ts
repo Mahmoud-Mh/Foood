@@ -255,4 +255,51 @@ export interface SearchParams {
   limit?: number;
   sortBy?: 'createdAt' | 'rating' | 'title' | 'totalTime';
   sortOrder?: 'asc' | 'desc';
+}
+
+// Rating Types
+export interface Rating {
+  id: string;
+  rating: number;
+  comment?: string;
+  userId: string;
+  userFullName: string;
+  userAvatar?: string;
+  isVerified: boolean;
+  helpfulCount: number;
+  recipeId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateRatingForm {
+  rating: number;
+  comment?: string;
+}
+
+export interface UpdateRatingForm {
+  rating?: number;
+  comment?: string;
+}
+
+export interface RatingSummary {
+  recipeId: string;
+  recipeTitle: string;
+  averageRating: number;
+  ratingsCount: number;
+  ratingDistribution: {
+    1: number;
+    2: number;
+    3: number;
+    4: number;
+    5: number;
+  };
+  recentRatings: Rating[];
+}
+
+export interface RatingStats {
+  totalRatings: number;
+  averageRating: number;
+  ratingsGiven: number;
+  ratingsReceived: number;
 } 

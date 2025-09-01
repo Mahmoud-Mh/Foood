@@ -4,6 +4,7 @@ import { RecipeService } from './recipe.service';
 import { CategoryService } from './category.service';
 import { IngredientService } from './ingredient.service';
 import { UserService } from './user.service';
+import { RatingService } from './rating.service';
 
 // Service Manager following Singleton pattern
 export class ServiceManager {
@@ -14,6 +15,7 @@ export class ServiceManager {
   private categoryService: CategoryService;
   private ingredientService: IngredientService;
   private userService: UserService;
+  private ratingService: RatingService;
 
   private constructor() {
     // Initialize HTTP service with shared configuration
@@ -25,6 +27,7 @@ export class ServiceManager {
     this.categoryService = new CategoryService(this.httpService);
     this.ingredientService = new IngredientService(this.httpService);
     this.userService = new UserService(this.httpService);
+    this.ratingService = new RatingService(this.httpService);
 
     // Initialize auth service (set token if exists)
     this.authService.initialize();
@@ -58,6 +61,10 @@ export class ServiceManager {
     return this.userService;
   }
 
+  public get ratings(): RatingService {
+    return this.ratingService;
+  }
+
   public get http(): HttpService {
     return this.httpService;
   }
@@ -77,6 +84,7 @@ export const recipeService = serviceManager.recipes;
 export const categoryService = serviceManager.categories;
 export const ingredientService = serviceManager.ingredients;
 export const userService = serviceManager.users;
+export const ratingService = serviceManager.ratings;
 export const httpService = serviceManager.http;
 
 // Export service manager for advanced usage
@@ -88,10 +96,12 @@ export { RecipeService } from './recipe.service';
 export { CategoryService } from './category.service';
 export { IngredientService } from './ingredient.service';
 export { UserService } from './user.service';
+export { RatingService } from './rating.service';
 export { HttpService, HttpError } from './base/http.service';
 
 // Export types
 export type { RequestConfig } from './base/http.service';
 export type { CreateCategoryForm } from './category.service';
 export type { CreateIngredientForm } from './ingredient.service';
-export type { UpdateProfileData } from './user.service'; 
+export type { UpdateProfileData } from './user.service';
+export type { GetRatingsParams, GetUserRatingsParams } from './rating.service'; 

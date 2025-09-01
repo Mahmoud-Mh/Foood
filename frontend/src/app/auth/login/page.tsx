@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/services';
+import { useAuth } from '@/context/AuthContext';
 import { LoginForm } from '@/types/api.types';
 import { HttpError } from '@/services/base/http.service';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState<LoginForm>({
     email: '',
     password: ''
@@ -47,7 +48,7 @@ export default function LoginPage() {
     setGeneralError('');
 
     try {
-      await authService.login(formData);
+      await login(formData.email, formData.password);
       router.push('/dashboard');
     } catch (error) {
       console.error('Login error:', error);

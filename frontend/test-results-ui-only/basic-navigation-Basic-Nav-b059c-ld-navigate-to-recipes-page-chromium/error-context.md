@@ -1,0 +1,127 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]:
+        - link "Recipe Hub" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e9] [cursor=pointer]
+          - generic [ref=e11] [cursor=pointer]: Recipe Hub
+        - generic [ref=e12]:
+          - link "Browse Recipes" [ref=e13] [cursor=pointer]:
+            - /url: /recipes
+            - text: Browse Recipes
+          - link "Categories" [ref=e14] [cursor=pointer]:
+            - /url: /categories
+            - text: Categories
+        - generic [ref=e16]:
+          - link "Sign In" [ref=e17] [cursor=pointer]:
+            - /url: /auth/login
+          - link "Get Started" [ref=e18] [cursor=pointer]:
+            - /url: /auth/register
+            - text: Get Started
+            - img [ref=e19] [cursor=pointer]
+    - generic [ref=e27]:
+      - generic [ref=e28]: Welcome to Recipe Hub
+      - heading "Discover & Share Amazing Recipes" [level=1] [ref=e30]:
+        - text: Discover & Share
+        - generic [ref=e31]: Amazing Recipes
+      - paragraph [ref=e32]: Join our community of passionate food lovers. Explore thousands of delicious recipes, share your culinary masterpieces, and connect with fellow chefs around the world.
+      - generic [ref=e33]:
+        - link "Explore Recipes" [active] [ref=e34] [cursor=pointer]:
+          - /url: /recipes
+          - generic [ref=e35] [cursor=pointer]:
+            - text: Explore Recipes
+            - img [ref=e36] [cursor=pointer]
+        - link "Join Community" [ref=e38] [cursor=pointer]:
+          - /url: /auth/register
+          - generic [ref=e39] [cursor=pointer]:
+            - text: Join Community
+            - img [ref=e40] [cursor=pointer]
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - generic [ref=e44]: 1000+
+          - generic [ref=e45]: Delicious Recipes
+        - generic [ref=e46]:
+          - generic [ref=e47]: 500+
+          - generic [ref=e48]: Food Lovers
+        - generic [ref=e49]:
+          - generic [ref=e50]: 50+
+          - generic [ref=e51]: Recipe Categories
+    - generic [ref=e58]:
+      - generic [ref=e59]:
+        - img [ref=e61]
+        - generic [ref=e63]: New!
+      - heading "Welcome to Recipe Hub!" [level=3] [ref=e64]:
+        - generic [ref=e65]: Welcome to Recipe Hub!
+      - paragraph [ref=e66]: Our community is just getting started. Be among the first to share your amazing recipes and help build this delicious platform together!
+      - generic [ref=e67]:
+        - link "Join & Share Your First Recipe" [ref=e68] [cursor=pointer]:
+          - /url: /auth/register
+          - generic [ref=e69] [cursor=pointer]:
+            - text: Join & Share Your First Recipe
+            - img [ref=e70] [cursor=pointer]
+        - link "Browse Recipes" [ref=e72] [cursor=pointer]:
+          - /url: /recipes
+          - generic [ref=e73] [cursor=pointer]:
+            - text: Browse Recipes
+            - img [ref=e74] [cursor=pointer]
+    - contentinfo [ref=e76]:
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - generic [ref=e81]:
+            - generic [ref=e82]:
+              - img [ref=e84]
+              - heading "Recipe Hub" [level=3] [ref=e86]
+            - paragraph [ref=e87]: Bringing food lovers together, one delicious recipe at a time. Join our community of passionate chefs and home cooks.
+            - generic [ref=e88]:
+              - link [ref=e89] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e90] [cursor=pointer]
+              - link [ref=e92] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e93] [cursor=pointer]
+              - link [ref=e95] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e96] [cursor=pointer]
+          - generic [ref=e98]:
+            - heading "Quick Links" [level=4] [ref=e99]
+            - list [ref=e100]:
+              - listitem [ref=e101]:
+                - link "Browse Recipes" [ref=e102] [cursor=pointer]:
+                  - /url: /recipes
+              - listitem [ref=e103]:
+                - link "Categories" [ref=e104] [cursor=pointer]:
+                  - /url: /categories
+              - listitem [ref=e105]:
+                - link "Share Recipe" [ref=e106] [cursor=pointer]:
+                  - /url: /recipes/create
+              - listitem [ref=e107]:
+                - link "Dashboard" [ref=e108] [cursor=pointer]:
+                  - /url: /dashboard
+          - generic [ref=e109]:
+            - heading "Support" [level=4] [ref=e110]
+            - list [ref=e111]:
+              - listitem [ref=e112]:
+                - link "About Us" [ref=e113] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e114]:
+                - link "Contact" [ref=e115] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e116]:
+                - link "Privacy Policy" [ref=e117] [cursor=pointer]:
+                  - /url: /privacy
+              - listitem [ref=e118]:
+                - link "Terms of Service" [ref=e119] [cursor=pointer]:
+                  - /url: /terms
+        - generic [ref=e121]:
+          - paragraph [ref=e122]: © 2024 Recipe Hub. All rights reserved. Made with ❤️ for food lovers.
+          - generic [ref=e123]:
+            - generic [ref=e124]: Powered by
+            - generic [ref=e127]: Recipe Hub
+  - button "Open Next.js Dev Tools" [ref=e133] [cursor=pointer]:
+    - img [ref=e134] [cursor=pointer]
+  - alert [ref=e137]
+```

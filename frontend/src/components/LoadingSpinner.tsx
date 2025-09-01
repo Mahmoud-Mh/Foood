@@ -18,7 +18,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   className = ''
 }) => {
   return (
-    <div className={`flex flex-col items-center justify-center ${className}`}>
+    <div className={`flex flex-col items-center justify-center ${className}`} role="status" aria-live="polite">
       <div className={`animate-spin rounded-full border-b-2 border-indigo-600 ${sizeClasses[size]}`}></div>
       {message && <p className="mt-4 text-gray-600">{message}</p>}
     </div>
@@ -27,7 +27,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
 export const PageLoadingSpinner: React.FC<{ message?: string }> = ({ message = 'Loading...' }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-4" role="status" aria-live="polite">
       <div className="text-center">
         <div className="relative">
           {/* Floating recipe icons - responsive sizes */}

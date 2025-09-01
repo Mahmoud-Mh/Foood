@@ -1,0 +1,466 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\playwright-fullstack.config.ts",
+    "rootDir": "C:/Users/Mahmoud/Desktop/food/frontend/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\fullstack-global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report-fullstack"
+        }
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/fullstack-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/Mahmoud/Desktop/food/frontend/test-results-fullstack",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Mahmoud/Desktop/food/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*fullstack*.spec.ts",
+          "**/real-auth-test.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/Mahmoud/Desktop/food/frontend/test-results-fullstack",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "mobile",
+        "name": "mobile",
+        "testDir": "C:/Users/Mahmoud/Desktop/food/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*fullstack*.spec.ts",
+          "**/real-auth-test.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 2,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "real-auth-test.spec.ts",
+      "file": "real-auth-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "🔐 Real Account Authentication Test",
+          "file": "real-auth-test.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should login with real regular user account",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4418,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🧪 Testing regular user login...\n"
+                        },
+                        {
+                          "text": "Email: test@gmail.com\n"
+                        },
+                        {
+                          "text": "✅ Regular user login successful\n"
+                        },
+                        {
+                          "text": "Current URL after login: http://localhost:3000/dashboard\n"
+                        },
+                        {
+                          "text": "❌ Regular user login failed: locator.isVisible: Error: strict mode violation: locator('text=Test') resolved to 2 elements:\n    1) <span class=\"text-gray-700 font-medium hidden sm:block\">test test</span> aka getByTestId('user-menu-button')\n    2) <h1 class=\"text-4xl sm:text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4\">Welcome back, test! 👋</h1> aka getByRole('heading', { name: 'Welcome back, test! 👋' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('text=Test')\u001b[22m\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T16:04:58.163Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d56163d82aac6611b7e3-a0f9e6b442a60a8decb0",
+              "file": "real-auth-test.spec.ts",
+              "line": 6,
+              "column": 7
+            },
+            {
+              "title": "should login with real admin user account",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6556,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🧪 Testing admin user login...\n"
+                        },
+                        {
+                          "text": "Email: mahmoud.mouzoun@epitech.eu\n"
+                        },
+                        {
+                          "text": "✅ Admin user login successful\n"
+                        },
+                        {
+                          "text": "Current URL after admin login: http://localhost:3000/dashboard\n"
+                        },
+                        {
+                          "text": "❌ Admin user login failed: locator.isVisible: Error: strict mode violation: locator('text=Mahmoud') resolved to 4 elements:\n    1) <span class=\"text-gray-700 font-medium hidden sm:block\">Mahmoud Mouzoun</span> aka getByTestId('user-menu-button')\n    2) <p class=\"text-sm font-medium text-gray-900 truncate\">Mahmoud Mouzoun</p> aka getByRole('paragraph').filter({ hasText: 'Mahmoud Mouzoun' })\n    3) <p class=\"text-sm text-gray-500 break-all max-w-full\">mahmoud.mouzoun@epitech.eu</p> aka getByText('mahmoud.mouzoun@epitech.eu')\n    4) <h1 class=\"text-4xl sm:text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4\">Welcome back, Mahmoud! 👋</h1> aka getByRole('heading', { name: 'Welcome back, Mahmoud! 👋' })\n\nCall log:\n\u001b[2m    - checking visibility of locator('text=Mahmoud')\u001b[22m\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T16:05:02.782Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d56163d82aac6611b7e3-ecd775dcfaf81a963776",
+              "file": "real-auth-test.spec.ts",
+              "line": 36,
+              "column": 7
+            },
+            {
+              "title": "should verify backend API authentication",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2260,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🧪 Testing backend API authentication...\n"
+                        },
+                        {
+                          "text": "✅ Regular user API login successful\n"
+                        },
+                        {
+                          "text": "Login response: {\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"807c7687-d0ea-4657-a16a-4f036d8de7f7\",\n      \"firstName\": \"test\",\n      \"lastName\": \"test\",\n      \"fullName\": \"test test\",\n      \"email\": \"test@gmail.com\",\n      \"role\": \"user\",\n      \"avatar\": null,\n      \"bio\": null,\n      \"isActive\": true,\n      \"createdAt\": \"2025-08-30T15:51:26.353Z\",\n      \"updatedAt\": \"2025-08-30T16:05:01.345Z\"\n    },\n    \"tokens\": {\n      \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MDdjNzY4Ny1kMGVhLTQ2NTctYTE2YS00ZjAzNmQ4ZGU3ZjciLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3NTY1Njk5MTAsImV4cCI6MTc1NjY1NjMxMH0.0F2kC-LV0lCX4qAQqBZ5hG8Ee80iaR17Wb7n4zuCaBI\",\n      \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4MDdjNzY4Ny1kMGVhLTQ2NTctYTE2YS00ZjAzNmQ4ZGU3ZjciLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwidG9rZW5WZXJzaW9uIjoxLCJpYXQiOjE3NTY1Njk5MTAsImV4cCI6MTc1NzE3NDcxMH0.5C8RgmQQXGfDFUJL8eup0a2VVUWXau4Ne35gxcW4Wzw\",\n      \"tokenType\": \"Bearer\",\n      \"expiresIn\": 86400\n    },\n    \"message\": \"Login successful\"\n  }\n}\n"
+                        },
+                        {
+                          "text": "✅ Authenticated /users/profile endpoint working\n"
+                        },
+                        {
+                          "text": "User data: {\n  \"success\": true,\n  \"message\": \"User profile retrieved successfully\",\n  \"data\": {\n    \"id\": \"807c7687-d0ea-4657-a16a-4f036d8de7f7\",\n    \"email\": \"test@gmail.com\",\n    \"firstName\": \"test\",\n    \"lastName\": \"test\",\n    \"fullName\": \"test test\",\n    \"role\": \"user\",\n    \"avatar\": null,\n    \"bio\": null,\n    \"isActive\": true,\n    \"isEmailVerified\": false,\n    \"lastLoginAt\": \"2025-08-30T16:05:10.911Z\",\n    \"createdAt\": \"2025-08-30T15:51:26.353Z\",\n    \"updatedAt\": \"2025-08-30T16:05:10.923Z\",\n    \"password\": \"\"\n  }\n}\n"
+                        },
+                        {
+                          "text": "✅ Admin user API login successful\n"
+                        },
+                        {
+                          "text": "Admin login response: {\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"c64decba-4b93-4ad3-b1f5-1975a001e837\",\n      \"firstName\": \"Mahmoud\",\n      \"lastName\": \"Mouzoun\",\n      \"fullName\": \"Mahmoud Mouzoun\",\n      \"email\": \"mahmoud.mouzoun@epitech.eu\",\n      \"role\": \"admin\",\n      \"avatar\": \"\",\n      \"bio\": \"heyyyy\",\n      \"isActive\": true,\n      \"createdAt\": \"2025-07-27T16:57:24.162Z\",\n      \"updatedAt\": \"2025-08-30T16:05:05.483Z\"\n    },\n    \"tokens\": {\n      \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjNjRkZWNiYS00YjkzLTRhZDMtYjFmNS0xOTc1YTAwMWU4MzciLCJlbWFpbCI6Im1haG1vdWQubW91em91bkBlcGl0ZWNoLmV1Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzU2NTY5OTExLCJleHAiOjE3NTY2NTYzMTF9.mPWVY8qX5-oXO35WO8Lp1RVp8NDPxDupVA8wqKe84B4\",\n      \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjNjRkZWNiYS00YjkzLTRhZDMtYjFmNS0xOTc1YTAwMWU4MzciLCJlbWFpbCI6Im1haG1vdWQubW91em91bkBlcGl0ZWNoLmV1IiwidG9rZW5WZXJzaW9uIjoxLCJpYXQiOjE3NTY1Njk5MTEsImV4cCI6MTc1NzE3NDcxMX0.M8lcJZGrbsJVoKJcSyPbBUbg9Cuh6MxVy83XXuhpGRo\",\n      \"tokenType\": \"Bearer\",\n      \"expiresIn\": 86400\n    },\n    \"message\": \"Login successful\"\n  }\n}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T16:05:09.352Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d56163d82aac6611b7e3-802d431a202565303129",
+              "file": "real-auth-test.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "should test basic frontend navigation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3395,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🧪 Testing basic frontend navigation...\n"
+                        },
+                        {
+                          "text": "Homepage title: Recipe Hub - Discover & Share Amazing Recipes\n"
+                        },
+                        {
+                          "text": "Login page - Email field visible: \u001b[33mtrue\u001b[39m\n"
+                        },
+                        {
+                          "text": "Login page - Password field visible: \u001b[33mtrue\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Login form fields are accessible\n"
+                        },
+                        {
+                          "text": "Register page - FirstName field visible: \u001b[33mtrue\u001b[39m\n"
+                        },
+                        {
+                          "text": "Register page - Email field visible: \u001b[33mtrue\u001b[39m\n"
+                        },
+                        {
+                          "text": "✅ Register form fields are accessible\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T16:05:11.625Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d56163d82aac6611b7e3-d76d646a1a0650c36640",
+              "file": "real-auth-test.spec.ts",
+              "line": 135,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "simple-fullstack-test.spec.ts",
+      "file": "simple-fullstack-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "🧪 Simple Full-Stack Integration Test",
+          "file": "simple-fullstack-test.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should verify backend and frontend are connected",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3307,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ Frontend loaded successfully\n"
+                        },
+                        {
+                          "text": "✅ Backend API is healthy\n"
+                        },
+                        {
+                          "text": "✅ User registration via API successful\n"
+                        },
+                        {
+                          "text": "✅ User login via API successful\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T16:04:58.158Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21d9a285520721b35eeb-88f14138a266da68701e",
+              "file": "simple-fullstack-test.spec.ts",
+              "line": 5,
+              "column": 7
+            },
+            {
+              "title": "should navigate to registration page and verify form fields",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2807,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ Registration form fields are present\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T16:05:01.677Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21d9a285520721b35eeb-e91621c9320942586699",
+              "file": "simple-fullstack-test.spec.ts",
+              "line": 65,
+              "column": 7
+            },
+            {
+              "title": "should navigate to login page and verify form fields",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1462,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "✅ Login form fields are present\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T16:05:04.508Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "21d9a285520721b35eeb-6213697c832a0efc1ac9",
+              "file": "simple-fullstack-test.spec.ts",
+              "line": 77,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-30T16:04:44.739Z",
+    "duration": 30396.218,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

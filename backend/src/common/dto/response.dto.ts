@@ -36,3 +36,57 @@ export class ApiResponseDto<T = unknown> {
     return new ApiResponseDto(false, message, undefined, error);
   }
 }
+
+export class PaginatedResponseDto<T = unknown> {
+  @ApiProperty({ description: 'Success status' })
+  success: boolean;
+
+  @ApiProperty({ description: 'Response message' })
+  message: string;
+
+  @ApiProperty({ description: 'Paginated response data' })
+  data: {
+    items: T[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+
+  constructor(
+    success: boolean,
+    message: string,
+    items: T[],
+    total: number,
+    page: number,
+    limit: number,
+  ) {
+    this.success = success;
+    this.message = message;
+    this.data = {
+      items,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      hasNext: page < Math.ceil(total / limit),
+      hasPrev: page > 1,
+    };
+  }
+
+  static success<T>(
+    message: string,
+    items: T[],
+    total: number,
+    page: number,
+    limit: number,
+  ): PaginatedResponseDto<T> {
+    return new PaginatedResponseDto(true, message, items, total, page, limit);
+  }
+}
+
+// Aliases for backward compatibility
+export { ApiResponseDto as ResponseDto };
+export { PaginatedResponseDto as PaginatedResult };

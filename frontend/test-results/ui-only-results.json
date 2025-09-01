@@ -1,0 +1,2567 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\playwright-ui-only.config.ts",
+    "rootDir": "C:/Users/Mahmoud/Desktop/food/frontend/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 6
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report-ui-only"
+        }
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/ui-only-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/Mahmoud/Desktop/food/frontend/test-results-ui-only",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 6
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Mahmoud/Desktop/food/frontend/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/fixed-ui-tests.spec.ts",
+          "**/form-validation-tests.spec.ts",
+          "**/recipe-app-coverage.spec.ts",
+          "**/basic-navigation.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 6,
+    "webServer": {
+      "command": "npm run dev -- --port 3006",
+      "url": "http://localhost:3006",
+      "reuseExistingServer": true,
+      "timeout": 60000,
+      "env": {
+        "NEXT_PUBLIC_API_URL": "http://localhost:9999/api/v1",
+        "PORT": "3006"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "basic-navigation.spec.ts",
+      "file": "basic-navigation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Basic Navigation",
+          "file": "basic-navigation.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should load home page successfully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5933,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T15:22:37.358Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d28afe6aae5d9e5cd19f-a6e3fc249f142e4cc9bc",
+              "file": "basic-navigation.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should navigate to recipes page",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 9617,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected string: \u001b[32m\"http://localhost:3006/\u001b[7mrecipes\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3006/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    8 × unexpected value \"http://localhost:3006/\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected string: \u001b[32m\"http://localhost:3006/\u001b[7mrecipes\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3006/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    8 × unexpected value \"http://localhost:3006/\"\u001b[22m\n\n    at C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts:19:24",
+                        "location": {
+                          "file": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts",
+                          "column": 24,
+                          "line": 19
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 17 |\u001b[39m     \u001b[90m// Click on Explore Recipes button\u001b[39m\n \u001b[90m 18 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'text=Explore Recipes'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 19 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveURL(\u001b[32m'/recipes'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 20 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 21 |\u001b[39m\n \u001b[90m 22 |\u001b[39m   test(\u001b[32m'should navigate to login page'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts",
+                            "column": 24,
+                            "line": 19
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected string: \u001b[32m\"http://localhost:3006/\u001b[7mrecipes\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3006/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    8 × unexpected value \"http://localhost:3006/\"\u001b[22m\n\n\n  17 |     // Click on Explore Recipes button\n  18 |     await page.click('text=Explore Recipes');\n> 19 |     await expect(page).toHaveURL('/recipes');\n     |                        ^\n  20 |   });\n  21 |\n  22 |   test('should navigate to login page', async ({ page }) => {\n    at C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts:19:24"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T15:22:37.380Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\test-results-ui-only\\basic-navigation-Basic-Nav-b059c-ld-navigate-to-recipes-page-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\test-results-ui-only\\basic-navigation-Basic-Nav-b059c-ld-navigate-to-recipes-page-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\test-results-ui-only\\basic-navigation-Basic-Nav-b059c-ld-navigate-to-recipes-page-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts",
+                        "column": 24,
+                        "line": 19
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "d28afe6aae5d9e5cd19f-eeb3efd8de32f967f2c5",
+              "file": "basic-navigation.spec.ts",
+              "line": 14,
+              "column": 7
+            },
+            {
+              "title": "should navigate to login page",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 11191,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T15:22:37.348Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d28afe6aae5d9e5cd19f-a6441512278be1e53687",
+              "file": "basic-navigation.spec.ts",
+              "line": 22,
+              "column": 7
+            },
+            {
+              "title": "should navigate to register page",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 11756,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected string: \u001b[32m\"http://localhost:3006/\u001b[7mauth/register\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3006/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"http://localhost:3006/\"\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected string: \u001b[32m\"http://localhost:3006/\u001b[7mauth/register\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3006/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"http://localhost:3006/\"\u001b[22m\n\n    at C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts:39:24",
+                        "location": {
+                          "file": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts",
+                          "column": 24,
+                          "line": 39
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 37 |\u001b[39m     \u001b[90m// Click on Get Started button - use first match to avoid strict mode violation\u001b[39m\n \u001b[90m 38 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'link'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Get Started'\u001b[39m })\u001b[33m.\u001b[39mfirst()\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 39 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page)\u001b[33m.\u001b[39mtoHaveURL(\u001b[32m'/auth/register'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 40 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'heading'\u001b[39m))\u001b[33m.\u001b[39mtoContainText(\u001b[32m'Join Our Community'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 41 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 42 |\u001b[39m })\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts",
+                            "column": 24,
+                            "line": 39
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected string: \u001b[32m\"http://localhost:3006/\u001b[7mauth/register\u001b[27m\"\u001b[39m\nReceived string: \u001b[31m\"http://localhost:3006/\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    9 × unexpected value \"http://localhost:3006/\"\u001b[22m\n\n\n  37 |     // Click on Get Started button - use first match to avoid strict mode violation\n  38 |     await page.getByRole('link', { name: 'Get Started' }).first().click();\n> 39 |     await expect(page).toHaveURL('/auth/register');\n     |                        ^\n  40 |     await expect(page.getByRole('heading')).toContainText('Join Our Community');\n  41 |   });\n  42 | });\n    at C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts:39:24"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-30T15:22:37.378Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\test-results-ui-only\\basic-navigation-Basic-Nav-ba36f-d-navigate-to-register-page-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\test-results-ui-only\\basic-navigation-Basic-Nav-ba36f-d-navigate-to-register-page-chromium\\video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\test-results-ui-only\\basic-navigation-Basic-Nav-ba36f-d-navigate-to-register-page-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Mahmoud\\Desktop\\food\\frontend\\e2e\\basic-navigation.spec.ts",
+                        "column": 24,
+                        "line": 39
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "d28afe6aae5d9e5cd19f-2d8b6587f75eb7d69e7b",
+              "file": "basic-navigation.spec.ts",
+              "line": 33,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "fixed-ui-tests.spec.ts",
+      "file": "fixed-ui-tests.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Fixed UI Tests - Comprehensive Coverage",
+          "file": "fixed-ui-tests.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "🏠 Homepage and Navigation",
+              "file": "fixed-ui-tests.spec.ts",
+              "line": 10,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should load homepage successfully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 6655,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:37.444Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-7fd9b8f875e895dcf79c",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 11,
+                  "column": 9
+                },
+                {
+                  "title": "should show correct navigation elements",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 6487,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:37.418Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-d5fb79047f41f1911e1c",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 20,
+                  "column": 9
+                },
+                {
+                  "title": "should handle direct navigation to auth pages",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 7384,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:44.637Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-e613adb61ef8a5e70a4f",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 33,
+                  "column": 9
+                },
+                {
+                  "title": "should handle direct navigation to app pages",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 14050,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:45.296Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-6a1cf70ad207e76d596d",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 44,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "📱 Responsive Design",
+              "file": "fixed-ui-tests.spec.ts",
+              "line": 55,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should work on mobile viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 6415,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:45.555Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-51dd7ad61ecdd040b9a5",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 56,
+                  "column": 9
+                },
+                {
+                  "title": "should work on tablet viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 6002,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:52.316Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-f93077dc7e43c29514fe",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 70,
+                  "column": 9
+                },
+                {
+                  "title": "should work on desktop viewport",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 5555,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:49.773Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-0e473941546b0c471436",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 79,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🔧 Form Rendering and Basic Interactions",
+              "file": "fixed-ui-tests.spec.ts",
+              "line": 90,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should render registration form correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 4594,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:52.830Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-14ef8c0d738ba0f2c606",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 91,
+                  "column": 9
+                },
+                {
+                  "title": "should render login form correctly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 3321,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:52.008Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-0593ba2029c35d59f857",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 104,
+                  "column": 9
+                },
+                {
+                  "title": "should allow form input interactions",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3818,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:52.099Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-8f95f0679505e34daf4d",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 113,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTML5 validation on registration form",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 4398,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:55.363Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-79f30f2d5791b78e5e57",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 130,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTML5 validation on login form",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 4393,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:55.376Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-11dc4665fd69f02c1003",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 154,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🎨 UI Components and Content",
+              "file": "fixed-ui-tests.spec.ts",
+              "line": 174,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should display hero section elements",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 6799,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:55.941Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-f94a7f6512930b241203",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 175,
+                  "column": 9
+                },
+                {
+                  "title": "should show recipe search interface",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 5165,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:59.423Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-fdcfa38dcfbf864b28a0",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 187,
+                  "column": 9
+                },
+                {
+                  "title": "should display stats section",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 5959,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:59.789Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-ad4aa2cb5b5ccd9e4cf7",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 196,
+                  "column": 9
+                },
+                {
+                  "title": "should show footer content",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 5492,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:59.798Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-e91f937b5cb6d993fa7d",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 206,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain consistent branding",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 18890,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:22:59.877Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-cf5d9823f3406ede19a0",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 215,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "⚡ Performance and Error Handling",
+              "file": "fixed-ui-tests.spec.ts",
+              "line": 229,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should load pages within reasonable time",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 6810,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:00.226Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-810a83a09636423c2d9a",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 230,
+                  "column": 9
+                },
+                {
+                  "title": "should handle 404 pages gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 3729,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:02.763Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-de7502f3274df96729c1",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 240,
+                  "column": 9
+                },
+                {
+                  "title": "should handle slow network conditions",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 6184,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:04.640Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-5ba30760b7ad972ba896",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 251,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain basic functionality with JavaScript errors",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 6074,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:05.315Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-ad1f1bdb54dc8541109e",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 264,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🔍 SEO and Accessibility",
+              "file": "fixed-ui-tests.spec.ts",
+              "line": 283,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should have proper HTML structure",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 6151,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:05.773Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-d03bd83f711c5f07c68d",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 284,
+                  "column": 9
+                },
+                {
+                  "title": "should have proper meta tags",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5633,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:06.520Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-f7b1101c3ec88e1d9d21",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 300,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🍽️ Food App Specific Content",
+              "file": "fixed-ui-tests.spec.ts",
+              "line": 313,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should show food-related content",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 8102,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:07.069Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-c04912acfcdc5066c28d",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 314,
+                  "column": 9
+                },
+                {
+                  "title": "should show recipe categories page",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 5629,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:10.864Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "185280a94bdd3df4e5a7-8c739b02d3f20d39d468",
+                  "file": "fixed-ui-tests.spec.ts",
+                  "line": 329,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "form-validation-tests.spec.ts",
+      "file": "form-validation-tests.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Form Validation Tests - HTML5 & Custom",
+          "file": "form-validation-tests.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Registration Form Validation",
+              "file": "form-validation-tests.spec.ts",
+              "line": 8,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should show HTML5 validation for empty required fields",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 3443,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:11.436Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-cbe5744c629a56347706",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 9,
+                  "column": 9
+                },
+                {
+                  "title": "should validate email format",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 4476,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:11.959Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-25148f286958c3fa14bd",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 30,
+                  "column": 9
+                },
+                {
+                  "title": "should validate password requirements",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 4346,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:12.197Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-85cb432835391e0ff05d",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 52,
+                  "column": 9
+                },
+                {
+                  "title": "should validate password confirmation match",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 5730,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:14.946Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-9c76bc17ec6aca20037e",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 83,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Login Form Validation",
+              "file": "form-validation-tests.spec.ts",
+              "line": 108,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should validate required login fields",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 3442,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:15.249Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-adbac08ed3b804aca647",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 109,
+                  "column": 9
+                },
+                {
+                  "title": "should validate login email format",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 5108,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:16.472Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-33cac68e3c55c2f30037",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 130,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Dynamic Form Behavior",
+              "file": "form-validation-tests.spec.ts",
+              "line": 150,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle form input events",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 5068,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:16.532Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-2448f7edcd4fda8f2b45",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 151,
+                  "column": 9
+                },
+                {
+                  "title": "should handle form focus and blur events",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 5090,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:16.564Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-81fd3c4a092284c72b14",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 165,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain form state during interaction",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 4067,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:18.727Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-be1f1682125b9f7320f0",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 184,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Accessibility and Usability",
+              "file": "form-validation-tests.spec.ts",
+              "line": 204,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should have proper form labels and accessibility",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 3752,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:18.820Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-cb37552736409d808f22",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 205,
+                  "column": 9
+                },
+                {
+                  "title": "should support keyboard navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 3117,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:20.706Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "4812f5773b4cf75c59f3-a5f2f14947b20d3034e3",
+                  "file": "form-validation-tests.spec.ts",
+                  "line": 232,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "recipe-app-coverage.spec.ts",
+      "file": "recipe-app-coverage.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Recipe App Complete Coverage Tests",
+          "file": "recipe-app-coverage.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "🔍 Advanced Search and Discovery",
+              "file": "recipe-app-coverage.spec.ts",
+              "line": 8,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should show search functionality on recipes page",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 6490,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:21.641Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-b980b82646ede66e51f3",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 9,
+                  "column": 9
+                },
+                {
+                  "title": "should handle categories page content",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 6266,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:21.681Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-cac7e7cdb207abf57a5f",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 26,
+                  "column": 9
+                },
+                {
+                  "title": "should handle empty search results gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 8041,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:21.690Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-ca17bd4dd0c8e5507a33",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 43,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🍽️ Recipe Content and Layout",
+              "file": "recipe-app-coverage.spec.ts",
+              "line": 62,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should show recipe-related UI elements",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 6148,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:22.609Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-60da7c69b272c7a6371f",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 63,
+                  "column": 9
+                },
+                {
+                  "title": "should handle recipe creation page access",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 6394,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:22.834Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-12ae108dc931f71f1061",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 76,
+                  "column": 9
+                },
+                {
+                  "title": "should show appropriate recipe-related content",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 4243,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:23.859Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-1d1bf4682d32d2d3cd90",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 93,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "👤 User Account and Profile Areas",
+              "file": "recipe-app-coverage.spec.ts",
+              "line": 109,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle profile page access",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 6084,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:27.994Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-7acaa557e51a5c188cf1",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 110,
+                  "column": 9
+                },
+                {
+                  "title": "should handle dashboard access",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 6688,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:28.132Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-59e3dfc47b3e74f0e5e0",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 121,
+                  "column": 9
+                },
+                {
+                  "title": "should handle my recipes page access",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 5709,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:28.154Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-d07c8898f8deb0e86ef6",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 132,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🔐 Protected Routes and Authentication Flow",
+              "file": "recipe-app-coverage.spec.ts",
+              "line": 144,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle protected routes appropriately",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 15137,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:28.784Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-f450df4498e7d44d826b",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 145,
+                  "column": 9
+                },
+                {
+                  "title": "should show appropriate authentication prompts",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 5655,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:29.255Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-2cc9cb367fa4962407b6",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 166,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🎨 Advanced UI/UX Features",
+              "file": "recipe-app-coverage.spec.ts",
+              "line": 182,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle loading states properly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 8007,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:29.757Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-5c18fa58f05121c3c0df",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 183,
+                  "column": 9
+                },
+                {
+                  "title": "should handle image placeholders and media",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 6663,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:33.901Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-b1e0c936933e881a1ca5",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 203,
+                  "column": 9
+                },
+                {
+                  "title": "should support dark mode considerations",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 6473,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:34.122Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-323873d97b860b1c846f",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 218,
+                  "column": 9
+                },
+                {
+                  "title": "should handle interactive elements properly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 6851,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:34.847Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-14621d7c307645d72710",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 230,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "📊 Performance and Analytics",
+              "file": "recipe-app-coverage.spec.ts",
+              "line": 251,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should maintain performance across different page loads",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 7,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 18868,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:34.934Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-c9579d4441192257be0f",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 252,
+                  "column": 9
+                },
+                {
+                  "title": "should handle concurrent page navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 17967,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:37.785Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-9643a6d88f682a88f7f4",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 266,
+                  "column": 9
+                },
+                {
+                  "title": "should handle memory usage efficiently",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 10221,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:40.611Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-94580a705d96dc124948",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 285,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🌐 Cross-Browser and Cross-Platform Features",
+              "file": "recipe-app-coverage.spec.ts",
+              "line": 304,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should work with different viewport orientations",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 4,
+                          "status": "passed",
+                          "duration": 12428,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:40.635Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-9ae605660f93407b57f5",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 305,
+                  "column": 9
+                },
+                {
+                  "title": "should handle touch interactions on mobile",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 8123,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:41.722Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-7b2ccefc085b5becdbc0",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 321,
+                  "column": 9
+                },
+                {
+                  "title": "should support keyboard-only navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 6737,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:43.943Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-6c98b67b0cf123e87138",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 340,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "🚨 Edge Cases and Error Scenarios",
+              "file": "recipe-app-coverage.spec.ts",
+              "line": 354,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle network disconnection gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 9341,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:49.880Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-a8ad803268b38dcf264a",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 355,
+                  "column": 9
+                },
+                {
+                  "title": "should handle large amounts of data",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 6840,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:50.704Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-4d0e1a664c985564f728",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 376,
+                  "column": 9
+                },
+                {
+                  "title": "should handle special characters in URLs",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 5,
+                          "status": "passed",
+                          "duration": 15642,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-08-30T15:23:50.858Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "5c1958d199123d0d6462-179d5154fad33d6a5016",
+                  "file": "recipe-app-coverage.spec.ts",
+                  "line": 389,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-30T15:22:29.302Z",
+    "duration": 97410.58499999999,
+    "expected": 62,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

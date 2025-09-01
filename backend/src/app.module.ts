@@ -13,6 +13,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { IngredientsModule } from './modules/ingredients/ingredients.module';
 import { RecipesModule } from './modules/recipes/recipes.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
+import { RatingsModule } from './modules/ratings/ratings.module';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { LoggerModule } from './common/logger/logger.module';
@@ -24,6 +25,7 @@ import { Ingredient } from './modules/ingredients/entities/ingredient.entity';
 import { Recipe } from './modules/recipes/entities/recipe.entity';
 import { RecipeIngredient } from './modules/recipes/entities/recipe-ingredient.entity';
 import { RecipeStep } from './modules/recipes/entities/recipe-step.entity';
+import { Rating } from './modules/ratings/entities/rating.entity';
 
 @Module({
   imports: [
@@ -41,6 +43,7 @@ import { RecipeStep } from './modules/recipes/entities/recipe-step.entity';
       Recipe,
       RecipeIngredient,
       RecipeStep,
+      Rating,
     ]),
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
@@ -58,6 +61,7 @@ import { RecipeStep } from './modules/recipes/entities/recipe-step.entity';
     IngredientsModule,
     RecipesModule,
     UploadsModule,
+    RatingsModule,
     LoggerModule,
   ],
   controllers: [AppController],

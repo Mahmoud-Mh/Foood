@@ -11,6 +11,7 @@ import { FormatUtils } from '@/utils/formatters';
 import Navbar from '@/components/Navbar';
 import { ApiErrorBoundary } from '@/components/ApiErrorBoundary';
 import { PageLoadingSpinner } from '@/components/LoadingSpinner';
+import { RatingDisplay } from '@/components/StarRating';
 
 export default function BrowseRecipesPage() {
   return (
@@ -388,27 +389,42 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
             </p>
           </div>
           
-          <div className="flex items-center justify-between mt-auto">
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <div className="flex items-center">
-                <svg className="w-4 h-4 mr-1 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                {FormatUtils.formatServings(recipe.servings)}
+          <div className="space-y-3 mt-auto">
+            {/* Rating Display */}
+            {(recipe as any).rating !== undefined && (recipe as any).ratingsCount !== undefined ? (
+              <div className="flex items-center justify-center">
+                <RatingDisplay
+                  rating={(recipe as any).rating || 0}
+                  count={(recipe as any).ratingsCount || 0}
+                  size="sm"
+                  showCount={true}
+                  className="text-sm"
+                />
               </div>
-              <div className="flex items-center">
-                <svg className="w-4 h-4 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                {recipe.viewsCount || 0}
+            ) : null}
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4 text-sm text-gray-500">
+                <div className="flex items-center">
+                  <svg className="w-4 h-4 mr-1 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  {FormatUtils.formatServings(recipe.servings)}
+                </div>
+                <div className="flex items-center">
+                  <svg className="w-4 h-4 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  {recipe.viewsCount || 0}
+                </div>
               </div>
-            </div>
-            
-            <div className="text-indigo-600 group-hover:text-purple-600 transition-colors">
-              <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+              
+              <div className="text-indigo-600 group-hover:text-purple-600 transition-colors">
+                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>

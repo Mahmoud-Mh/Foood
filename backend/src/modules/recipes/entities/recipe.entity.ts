@@ -14,6 +14,7 @@ import { User } from '../../users/entities/user.entity';
 import { Category } from '../../categories/entities/category.entity';
 import { RecipeIngredient } from './recipe-ingredient.entity';
 import { RecipeStep } from './recipe-step.entity';
+import { Rating } from '../../ratings/entities/rating.entity';
 
 export enum RecipeStatus {
   DRAFT = 'draft',
@@ -155,6 +156,14 @@ export class Recipe {
   @Column({ default: true })
   isActive: boolean;
 
+  @ApiProperty({ description: 'Average rating', default: 0 })
+  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
+  averageRating: number;
+
+  @ApiProperty({ description: 'Number of ratings', default: 0 })
+  @Column({ default: 0 })
+  ratingsCount: number;
+
   // Relations
   @ApiProperty({ description: 'Recipe author ID' })
   @Column('uuid')
@@ -192,12 +201,16 @@ export class Recipe {
   })
   steps: RecipeStep[];
 
-  // TODO: Add when Comment and Rating entities are created
+  // TODO: Add when Comment entity is created
   // @OneToMany(() => Comment, comment => comment.recipe)
   // comments: Comment[];
 
-  // @OneToMany(() => Rating, rating => rating.recipe)
-  // ratings: Rating[];
+  // Ratings relation
+  @OneToMany(() => Rating, rating => rating.recipe, {
+    cascade: false,
+    eager: false,
+  })
+  ratings: Rating[];
 
   @ApiProperty({ description: 'Recipe creation date' })
   @CreateDateColumn()
@@ -212,12 +225,6 @@ export class Recipe {
   get totalTimeMinutes(): number {
     return this.prepTimeMinutes + this.cookTimeMinutes;
   }
-
-  @ApiProperty({ description: 'Average rating' })
-  averageRating?: number;
-
-  @ApiProperty({ description: 'Number of ratings' })
-  ratingsCount?: number;
 
   @ApiProperty({ description: 'Number of comments' })
   commentsCount?: number;

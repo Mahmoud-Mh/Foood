@@ -111,6 +111,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center mr-4">
             <button
+              data-testid="mobile-menu-button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
@@ -130,6 +131,7 @@ export default function Navbar() {
                               <div className="relative" ref={dropdownRef}>
                   <button
                     ref={buttonRef}
+                    data-testid="user-menu-button"
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >

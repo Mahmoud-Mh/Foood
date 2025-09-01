@@ -8,6 +8,9 @@ import { recipeService, authService } from '@/services';
 import { Recipe, RecipeStatus, RecipeIngredient } from '@/types/api.types';
 import { FormatUtils } from '@/utils/formatters';
 import Navbar from '@/components/Navbar';
+import { RatingsList, RatingSummary } from '@/components/RatingsList';
+import { RatingForm } from '@/components/RatingForm';
+import { useRecipeRatingSystem } from '@/hooks/useRatings';
 
 export default function RecipeDetailPage() {
   const params = useParams();
@@ -16,6 +19,13 @@ export default function RecipeDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
+  const [showRatingForm, setShowRatingForm] = useState(false);
+  const [editingRating, setEditingRating] = useState(false);
+  
+  // Rating system
+  const recipeId = params.id as string;
+  const ratingsSystem = useRecipeRatingSystem(recipeId);
 
   useEffect(() => {
     const loadRecipe = async () => {
@@ -27,8 +37,11 @@ export default function RecipeDetailPage() {
         // Check if current user is the owner
         if (authService.isAuthenticated()) {
           const currentUser = await authService.getCurrentUser();
-          if (currentUser && recipeData.authorId === currentUser.id) {
-            setIsOwner(true);
+          if (currentUser) {
+            setCurrentUserId(currentUser.id);
+            if (recipeData.authorId === currentUser.id) {
+              setIsOwner(true);
+            }
           }
         }
       } catch (error) {
@@ -225,7 +238,7 @@ export default function RecipeDetailPage() {
             </div>
             
             {/* Recipe Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
               <div className="text-center p-6 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl border border-indigo-200 hover:shadow-lg transition-all duration-300">
                 <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,6 +275,21 @@ export default function RecipeDetailPage() {
                 </div>
                 <div className="text-3xl font-bold text-orange-600 mb-1">{recipe.ingredients?.length || 0}</div>
                 <div className="text-sm text-gray-600 font-medium">Ingredients</div>
+              </div>
+              
+              {/* Rating Stats */}
+              <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl border border-yellow-200 hover:shadow-lg transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                </div>
+                <div className="text-3xl font-bold text-yellow-600 mb-1">
+                  {ratingsSystem.summary ? ratingsSystem.summary.averageRating.toFixed(1) : '—'}
+                </div>
+                <div className="text-sm text-gray-600 font-medium">
+                  Rating ({ratingsSystem.summary?.ratingsCount || 0})
+                </div>
               </div>
             </div>
 
@@ -537,6 +565,145 @@ export default function RecipeDetailPage() {
             )}
           </div>
         )}
+
+        {/* Rating Section */}
+        <div className="mt-8 space-y-8">
+          {/* Rating Summary */}
+          {ratingsSystem.summary && (
+            <RatingSummary
+              averageRating={ratingsSystem.summary.averageRating}
+              totalRatings={ratingsSystem.summary.ratingsCount}
+              distribution={ratingsSystem.summary.ratingDistribution}
+              className="bg-white/80 backdrop-blur-lg shadow-xl border border-gray-100"
+            />
+          )}
+
+          {/* Rating Form for Authenticated Users */}
+          {currentUserId && !isOwner && (
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 flex items-center">
+                  <span className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                  </span>
+                  {ratingsSystem.userRating ? 'Update Your Review' : 'Share Your Experience'}
+                </h3>
+              </div>
+              
+              {ratingsSystem.userRating && !editingRating ? (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-blue-800 font-medium mb-2">You've already reviewed this recipe!</p>
+                      <p className="text-blue-600 text-sm">You can edit your review or view it in the list below.</p>
+                    </div>
+                    <button
+                      onClick={() => setEditingRating(true)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      Edit Review
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <RatingForm
+                  recipeId={recipeId}
+                  recipeName={recipe?.title}
+                  existingRating={ratingsSystem.userRating ? {
+                    id: ratingsSystem.userRating.id,
+                    rating: ratingsSystem.userRating.rating,
+                    comment: ratingsSystem.userRating.comment
+                  } : undefined}
+                  isSubmitting={ratingsSystem.createLoading || ratingsSystem.updateLoading}
+                  onSubmit={async (data) => {
+                    if (ratingsSystem.userRating) {
+                      await ratingsSystem.updateRating(ratingsSystem.userRating.id, data);
+                      setEditingRating(false);
+                    } else {
+                      await ratingsSystem.createRating(data);
+                    }
+                  }}
+                  onCancel={ratingsSystem.userRating ? () => setEditingRating(false) : undefined}
+                  showRecipeName={false}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Rating List */}
+          {ratingsSystem.ratings && ratingsSystem.ratings.data && ratingsSystem.ratings.data.length > 0 && (
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <span className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </span>
+                Reviews ({ratingsSystem.ratings.total})
+              </h3>
+              
+              <RatingsList
+                ratings={ratingsSystem.ratings.data}
+                currentUserId={currentUserId}
+                onEdit={(rating) => {
+                  setEditingRating(true);
+                }}
+                onDelete={async (ratingId) => {
+                  if (window.confirm('Are you sure you want to delete your review?')) {
+                    await ratingsSystem.deleteRating(ratingId);
+                  }
+                }}
+                onReport={async (ratingId) => {
+                  const reason = window.prompt('Why are you reporting this review? (optional)');
+                  await ratingsSystem.reportRating(ratingId, reason || undefined);
+                }}
+                onHelpful={ratingsSystem.markHelpful}
+              />
+
+              {/* Load More Ratings */}
+              {ratingsSystem.ratings.hasNext && (
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => {
+                      // TODO: Implement pagination
+                      console.log('Load more ratings...');
+                    }}
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold transform hover:scale-105 shadow-lg"
+                  >
+                    Load More Reviews
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Empty State for No Ratings */}
+          {ratingsSystem.ratings && ratingsSystem.ratings.data && ratingsSystem.ratings.data.length === 0 && (
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100 text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-gray-300 to-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No Reviews Yet</h3>
+              <p className="text-gray-600">Be the first to share your experience with this recipe!</p>
+            </div>
+          )}
+
+          {/* Success Messages */}
+          {(ratingsSystem.createSuccess || ratingsSystem.updateSuccess || ratingsSystem.deleteSuccess) && (
+            <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {ratingsSystem.createSuccess || ratingsSystem.updateSuccess || ratingsSystem.deleteSuccess}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
