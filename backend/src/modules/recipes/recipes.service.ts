@@ -241,9 +241,12 @@ export class RecipesService {
       .leftJoinAndSelect('recipe.category', 'category')
       .leftJoin('recipe.recipeIngredients', 'ingredients')
       .leftJoin('recipe.steps', 'steps')
+      .leftJoin('recipe.ratings', 'ratings', 'ratings.isActive = true')
       .addSelect([
         'COUNT(DISTINCT ingredients.id) as ingredientsCount',
         'COUNT(DISTINCT steps.id) as stepsCount',
+        'ROUND(AVG(ratings.rating), 1) as averageRating',
+        'COUNT(DISTINCT ratings.id) as ratingsCount',
       ])
       .groupBy('recipe.id, author.id, category.id');
 
@@ -735,14 +738,19 @@ export class RecipesService {
     return transformed;
   }
 
-  private transformToListResponseDto(recipe: Recipe): RecipeListResponseDto {
+  private transformToListResponseDto(recipe: any): RecipeListResponseDto {
     const transformed = plainToClass(RecipeListResponseDto, recipe, {
       excludeExtraneousValues: true,
     });
 
     // Add computed fields
-    transformed.ingredientsCount = recipe.recipeIngredients?.length || 0;
-    transformed.stepsCount = recipe.steps?.length || 0;
+    transformed.ingredientsCount = parseInt(recipe.ingredientsCount) || 0;
+    transformed.stepsCount = parseInt(recipe.stepsCount) || 0;
+    
+    // Add rating fields from query aggregation
+    transformed.averageRating = recipe.averageRating !== null && recipe.averageRating !== undefined ? 
+      parseFloat(recipe.averageRating) : 0;
+    transformed.ratingsCount = parseInt(recipe.ratingsCount) || 0;
 
     return transformed;
   }

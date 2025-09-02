@@ -84,7 +84,17 @@ export class RatingService {
     );
     
     if (response.success && response.data) {
-      return response.data;
+      // Backend returns data.items, but frontend expects data to be the array
+      // Transform the response to match frontend expectations
+      return {
+        data: response.data.items,
+        total: response.data.total,
+        page: response.data.page,
+        limit: response.data.limit,
+        totalPages: response.data.totalPages,
+        hasNext: response.data.hasNext,
+        hasPrev: response.data.hasPrev,
+      };
     }
     
     throw new Error(response.message || 'Failed to fetch recipe ratings');
@@ -136,7 +146,16 @@ export class RatingService {
     );
     
     if (response.success && response.data) {
-      return response.data;
+      // Backend returns data.items, but frontend expects data to be the array
+      return {
+        data: response.data.items,
+        total: response.data.total,
+        page: response.data.page,
+        limit: response.data.limit,
+        totalPages: response.data.totalPages,
+        hasNext: response.data.hasNext,
+        hasPrev: response.data.hasPrev,
+      };
     }
     
     throw new Error(response.message || 'Failed to fetch my ratings');
@@ -161,7 +180,16 @@ export class RatingService {
     );
     
     if (response.success && response.data) {
-      return response.data;
+      // Backend returns data.items, but frontend expects data to be the array
+      return {
+        data: response.data.items,
+        total: response.data.total,
+        page: response.data.page,
+        limit: response.data.limit,
+        totalPages: response.data.totalPages,
+        hasNext: response.data.hasNext,
+        hasPrev: response.data.hasPrev,
+      };
     }
     
     throw new Error(response.message || 'Failed to fetch user ratings');
@@ -233,7 +261,16 @@ export class RatingService {
     );
     
     if (response.success && response.data) {
-      return response.data;
+      // Backend returns data.items, but frontend expects data to be the array
+      return {
+        data: response.data.items,
+        total: response.data.total,
+        page: response.data.page,
+        limit: response.data.limit,
+        totalPages: response.data.totalPages,
+        hasNext: response.data.hasNext,
+        hasPrev: response.data.hasPrev,
+      };
     }
     
     throw new Error(response.message || 'Failed to fetch recent ratings');

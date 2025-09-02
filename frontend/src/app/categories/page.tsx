@@ -45,6 +45,29 @@ export default function CategoriesPage() {
   const [categoryRecipes, setCategoryRecipes] = useState<Record<string, Recipe[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'with-recipes' | 'empty'>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  // Filter categories based on search and filter
+  const filteredCategories = categories.filter(category => {
+    // Search filter
+    const matchesSearch = category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         category.description.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (!matchesSearch) return false;
+    
+    // Recipe count filter
+    const recipeCount = (categoryRecipes[category.id] || []).length;
+    switch (selectedFilter) {
+      case 'with-recipes':
+        return recipeCount > 0;
+      case 'empty':
+        return recipeCount === 0;
+      default:
+        return true;
+    }
+  });
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -138,7 +161,7 @@ export default function CategoriesPage() {
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 text-sm font-medium mb-6 animate-bounce">
             <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2 animate-pulse"></span>
             Explore Categories
@@ -151,20 +174,127 @@ export default function CategoriesPage() {
             </span>
           </h1>
           
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 mb-8">
             From quick breakfasts to gourmet dinners, explore our curated collection of recipe categories. 
             Find the perfect dish for any occasion and culinary craving.
           </p>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-          {categories.map((category, index) => {
+        {/* Enhanced Search and Filters */}
+        <div className="mb-8 sm:mb-12">
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-6 shadow-xl border border-gray-100">
+            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+              {/* Search Bar */}
+              <div className="relative flex-1 max-w-md w-full">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search categories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 bg-white/70"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {/* Filters and View Controls */}
+              <div className="flex items-center gap-4 w-full lg:w-auto">
+                {/* Recipe Filter */}
+                <div className="flex bg-gray-100 rounded-xl p-1">
+                  <button
+                    onClick={() => setSelectedFilter('all')}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      selectedFilter === 'all' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => setSelectedFilter('with-recipes')}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      selectedFilter === 'with-recipes' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    With Recipes
+                  </button>
+                  <button
+                    onClick={() => setSelectedFilter('empty')}
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      selectedFilter === 'empty' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    Empty
+                  </button>
+                </div>
+
+                {/* View Mode Toggle */}
+                <div className="flex bg-gray-100 rounded-xl p-1">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded-lg transition-all duration-200 ${
+                      viewMode === 'grid' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="Grid view"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded-lg transition-all duration-200 ${
+                      viewMode === 'list' ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="List view"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Results Summary */}
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+              <span>
+                Showing {filteredCategories.length} of {categories.length} categories
+                {searchQuery && ` for "${searchQuery}"`}
+              </span>
+              
+              {filteredCategories.length > 0 && (
+                <div className="flex items-center space-x-4">
+                  <span>Total Recipes: {Object.values(categoryRecipes).flat().length}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Categories Grid/List */}
+        <div className={viewMode === 'grid' 
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8"
+          : "space-y-4"
+        }>
+          {filteredCategories.map((category, index) => {
             const recipes = categoryRecipes[category.id] || [];
             const icon = getCategoryIcon(category.name);
             const gradientClass = getCategoryColor(index);
             
-            return (
+            return viewMode === 'grid' ? (
               <div
                 key={category.id}
                 className="group relative bg-white/80 backdrop-blur-lg rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 border border-gray-100 animate-fadeIn h-full flex flex-col"
@@ -256,10 +386,106 @@ export default function CategoriesPage() {
                   </div>
                 </div>
               </div>
+            ) : (
+              // List View
+              <div
+                key={category.id}
+                className="group relative bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 animate-fadeIn"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                <Link href={`/categories/${category.id}`} className="block">
+                  <div className="flex items-center p-6 hover:bg-gray-50/50 transition-colors duration-200">
+                    {/* Icon */}
+                    <div className={`w-16 h-16 bg-gradient-to-br ${gradientClass} rounded-2xl flex items-center justify-center mr-6 transform group-hover:scale-110 transition-transform duration-300`}>
+                      <div className="text-2xl">{icon}</div>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 mr-4">
+                          <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors">
+                            {category.name}
+                          </h3>
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                            {category.description}
+                          </p>
+                          
+                          {/* Recipe preview in list */}
+                          <div className="flex items-center text-sm text-gray-500">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            {recipes.length} recipe{recipes.length !== 1 ? 's' : ''}
+                            {recipes.length > 0 && (
+                              <span className="ml-2 text-gray-400">•</span>
+                            )}
+                            {recipes.length > 0 && (
+                              <span className="ml-2 truncate">
+                                {recipes.slice(0, 2).map(r => r.title).join(', ')}
+                                {recipes.length > 2 && ` +${recipes.length - 2} more`}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                            Browse
+                          </div>
+                          <svg className="w-5 h-5 text-gray-400 group-hover:text-indigo-600 transform group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
             );
           })}
         </div>
 
+        {/* No Results State */}
+        {filteredCategories.length === 0 && categories.length > 0 && (
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <div className="w-24 h-24 bg-gradient-to-r from-gray-400 to-gray-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">No Categories Found</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                {searchQuery 
+                  ? `No categories match "${searchQuery}". Try adjusting your search or filters.`
+                  : 'No categories match the selected filter. Try changing the filter options.'
+                }
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedFilter('all');
+                  }}
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold"
+                >
+                  Clear Filters
+                </button>
+                <Link
+                  href="/recipes/create"
+                  className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-300 font-semibold"
+                >
+                  Create Recipe
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Empty State */}
         {categories.length === 0 && (
           <div className="text-center py-20">
@@ -293,7 +519,7 @@ export default function CategoriesPage() {
         )}
 
         {/* Call to Action */}
-        {categories.length > 0 && (
+        {filteredCategories.length > 0 && (
           <div className="mt-20">
             <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 sm:p-12 shadow-xl border border-gray-100 text-center relative overflow-hidden">
               {/* Background pattern */}
@@ -346,6 +572,18 @@ export default function CategoriesPage() {
             </div>
           </div>
         )}
+        
+        {/* Floating Action Button for Mobile */}
+        <div className="fixed bottom-6 right-6 sm:hidden z-40">
+          <Link
+            href="/recipes/create"
+            className="group w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300 flex items-center justify-center"
+          >
+            <svg className="w-6 h-6 transform group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </Link>
+        </div>
       </div>
     </div>
   );

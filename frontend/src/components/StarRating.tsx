@@ -87,7 +87,7 @@ export const StarRating: React.FC<StarRatingProps> = ({
     Array.from({ length: maxRating }, (_, i) => i + 1) : 
     generateStarValues();
 
-  const displayRating = isHovering && interactive ? hoverRating : rating;
+  const displayRating = isHovering && interactive ? hoverRating : (typeof rating === 'number' ? rating : parseFloat(rating) || 0);
 
   return (
     <div 

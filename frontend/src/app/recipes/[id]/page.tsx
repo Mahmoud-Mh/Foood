@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,12 +20,12 @@ export default function RecipeDetailPage() {
   const [isOwner, setIsOwner] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | undefined>(undefined);
-  const [showRatingForm, setShowRatingForm] = useState(false);
   const [editingRating, setEditingRating] = useState(false);
   
   // Rating system
   const recipeId = params.id as string;
   const ratingsSystem = useRecipeRatingSystem(recipeId);
+  
 
   useEffect(() => {
     const loadRecipe = async () => {
@@ -339,108 +339,133 @@ export default function RecipeDetailPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Ingredients */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+          {/* Ingredients - Now with max height and scrolling */}
           <div className="lg:col-span-1">
-            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 sticky top-8 border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <span className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                </span>
-                Ingredients
-              </h2>
-              <div className="space-y-4">
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-100 lg:sticky lg:top-8 max-h-[60vh] lg:max-h-[80vh] overflow-hidden flex flex-col">
+              <div className="p-4 sm:p-8 pb-4">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                  <span className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </span>
+                  <span className="flex-1">Ingredients</span>
+                  <span className="text-sm text-gray-500 bg-green-100 px-2 py-1 rounded-full">
+                    {recipe.ingredients?.length || 0}
+                  </span>
+                </h2>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto px-4 sm:px-8 pb-4 sm:pb-8 space-y-3 custom-scrollbar">
                 {recipe.ingredients?.map((ingredient: RecipeIngredient, index: number) => (
-                  <div key={index} className="flex items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl hover:from-green-100 hover:to-emerald-100 transition-all duration-300 group border border-green-100 hover:border-green-200">
+                  <div key={index} className="flex items-start p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl hover:from-green-100 hover:to-emerald-100 transition-all duration-300 group border border-green-100 hover:border-green-200">
+                    <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3 mt-0.5 flex-shrink-0">
+                      {index + 1}
+                    </div>
                     <div className="flex-1">
-                      <div className="font-semibold text-gray-900 group-hover:text-green-700 transition-colors">
+                      <div className="font-semibold text-gray-900 group-hover:text-green-700 transition-colors text-sm leading-tight">
                         {ingredient.quantity} {ingredient.unit} {ingredient.ingredient?.name || 'Unknown'}
                       </div>
                       {ingredient.preparation && (
-                        <div className="text-sm text-gray-600 mt-1 italic">{ingredient.preparation}</div>
+                        <div className="text-xs text-gray-600 mt-1 italic">{ingredient.preparation}</div>
+                      )}
+                      {ingredient.isOptional && (
+                        <span className="inline-block text-xs text-yellow-700 bg-yellow-100 border border-yellow-200 px-2 py-1 rounded-full font-medium mt-1">Optional</span>
                       )}
                     </div>
-                    {ingredient.isOptional && (
-                      <span className="text-xs text-gray-500 bg-yellow-100 text-yellow-700 border border-yellow-200 px-2 py-1 rounded-full font-medium">Optional</span>
-                    )}
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Instructions */}
-          <div className="lg:col-span-2">
-            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
-                <span className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </span>
-                Instructions
-              </h2>
-              <div className="space-y-8">
-                {recipe.steps?.map((step, index) => (
-                  <div key={index} className="flex space-x-6">
+          {/* Instructions - Now with better layout and navigation */}
+          <div className="lg:col-span-3">
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-100">
+              <div className="p-8 pb-4">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <span className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </span>
+                    Instructions
+                  </h2>
+                  <span className="text-sm text-gray-500 bg-indigo-100 px-3 py-1 rounded-full">
+                    {recipe.steps?.length || 0} steps
+                  </span>
+                </div>
+              </div>
+              
+              <div className="px-4 sm:px-8 pb-8 max-h-[70vh] lg:max-h-[80vh] overflow-y-auto custom-scrollbar space-y-4 lg:space-y-6">
+                {recipe.steps?.filter((step, index, array) => {
+                  // Remove duplicates based on step.id if available, or stepNumber + title combination
+                  return array.findIndex(s => 
+                    (s.id && step.id && s.id === step.id) || 
+                    (s.stepNumber === step.stepNumber && s.title === step.title)
+                  ) === index;
+                }).map((step, index) => (
+                  <div key={step.id || `step-${step.stepNumber}-${step.title}`} className="flex space-x-3 sm:space-x-4 p-4 sm:p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl sm:rounded-2xl border border-gray-200 hover:shadow-md transition-all duration-300 step-item" data-step={index + 1}>
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl flex items-center justify-center font-bold text-lg shadow-lg">
-                        {step.stepNumber}
+                      <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl flex items-center justify-center font-bold text-sm shadow-lg">
+                        {index + 1}
                       </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-900 mb-3">{step.title}</h3>
-                      <p className="text-gray-700 leading-relaxed mb-4">{step.instructions}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
+                      <p className="text-gray-700 leading-relaxed mb-3 whitespace-pre-wrap">{step.instructions}</p>
                       
                       {step.imageUrl && (
-                        <div className="relative h-64 mb-4 rounded-2xl overflow-hidden shadow-lg border border-gray-200">
+                        <div className="relative h-48 mb-3 rounded-xl overflow-hidden shadow-md border border-gray-200">
                           <Image
                             src={FormatUtils.getImageUrl(step.imageUrl)}
                             alt={step.title}
                             fill
-                            className="object-cover hover:scale-110 transition-transform duration-500"
+                            className="object-cover hover:scale-105 transition-transform duration-300"
                           />
                         </div>
                       )}
                       
-                      <div className="flex flex-wrap gap-3 text-sm mb-4">
+                      <div className="flex flex-wrap gap-2 text-xs mb-3">
                         {step.timeMinutes && step.timeMinutes > 0 && (
-                          <span className="flex items-center bg-blue-100 text-blue-700 px-3 py-1 rounded-full border border-blue-200">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <span className="flex items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-full border border-blue-200">
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             {step.timeMinutes} min
                           </span>
                         )}
                         {step.temperature && (
-                          <span className="flex items-center bg-red-100 text-red-700 px-3 py-1 rounded-full border border-red-200">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <span className="flex items-center bg-red-100 text-red-700 px-2 py-1 rounded-full border border-red-200">
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
                             {step.temperature}
                           </span>
                         )}
-                        {step.tips && (
-                          <span className="flex items-center bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full border border-yellow-200">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        {step.equipment && step.equipment.length > 0 && (
+                          <span className="flex items-center bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full border border-indigo-200">
+                            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                             </svg>
-                            {step.tips}
+                            {step.equipment.slice(0, 2).join(', ')}{step.equipment.length > 2 && ' +' + (step.equipment.length - 2)}
                           </span>
                         )}
                       </div>
                       
-                      {step.equipment && step.equipment.length > 0 && (
-                        <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
-                          <span className="text-sm font-medium text-blue-800 flex items-center mb-2">
-                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                      {step.tips && (
+                        <div className="mt-3 p-3 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border border-yellow-200">
+                          <div className="flex items-start">
+                            <svg className="w-4 h-4 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                             </svg>
-                            Equipment needed:
-                          </span>
-                          <span className="text-sm text-blue-700">{step.equipment.join(', ')}</span>
+                            <div className="flex-1">
+                              <span className="text-sm text-yellow-800 font-medium">Chef's Tip:</span>
+                              <p className="text-sm text-yellow-700 mt-1">{step.tips}</p>
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -566,131 +591,177 @@ export default function RecipeDetailPage() {
           </div>
         )}
 
-        {/* Rating Section */}
-        <div className="mt-8 space-y-8">
-          {/* Rating Summary */}
-          {ratingsSystem.summary && (
-            <RatingSummary
-              averageRating={ratingsSystem.summary.averageRating}
-              totalRatings={ratingsSystem.summary.ratingsCount}
-              distribution={ratingsSystem.summary.ratingDistribution}
-              className="bg-white/80 backdrop-blur-lg shadow-xl border border-gray-100"
-            />
-          )}
-
-          {/* Rating Form for Authenticated Users */}
-          {currentUserId && !isOwner && (
-            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 flex items-center">
-                  <span className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center mr-3">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                    </svg>
-                  </span>
-                  {ratingsSystem.userRating ? 'Update Your Review' : 'Share Your Experience'}
-                </h3>
-              </div>
-              
-              {ratingsSystem.userRating && !editingRating ? (
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200 mb-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-blue-800 font-medium mb-2">You've already reviewed this recipe!</p>
-                      <p className="text-blue-600 text-sm">You can edit your review or view it in the list below.</p>
-                    </div>
-                    <button
-                      onClick={() => setEditingRating(true)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-colors font-medium"
-                    >
-                      Edit Review
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <RatingForm
-                  recipeId={recipeId}
-                  recipeName={recipe?.title}
-                  existingRating={ratingsSystem.userRating ? {
-                    id: ratingsSystem.userRating.id,
-                    rating: ratingsSystem.userRating.rating,
-                    comment: ratingsSystem.userRating.comment
-                  } : undefined}
-                  isSubmitting={ratingsSystem.createLoading || ratingsSystem.updateLoading}
-                  onSubmit={async (data) => {
-                    if (ratingsSystem.userRating) {
-                      await ratingsSystem.updateRating(ratingsSystem.userRating.id, data);
-                      setEditingRating(false);
-                    } else {
-                      await ratingsSystem.createRating(data);
-                    }
-                  }}
-                  onCancel={ratingsSystem.userRating ? () => setEditingRating(false) : undefined}
-                  showRecipeName={false}
-                />
-              )}
-            </div>
-          )}
-
-          {/* Rating List */}
-          {ratingsSystem.ratings && ratingsSystem.ratings.data && ratingsSystem.ratings.data.length > 0 && (
-            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+        {/* Reviews & Ratings Section - Unified Layout */}
+        <div id="reviews-section" className="mt-8">
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+            <div className="p-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
                 <span className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                   </svg>
                 </span>
-                Reviews ({ratingsSystem.ratings.total})
+                Reviews & Ratings
               </h3>
-              
-              <RatingsList
-                ratings={ratingsSystem.ratings.data}
-                currentUserId={currentUserId}
-                onEdit={(rating) => {
-                  setEditingRating(true);
-                }}
-                onDelete={async (ratingId) => {
-                  if (window.confirm('Are you sure you want to delete your review?')) {
-                    await ratingsSystem.deleteRating(ratingId);
-                  }
-                }}
-                onReport={async (ratingId) => {
-                  const reason = window.prompt('Why are you reporting this review? (optional)');
-                  await ratingsSystem.reportRating(ratingId, reason || undefined);
-                }}
-                onHelpful={ratingsSystem.markHelpful}
-              />
 
-              {/* Load More Ratings */}
-              {ratingsSystem.ratings.hasNext && (
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={() => {
-                      // TODO: Implement pagination
-                      console.log('Load more ratings...');
-                    }}
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold transform hover:scale-105 shadow-lg"
-                  >
-                    Load More Reviews
-                  </button>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Left Side - Rating Summary */}
+                <div className="lg:col-span-4">
+                  {ratingsSystem.summary ? (
+                    <div className="sticky top-8">
+                      <RatingSummary
+                        averageRating={ratingsSystem.summary.averageRating}
+                        totalRatings={ratingsSystem.summary.ratingsCount}
+                        distribution={ratingsSystem.summary.ratingDistribution}
+                        className="border-0 bg-transparent p-0 shadow-none"
+                      />
+                      
+                      {/* Rating Form for Authenticated Users */}
+                      {currentUserId && !isOwner && (
+                        <div className="mt-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
+                          {ratingsSystem.userRating && !editingRating ? (
+                            <div>
+                              <p className="text-blue-800 font-medium mb-2">You've reviewed this recipe</p>
+                              <button
+                                onClick={() => setEditingRating(true)}
+                                className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                              >
+                                Edit Review
+                              </button>
+                            </div>
+                          ) : (
+                            <div>
+                              <h4 className="font-semibold text-gray-900 mb-4">
+                                {ratingsSystem.userRating ? 'Update Your Review' : 'Share Your Experience'}
+                              </h4>
+                              <RatingForm
+                                recipeId={recipeId}
+                                recipeName={recipe?.title}
+                                existingRating={ratingsSystem.userRating ? {
+                                  id: ratingsSystem.userRating.id,
+                                  rating: ratingsSystem.userRating.rating,
+                                  comment: ratingsSystem.userRating.comment
+                                } : undefined}
+                                isSubmitting={ratingsSystem.createLoading || ratingsSystem.updateLoading}
+                                onSubmit={async (data) => {
+                                  if (ratingsSystem.userRating) {
+                                    await ratingsSystem.updateRating(ratingsSystem.userRating.id, data);
+                                    setEditingRating(false);
+                                  } else {
+                                    await ratingsSystem.createRating(data);
+                                  }
+                                }}
+                                onCancel={ratingsSystem.userRating ? () => setEditingRating(false) : undefined}
+                                showRecipeName={false}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-gradient-to-r from-gray-300 to-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">No Reviews Yet</h4>
+                      <p className="text-gray-600 mb-4">Be the first to rate this recipe!</p>
+                      {!currentUserId && (
+                        <p className="text-blue-600 text-sm">Sign in to leave a review</p>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          )}
 
-          {/* Empty State for No Ratings */}
-          {ratingsSystem.ratings && ratingsSystem.ratings.data && ratingsSystem.ratings.data.length === 0 && (
-            <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl p-8 border border-gray-100 text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-gray-300 to-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
+                {/* Right Side - Reviews List */}
+                <div className="lg:col-span-8">
+                  <div className="h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+                    {ratingsSystem.ratings?.data && ratingsSystem.ratings.data.length > 0 ? (
+                      <>
+                        <RatingsList
+                          ratings={ratingsSystem.ratings.data}
+                          currentUserId={currentUserId}
+                          onEdit={(_rating) => {
+                            setEditingRating(true);
+                          }}
+                          onDelete={async (ratingId) => {
+                            if (window.confirm('Are you sure you want to delete your review?')) {
+                              await ratingsSystem.deleteRating(ratingId);
+                            }
+                          }}
+                          onReport={async (ratingId) => {
+                            const reason = window.prompt('Why are you reporting this review? (optional)');
+                            await ratingsSystem.reportRating(ratingId, reason || undefined);
+                          }}
+                          onHelpful={ratingsSystem.markHelpful}
+                          className="space-y-4"
+                        />
+
+                        {/* Load More Button */}
+                        {ratingsSystem.ratings.hasNext && (
+                          <div className="mt-6 text-center">
+                            <button
+                              onClick={() => {
+                                // TODO: Implement pagination
+                                console.log('Load more ratings...');
+                              }}
+                              className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold"
+                            >
+                              Load More Reviews
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-gradient-to-r from-gray-300 to-gray-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                          </svg>
+                        </div>
+                        <h4 className="text-xl font-semibold text-gray-900 mb-2">No Comments Yet</h4>
+                        <p className="text-gray-600 mb-6">Be the first to share your cooking experience!</p>
+                        {!currentUserId && (
+                          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 max-w-md mx-auto">
+                            <p className="text-blue-800 text-sm">
+                              <span className="font-semibold">Want to leave a review?</span> Sign in to share your thoughts.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">No Reviews Yet</h3>
-              <p className="text-gray-600">Be the first to share your experience with this recipe!</p>
             </div>
-          )}
+          </div>
+
+          {/* Floating Navigation */}
+          <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">
+            {/* Jump to Reviews Button */}
+            <button
+              onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
+              className="w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 flex items-center justify-center group"
+              title="Jump to Reviews"
+            >
+              <svg className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </button>
+            
+            {/* Scroll to Top Button */}
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="w-12 h-12 bg-white border border-gray-300 text-gray-600 rounded-full shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 flex items-center justify-center"
+              title="Scroll to Top"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+            </button>
+          </div>
 
           {/* Success Messages */}
           {(ratingsSystem.createSuccess || ratingsSystem.updateSuccess || ratingsSystem.deleteSuccess) && (
